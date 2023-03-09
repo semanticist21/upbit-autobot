@@ -1,0 +1,8 @@
+github.com/cinar/indicator v1.2.24 h1:/vDjrYyLQIIevmmjwr/RL55IGM2AXJgPv08DtQPHUn0=
+github.com/cinar/indicator v1.2.24/go.mod h1:5eX8f1PG9g3RKSoHsoQxKd8bIN97Cf/gbgxXjihROpI=
+github.com/dgrijalva/jwt-go v3.2.0+incompatible h1:7qlOGliEKZXTDg6OTjfoBKDXWrumCAMpl/TFQ4/5kLM=
+github.com/dgrijalva/jwt-go v3.2.0+incompatible/go.mod h1:E3ru+11k8xSBh+hMPgOLZmtrrCbhqsmaPHjLKYnJCaQ=
+github.com/google/uuid v1.3.0 h1:t6JiXgmwXMjEs8VusXIJk2BXHsn+wx8BZdTaoZ5fu7I=
+github.com/google/uuid v1.3.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
+github.com/sangx2/upbit v0.0.0-20211015065425-a0e59dbf53e9 h1:vgTFuZmNZcguqLx6teDnEyeuLOVkZ/u9BL2bRKrsGUc=
+github.com/sangx2/upbit v0.0.0-20211015065425-a0e59dbf53e9/go.mod h1:ZdSqteC5st2003a1Mhww8O9O/UPQv80Xt8qOanjuoVQ=
