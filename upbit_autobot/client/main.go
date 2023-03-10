@@ -2,6 +2,6 @@ package main
 
 func main() {
 	// upbit get account balance
-	upbit := Upbit
+	// upbit := upbit.NewUpbit("", "")
 
 }
