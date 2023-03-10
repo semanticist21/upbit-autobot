@@ -3,7 +3,7 @@ package model
 import "time"
 
 type Transaction struct {
-	Id         float64
+	Uuid       float64
 	CoinName   string
 	Quantity   float64
 	OrderPrice float64

@@ -1,25 +1,44 @@
 package model
 
+import (
+	"sync"
+)
+
 type Strategy struct {
-	Minute        int
-	Length        int
-	Multiplier    float64
-	LossPercent   float64
-	ProfitPercent float64
+	Minute         int
+	Length         int
+	Multiplier     float64
+	LossPercent    float64
+	ProfitPercent  float64
+	PropotionToBuy float64
 }
 
-func NewStartegy(
+var once = &sync.Once{}
+var currentStrategy *Strategy
+
+func GetInstance() *Strategy {
+	if currentStrategy == nil {
+		once.Do(func() {
+			currentStrategy = DefaultStrategy()
+		})
+	}
+
+	return currentStrategy
+}
+
+func InitStrategy(
 	minute int,
 	length int,
 	multiplier float64,
 	loss float64,
-	profit float64) *Strategy {
+	profit float64, proportionToBuy float64) *Strategy {
 	return &Strategy{
 		minute,
 		length,
 		multiplier,
 		loss,
 		profit,
+		proportionToBuy,
 	}
 }
 
@@ -30,5 +49,6 @@ func DefaultStrategy() *Strategy {
 		2,
 		5,
 		5,
+		10,
 	}
 }

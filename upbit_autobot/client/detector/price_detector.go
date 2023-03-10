@@ -1,50 +1,47 @@
 package detector
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/sangx2/upbit"
-	"github.com/semanticist21/upbit-client-server/coin"
+	"github.com/semanticist21/upbit-client-server/coininfos"
 	"github.com/semanticist21/upbit-client-server/indicator"
-	"github.com/semanticist21/upbit-client-server/model"
+	"github.com/semanticist21/upbit-client-server/logger"
 )
 
 // executed in seperated thread
-func InitDetector(upbit *upbit.Upbit, strategy *model.Strategy, coins chan indicator.CoinBollingerInfo, errs chan error) error {
+func InitDetector(upbit *upbit.Upbit, coins *chan indicator.CoinBollingerInfo) {
+	fmt.Println("Started to fetch coin data.")
+	go hasCoinsToBuy(upbit, coins)
+}
+
+func hasCoinsToBuy(upbit *upbit.Upbit, ch *chan indicator.CoinBollingerInfo) {
 	for {
 		start := time.Now()
 		cycleTime := time.Second * 60
 
-		go hasCoinsToBuy(upbit, strategy, coins, errs)
-
-		gap := time.Since(start)
-		if gap < cycleTime {
-			time.Sleep(cycleTime - gap)
-		}
-	}
-
-}
-
-func hasCoinsToBuy(upbit *upbit.Upbit, strategy *model.Strategy, ch chan indicator.CoinBollingerInfo, errs chan error) {
-	for {
-		list, err := coin.GetCoinNames(upbit)
+		list, err := coininfos.GetCoinNames(upbit)
 
 		if err != nil {
-			errs <- err
+			logger.GetInstance().InsertErr(err)
+			logger.GetInstance().InsertErr(fmt.Errorf("the task was canceled"))
+			return
 		}
 
-		infos, err := coin.GetCoinInfosWithBollinger(upbit, strategy, list)
-
-		if err != nil {
-			errs <- err
-		}
+		infos := coininfos.GetCoinInfosWithBollinger(upbit, list)
 
 		// verify bollinger according to strategy.
 		for _, v := range infos {
 			isCoinToBuy := check(v)
-			if isCoinToBuy {
-				ch <- v
+			if !isCoinToBuy {
+				*ch <- v
 			}
+		}
+
+		gap := time.Since(start)
+		if gap < cycleTime {
+			time.Sleep(cycleTime - gap)
 		}
 	}
 }
