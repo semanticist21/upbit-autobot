@@ -3,13 +3,13 @@ package singleton
 import "fmt"
 
 type Logger struct {
-	Msgs     chan string
-	Errs     chan error
-	Warnings chan error
+	Msgs      chan string
+	Errs      chan error
+	Warnings  chan error
+	IsRunning bool
 }
 
 var logger *Logger
-var IsRunning = false
 
 //go:inline
 func InstanceLogger() *Logger {
@@ -19,19 +19,20 @@ func InstanceLogger() *Logger {
 //go:inline
 func InitLogger() {
 	logger = &Logger{
-		Msgs:     make(chan string),
-		Errs:     make(chan error),
-		Warnings: make(chan error),
+		Msgs:      make(chan string),
+		Errs:      make(chan error),
+		Warnings:  make(chan error),
+		IsRunning: false,
 	}
 }
 
 //go:inline
-func RunLogger() {
-	if IsRunning {
+func (logger *Logger) RunLogger() {
+	if logger.IsRunning {
 		return
 	}
+	logger.IsRunning = true
 
-	IsRunning = true
 	go func() {
 		select {
 		case msg := <-logger.Msgs:
