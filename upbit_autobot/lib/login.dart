@@ -169,9 +169,10 @@ class _LoginState extends State<Login> {
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700),
                           ),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
+                          SingleChildScrollView(
+                              child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
                                 ElevatedButton(
                                   onPressed: _onButtonPressed,
                                   child: Text("Login"),
@@ -187,7 +188,7 @@ class _LoginState extends State<Login> {
                                 SizedBox(
                                   width: 5,
                                 ),
-                              ])
+                              ]))
                         ])
                   ],
                 ),
@@ -225,8 +226,7 @@ class _LoginState extends State<Login> {
 
     //login success
     if (context.mounted) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
-
+      Navigator.push(context, MaterialPageRoute(builder: (_) => Home()));
       setState(() {
         _loadingText = '';
         _isIndicatorVisible = false;
