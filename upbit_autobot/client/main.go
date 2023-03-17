@@ -10,7 +10,7 @@ import (
 func main() {
 	// upbit get account balance
 	// upbit := upbit.NewUpbit("", "")
-	u := upbit.NewUpbit("Hee9WfzADJ2PKtWoIz8qSXjah27MsU0twcQLLBoe", "tDo9oCvUbeXxfo21Fo44glBwxO9IHQBYrulkHtfK")
+	u := upbit.NewUpbit("", "")
 	result, _, err := u.GetAccounts()
 
 	if err != nil {
