@@ -3,7 +3,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../animation/wave.dart';
 import '../items/items_buy_list.dart';
+<<<<<<< HEAD
 import '../items/items_strategy.dart';
+=======
+>>>>>>> 4772c395897b632253a04e2f96189c624630d576
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -242,7 +245,11 @@ class _HomeState extends State<Home> {
                                   child: Padding(
                                       padding: EdgeInsets.all(15),
                                       child: Column(children: [
+<<<<<<< HEAD
                                         // 위에 전략 부분
+=======
+                                        // 위에 전략 부분분
+>>>>>>> 4772c395897b632253a04e2f96189c624630d576
                                         Expanded(
                                             flex: 3,
                                             child: Container(
@@ -263,7 +270,10 @@ class _HomeState extends State<Home> {
                                                     // 리스트 아이템들
                                                     slivers: [
                                                       SliverAppBar(
+<<<<<<< HEAD
                                                         pinned: true,
+=======
+>>>>>>> 4772c395897b632253a04e2f96189c624630d576
                                                         automaticallyImplyLeading:
                                                             false,
                                                         backgroundColor:
@@ -293,6 +303,7 @@ class _HomeState extends State<Home> {
                                                           ),
                                                         ],
                                                       ),
+<<<<<<< HEAD
                                                       // 아이템 있는 부분
                                                       SliverPadding(
                                                           padding:
@@ -319,6 +330,105 @@ class _HomeState extends State<Home> {
                                                                     mainAxisSpacing:
                                                                         5,
                                                                   )))
+=======
+                                                      SliverPadding(
+                                                          padding:
+                                                              EdgeInsets.all(5),
+                                                          sliver: SliverGrid(
+                                                              delegate:
+                                                                  SliverChildBuilderDelegate(
+                                                                      (context,
+                                                                          index) {
+                                                                return Card(
+                                                                  color: Color
+                                                                      .fromRGBO(
+                                                                          62,
+                                                                          39,
+                                                                          35,
+                                                                          0.8),
+                                                                  elevation: 10,
+                                                                  shape: ContinuousRectangleBorder(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              15)),
+                                                                  shadowColor:
+                                                                      Colors
+                                                                          .black45,
+                                                                  child: Column(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .start,
+                                                                      children: [
+                                                                        SizedBox(
+                                                                            height:
+                                                                                5),
+                                                                        Row(
+                                                                            mainAxisAlignment:
+                                                                                MainAxisAlignment.center,
+                                                                            children: [
+                                                                              Text("마켓 ID : "),
+                                                                              Text("BTC-KRW"),
+                                                                            ]),
+                                                                        Divider(),
+                                                                        Padding(
+                                                                            padding:
+                                                                                EdgeInsets.symmetric(horizontal: 5),
+                                                                            child: IntrinsicHeight(
+                                                                                child: Row(
+                                                                              children: [
+                                                                                Expanded(
+                                                                                    flex: 1,
+                                                                                    child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                                                                                      SizedBox(height: 5),
+                                                                                      Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                                                                                        Text("볼린저 길이 : "),
+                                                                                        Text("20")
+                                                                                      ]),
+                                                                                      SizedBox(height: 10),
+                                                                                      Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                                                                                        Text("볼린저 곱 : "),
+                                                                                        Text("2")
+                                                                                      ]),
+                                                                                      SizedBox(height: 10),
+                                                                                      Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                                                                                        Text("카운트: "),
+                                                                                        Text("3")
+                                                                                      ]),
+                                                                                    ])),
+                                                                                VerticalDivider(),
+                                                                                Expanded(
+                                                                                    flex: 1,
+                                                                                    child: Column(
+                                                                                      children: [
+                                                                                        SizedBox(height: 5),
+                                                                                        Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                                                                                          Text("손절 기준 : "),
+                                                                                          Text("5%")
+                                                                                        ]),
+                                                                                        SizedBox(height: 10),
+                                                                                        Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                                                                                          Text("익절 기준 : "),
+                                                                                          Text("5%")
+                                                                                        ]),
+                                                                                      ],
+                                                                                    )),
+                                                                              ],
+                                                                            )))
+                                                                      ]),
+                                                                );
+                                                              }, childCount: 1),
+                                                              gridDelegate:
+                                                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                                                crossAxisCount:
+                                                                    2,
+                                                                childAspectRatio:
+                                                                    2,
+                                                                crossAxisSpacing:
+                                                                    5,
+                                                                mainAxisSpacing:
+                                                                    5,
+                                                              )))
+>>>>>>> 4772c395897b632253a04e2f96189c624630d576
                                                     ]))),
                                         SizedBox(height: 10),
                                         // 로그 부분
