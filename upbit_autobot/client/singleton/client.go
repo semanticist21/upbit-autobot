@@ -19,8 +19,8 @@ func InstanceClient() *upbit.Upbit {
 }
 
 //go:inline
-func InitClient(publicKey string, privateKey string) {
+func InitClient(publicKey string, secretKey string) {
 	once.Do(func() {
-		client = upbit.NewUpbit(publicKey, privateKey)
+		client = upbit.NewUpbit(publicKey, secretKey)
 	})
 }

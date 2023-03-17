@@ -1,9 +1,19 @@
 package singleton
 
 func Init() {
+	// start upbit client
 	InstanceClient()
-	InitLogger()
 
+	// start logger
+	InitLogger()
+	logger.RunLogger()
+
+	// start fetching account balance
 	InstanceAccount()
-	InitDetector()
+	// InitDetector()
+}
+
+//
+func CloseWithDefer() {
+	loggerWriter.Sync()
 }

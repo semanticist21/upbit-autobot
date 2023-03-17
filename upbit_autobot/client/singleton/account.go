@@ -18,6 +18,7 @@ func InitAccount(client *upbit.Upbit) {
 	RefreshAccount(client)
 }
 
+//go:inline
 func RefreshAccount(client *upbit.Upbit) {
 	logger := InstanceLogger()
 	accounts, _, err := client.GetAccounts()
