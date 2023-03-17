@@ -13,6 +13,7 @@ void main() async {
     await windowManager.setSize(const Size(800, 600));
     windowManager.setMinimumSize(const Size(800, 600));
     windowManager.setMaximumSize(const Size(1024, 768));
+    windowManager.setResizable(false);
   }
 
   await Window.initialize();

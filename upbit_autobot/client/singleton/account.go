@@ -6,6 +6,7 @@ import (
 )
 
 var krwAccount *account.Account
+var coinsAccount []*account.Account
 
 func InstanceAccount() *account.Account {
 	return krwAccount
@@ -13,6 +14,7 @@ func InstanceAccount() *account.Account {
 
 //go:inline
 func InitAccount(client *upbit.Upbit) {
+	coinsAccount = []*account.Account{}
 	RefreshAccount(client)
 }
 
@@ -28,6 +30,9 @@ func RefreshAccount(client *upbit.Upbit) {
 	for _, account := range accounts {
 		if account.UnitCurrency == "KRW" {
 			krwAccount = account
+
+		} else {
+			coinsAccount = append(coinsAccount, account)
 		}
 	}
 }
