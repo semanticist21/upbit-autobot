@@ -2,52 +2,100 @@ package main
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"fmt"
+	"io"
+	"math"
 	"net/http"
+	"strconv"
 
 	"github.com/sangx2/upbit"
+	"github.com/semanticist21/upbit-client-server/converter"
 	"github.com/semanticist21/upbit-client-server/model"
 	"github.com/semanticist21/upbit-client-server/singleton"
 )
 
-func StartServer() {
+//go:inline
+func startServer() {
 	http.HandleFunc("/login", handleLogin)
-
+	http.HandleFunc("/balance", handleBalance)
 	http.ListenAndServe(":8080", nil)
 }
 
+//go:inline
 func handleLogin(w http.ResponseWriter, r *http.Request) {
+	// already logined case
+	if singleton.InstanceClient() != nil {
+		w.WriteHeader(http.StatusOK)
+	}
+
 	isSuccesful := false
+	var keys *model.Key
 
 	if r.Method == http.MethodPost {
-		isSuccesful = checkLogin(r)
+		isSuccesful, keys = checkLogin(&w, r)
 	}
 
 	if isSuccesful {
+		singleton.InitClient(keys.PublicKey, keys.SecretKey)
+		singleton.InitAccount(singleton.InstanceClient())
 		w.WriteHeader(http.StatusOK)
 	} else {
-		w.WriteHeader()
+		w.WriteHeader(http.StatusBadRequest)
 	}
-
-	// w.Header().Set("Content-Type", "application/json")
-
-	// tokenStr := r.Body
 }
 
-func checkLogin(r *http.Request) bool {
+//go:inline
+func handleBalance(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
-	body, err := ioutil.ReadAll(r.Body)
+	num, err := strconv.ParseFloat(singleton.InstanceKrwBalance().Balance, 64)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		singleton.InstanceLogger().Errs <- fmt.Errorf("failed to parse balance string to float64")
+		return
+	}
+
+	roundedNum := math.Floor(num)
+	stringNum := converter.Float64ToString(roundedNum)
+
+	krwBalance := stringNum
+	jsonKrw := model.Balance{Balance: krwBalance}
+
+	data, err := json.Marshal(jsonKrw)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
+//go:inline
+func checkLogin(w *http.ResponseWriter, r *http.Request) (bool, *model.Key) {
+
+	body, err := io.ReadAll(r.Body)
 
 	if err != nil {
 		singleton.InstanceLogger().Errs <- err
-		return false
+		http.Error(*w, err.Error(), http.StatusBadRequest)
+		return false, nil
+	}
+
+	if body == nil {
+		return false, nil
 	}
 
 	keyObj := model.Key{}
-	json.Unmarshal(body, keyObj)
+	json.Unmarshal(body, &keyObj)
 	isLogin := IsValidClientKey(keyObj.PublicKey, keyObj.SecretKey)
 
-	return isLogin
+	return isLogin, &keyObj
 }
 
 //go:inline

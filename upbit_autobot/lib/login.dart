@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:upbit_autobot/client/client.dart';
 import 'package:upbit_autobot/model/account.dart';
 
 import 'pages/home.dart';
@@ -214,15 +217,25 @@ class _LoginState extends State<Login> {
       return;
     }
 
-    setState(() {
-      _loadingText = '로딩 중입니다..';
-      _isIndicatorVisible = true;
-    });
-
-    await Future.delayed(const Duration(milliseconds: 1000));
+    _loadingText = '로딩 중입니다..';
+    _isIndicatorVisible = true;
+    setState(() {});
 
     var acc =
         Account(publicKey: _publicField.text, secretKey: _secretField.text);
+    var data = acc.toJson();
+    var client = RestApiClient();
+
+    var response = await client.requestPost('login', encodeData(data));
+
+    // login fail case
+    if (response.statusCode != HttpStatus.ok) {
+      _loadingText = '';
+      _warningText = '로딩에 실패했습니다.';
+      _isIndicatorVisible = false;
+      setState(() {});
+      return;
+    }
 
     //login success
     if (context.mounted) {

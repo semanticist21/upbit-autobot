@@ -8,7 +8,7 @@ import (
 var krwAccount *account.Account
 var coinsAccount []*account.Account
 
-func InstanceAccount() *account.Account {
+func InstanceKrwBalance() *account.Account {
 	return krwAccount
 }
 
@@ -29,9 +29,8 @@ func RefreshAccount(client *upbit.Upbit) {
 	}
 
 	for _, account := range accounts {
-		if account.UnitCurrency == "KRW" {
+		if account.Currency == "KRW" {
 			krwAccount = account
-
 		} else {
 			coinsAccount = append(coinsAccount, account)
 		}

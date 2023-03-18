@@ -1,6 +1,6 @@
 package model
 
 type Key struct {
-	PublicKey string
-	SecretKey string
+	PublicKey string `json:"publicKey"`
+	SecretKey string `json:"secretKey"`
 }

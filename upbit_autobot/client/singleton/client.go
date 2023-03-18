@@ -11,10 +11,6 @@ var client *upbit.Upbit
 
 //go:inline
 func InstanceClient() *upbit.Upbit {
-	if client == nil {
-		InitClient("", "")
-	}
-
 	return client
 }
 
