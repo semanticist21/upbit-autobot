@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:upbit_autobot/client/client.dart';
+import 'package:upbit_autobot/components/refresh_button.dart';
 
 import '../animation/wave.dart';
 
@@ -13,15 +14,15 @@ class BalanceMonitor extends StatefulWidget {
 
 class _BalanceMonitorState extends State<BalanceMonitor> {
   var _balance = '0';
-  var _isInitial = true;
+
+  @override
+  void initState() {
+    super.initState();
+    DoBalanceRequest();
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (_isInitial) {
-      DoBalanceRequest();
-      _isInitial = false;
-    }
-
     return Stack(children: [
       const Opacity(opacity: 0.4, child: Wave()),
       Padding(
@@ -41,13 +42,9 @@ class _BalanceMonitorState extends State<BalanceMonitor> {
                     Text("업비트 나의 현금 잔고")
                   ]),
                   Spacer(),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(FontAwesomeIcons.arrowRotateLeft),
-                    padding: EdgeInsets.zero,
-                    iconSize: 15,
-                    splashRadius: 15.0,
-                  )
+                  RefreshButton(callback: () async {
+                    await DoBalanceRequest();
+                  })
                 ],
               ),
               const SizedBox(height: 15),
@@ -77,12 +74,13 @@ class _BalanceMonitorState extends State<BalanceMonitor> {
   }
 
   Future<void> DoBalanceRequest() async {
-    var result = await RestApiClient().requestGet("balance");
+    var result = await RestApiClient().requestGet("balance/krw");
 
     Map<String, dynamic> parsedResult = parseResponseData(result);
 
-    if (parsedResult.containsKey('balance')) {
-      _balance = parsedResult['balance'];
+    var key = 'balance';
+    if (parsedResult.containsKey(key)) {
+      _balance = parsedResult[key];
       setState(() {});
       return;
     }

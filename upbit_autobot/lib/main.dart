@@ -3,7 +3,9 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
-import 'package:upbit_autobot/login.dart';
+import 'package:provider/provider.dart';
+import 'package:upbit_autobot/pages/login.dart';
+import 'package:upbit_autobot/provider.dart';
 import 'package:window_manager/window_manager.dart';
 
 void main() async {
@@ -28,18 +30,21 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      scrollBehavior: MaterialScrollBehavior().copyWith(
-        dragDevices: {
-          PointerDeviceKind.mouse,
-          PointerDeviceKind.touch,
-          PointerDeviceKind.stylus,
-          PointerDeviceKind.unknown
-        },
+    return ChangeNotifierProvider(
+      create: (context) => AppProvider(),
+      child: MaterialApp(
+        scrollBehavior: MaterialScrollBehavior().copyWith(
+          dragDevices: {
+            PointerDeviceKind.mouse,
+            PointerDeviceKind.touch,
+            PointerDeviceKind.stylus,
+            PointerDeviceKind.unknown
+          },
+        ),
+        theme: ThemeData.dark(),
+        title: '로그인',
+        home: const Login(),
       ),
-      theme: ThemeData.dark(),
-      title: '로그인',
-      home: const Login(),
     );
   }
 }

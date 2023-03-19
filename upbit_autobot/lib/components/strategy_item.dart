@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
-class StrategyItems extends StatefulWidget {
-  StrategyItems({super.key, required this.itemKey});
-  ValueKey itemKey;
+class StrategyItem extends StatefulWidget {
+  StrategyItem({super.key, required this.itemKey});
+  final ValueKey itemKey;
 
   @override
-  State<StrategyItems> createState() => _StrategyItemsState();
+  State<StrategyItem> createState() => _StrategyItemState();
 }
 
-class _StrategyItemsState extends State<StrategyItems> {
+class _StrategyItemState extends State<StrategyItem> {
   bool _isHover = false;
   double _opacity = 1;
   final _color =

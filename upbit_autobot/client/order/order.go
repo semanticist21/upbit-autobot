@@ -52,7 +52,7 @@ func GetAllCoinIds(client *upbit.Upbit) (map[string]string, error) {
 }
 
 func BuyOrder(client *upbit.Upbit, orderInfo *OrderInfo) (*order.Order, error) {
-	order, _, err := client.PurchaseOrder(orderInfo.CoinId, "", converter.Float64ToString(orderInfo.BuyAmountKrw), exchange.ORDER_TYPE_PRICE, "")
+	order, _, err := client.PurchaseOrder(orderInfo.CoinId, "", converter.Float64ToString(orderInfo.BuyAmountKrw, 2), exchange.ORDER_TYPE_PRICE, "")
 
 	if err != nil {
 		return nil, err

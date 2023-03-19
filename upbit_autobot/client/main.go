@@ -5,23 +5,12 @@ import (
 )
 
 func main() {
-	// upbit get account balance
-	// upbit := upbit.NewUpbit("", "")
-	// u := upbit.NewUpbit("", "")
-	// result, _, err := u.GetAccounts()
-
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-
-	// for _, item := range result {
-	// 	fmt.Println(item.GetMarketID())
-	// }
-
-	startServer()
-
 	// start instances
 	singleton.Init()
 	defer singleton.CloseWithDefer()
+	singleton.InstanceLogger().Msgs <- "싱글톤 인스턴스 시작 완료."
 
+	// start server
+	singleton.InstanceLogger().Msgs <- "서버 시작."
+	startServer()
 }

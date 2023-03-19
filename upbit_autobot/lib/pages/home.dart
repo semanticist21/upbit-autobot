@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:upbit_autobot/components/buy_item_list.dart';
+import 'package:upbit_autobot/components/refresh_button.dart';
 
 import '../animation/wave.dart';
 import '../components/balance_monitor.dart';
-import '../components/items_buy_list.dart';
-import '../components/items_strategy.dart';
+import '../components/buy_item.dart';
+import '../components/loggerBox.dart';
+import '../components/strategy_item.dart';
+import '../provider.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -14,18 +19,17 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-  final _logController = TextEditingController();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  AppProvider _provider = AppProvider();
 
   bool _hover = false;
-  var _balance = '0';
 
   @override
   Widget build(BuildContext context) {
-    _logController.text =
-        '[18:13:10] TRX 코인 매수 완료.\n[18:13:10] TRX 코인 매수량 13000 개.';
+    _provider = Provider.of<AppProvider>(context, listen: true);
+
     return Scaffold(
-        key: scaffoldKey,
+        key: _scaffoldKey,
         backgroundColor: Colors.transparent,
         body: Row(
           children: [
@@ -116,18 +120,14 @@ class _HomeState extends State<Home> {
                                                               ),
                                                             ),
                                                             const Spacer(),
-                                                            IconButton(
-                                                              icon: Icon(
-                                                                  FontAwesomeIcons
-                                                                      .arrowRotateLeft),
-                                                              padding:
-                                                                  EdgeInsets
-                                                                      .zero,
-                                                              iconSize: 15,
-                                                              splashRadius:
-                                                                  15.0,
-                                                              onPressed: () {},
-                                                            )
+                                                            RefreshButton(
+                                                                callback:
+                                                                    () async {
+                                                              await _provider
+                                                                  .doCoinBalanceRequest(
+                                                                      _provider
+                                                                          .buyItems);
+                                                            }),
                                                           ])),
                                                       titlePadding:
                                                           EdgeInsets.fromLTRB(
@@ -141,7 +141,7 @@ class _HomeState extends State<Home> {
                                                                     .circular(
                                                                         10)),
                                                   ),
-                                                  BuyListItem(),
+                                                  BuyItemList(),
                                                   SliverToBoxAdapter(
                                                       child:
                                                           SizedBox(height: 20))
@@ -233,7 +233,7 @@ class _HomeState extends State<Home> {
                                                                   itemBuilder:
                                                                       (context,
                                                                           index) {
-                                                                    return StrategyItems(
+                                                                    return StrategyItem(
                                                                       itemKey:
                                                                           ValueKey(
                                                                               index),
@@ -253,71 +253,7 @@ class _HomeState extends State<Home> {
                                                     ]))),
                                         SizedBox(height: 10),
                                         // 로그 부분
-                                        Expanded(
-                                            flex: 1,
-                                            child: Container(
-                                                width: double.infinity,
-                                                height: double.infinity,
-                                                clipBehavior: Clip.antiAlias,
-                                                decoration: BoxDecoration(
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .background,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10)),
-                                                child: Column(children: [
-                                                  Container(
-                                                      height: 30,
-                                                      color: Color.fromRGBO(
-                                                          66, 66, 66, 0.9),
-                                                      child: Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .center,
-                                                          children: [
-                                                            Icon(
-                                                                FontAwesomeIcons
-                                                                    .clockRotateLeft,
-                                                                size: 15),
-                                                            SizedBox(width: 15),
-                                                            Text("로그",
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        15,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500))
-                                                          ])),
-                                                  Expanded(
-                                                      child:
-                                                          SingleChildScrollView(
-                                                    physics: BouncingScrollPhysics(
-                                                        parent:
-                                                            AlwaysScrollableScrollPhysics()),
-                                                    scrollDirection:
-                                                        Axis.vertical,
-                                                    child: Padding(
-                                                        padding: EdgeInsets
-                                                            .symmetric(
-                                                                horizontal: 10,
-                                                                vertical: 5),
-                                                        child: TextFormField(
-                                                          controller:
-                                                              _logController,
-                                                          enabled: true,
-                                                          maxLines: null,
-                                                          readOnly: true,
-                                                          style: TextStyle(
-                                                              fontSize: 15),
-                                                          decoration:
-                                                              InputDecoration(
-                                                                  border:
-                                                                      InputBorder
-                                                                          .none),
-                                                        )),
-                                                  ))
-                                                ])))
+                                        Expanded(flex: 1, child: LoggerBox())
                                       ])))));
                     })))
           ],

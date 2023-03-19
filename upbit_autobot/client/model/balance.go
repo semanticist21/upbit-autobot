@@ -1,5 +1,5 @@
 package model
 
-type Balance struct {
+type KrwBalance struct {
 	Balance string `json:"balance"`
 }

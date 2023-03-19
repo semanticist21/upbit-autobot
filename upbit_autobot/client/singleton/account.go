@@ -6,15 +6,19 @@ import (
 )
 
 var krwAccount *account.Account
-var coinsAccount []*account.Account
+var coinAccounts []*account.Account
 
 func InstanceKrwBalance() *account.Account {
 	return krwAccount
 }
 
+func InstanceCoinBalances() []*account.Account {
+	return coinAccounts
+}
+
 //go:inline
 func InitAccount(client *upbit.Upbit) {
-	coinsAccount = []*account.Account{}
+	coinAccounts = []*account.Account{}
 	RefreshAccount(client)
 }
 
@@ -22,6 +26,7 @@ func InitAccount(client *upbit.Upbit) {
 func RefreshAccount(client *upbit.Upbit) {
 	logger := InstanceLogger()
 	accounts, _, err := client.GetAccounts()
+	coinAccounts = []*account.Account{}
 
 	if err != nil {
 		logger.Errs <- err
@@ -32,7 +37,7 @@ func RefreshAccount(client *upbit.Upbit) {
 		if account.Currency == "KRW" {
 			krwAccount = account
 		} else {
-			coinsAccount = append(coinsAccount, account)
+			coinAccounts = append(coinAccounts, account)
 		}
 	}
 }
