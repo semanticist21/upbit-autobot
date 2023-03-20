@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:upbit_autobot/client/client.dart';
 import 'package:upbit_autobot/provider.dart';
 
 class LoggerBox extends StatefulWidget {
@@ -46,7 +45,7 @@ class _LoggerBoxState extends State<LoggerBox> {
                 SizedBox(width: 15),
                 Text("로그",
                     style:
-                        TextStyle(fontSize: 13, fontWeight: FontWeight.normal))
+                        TextStyle(fontSize: 15, fontWeight: FontWeight.normal))
               ])),
           Expanded(
               child: SingleChildScrollView(
@@ -60,7 +59,7 @@ class _LoggerBoxState extends State<LoggerBox> {
                   enabled: true,
                   maxLines: null,
                   readOnly: true,
-                  style: TextStyle(fontSize: 15),
+                  style: TextStyle(fontSize: 12),
                   decoration: InputDecoration(border: InputBorder.none),
                 )),
           ))

@@ -102,6 +102,11 @@ func handleBalance(w http.ResponseWriter, r *http.Request) {
 
 //go:inline
 func doKrwHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		incurBadRequestError(w)
+		return
+	}
+
 	num, err := strconv.ParseFloat(singleton.InstanceKrwBalance().Balance, 64)
 	singleton.RefreshAccount(singleton.InstanceClient())
 
@@ -128,6 +133,11 @@ func doKrwHandle(w http.ResponseWriter, r *http.Request) {
 
 //go:inline
 func doAllHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		incurBadRequestError(w)
+		return
+	}
+
 	balances := singleton.InstanceCoinBalances()
 	singleton.RefreshAccount(singleton.InstanceClient())
 

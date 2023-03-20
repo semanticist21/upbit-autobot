@@ -20,6 +20,7 @@ class AppProvider extends ChangeNotifier {
   factory AppProvider() {
     return _instance;
   }
+
   Future<void> doCoinBalanceRequest(List<CoinBalance> buyItems) async {
     var response = await RestApiClient().requestGet("balance/all");
     var parsedResult = parseResponseData(response);
@@ -46,23 +47,46 @@ class AppProvider extends ChangeNotifier {
     if (!_isInitRequest) {
       return;
     }
+
     _isInitRequest = false;
     var receivePort = ReceivePort();
-    Isolate.spawn(updateLogger, receivePort.sendPort);
+    await Isolate.spawn(updateLogger, receivePort.sendPort);
 
     receivePort.listen((message) {
       var text = controller.text;
-      var newLog = '$text\n$message';
-      controller.text = newLog;
+      var msgStr = message as String;
+      msgStr = msgStr.replaceAll('T', ' ');
+      msgStr = msgStr.replaceAll('+0900', '');
+
+      if (text == '') {
+        controller.text = '$msgStr';
+      } else {
+        controller.text = '$text$msgStr';
+      }
       notifyListeners();
+    }, onError: (error) {
+      print(error);
+      receivePort.close();
     });
   }
 }
 
 Future<void> updateLogger(SendPort sendPort) async {
-  Timer.periodic(Duration(seconds: 10), (timer) async {
-    var response = await RestApiClient().requestGet('logs');
-    var data = parseWordData(response);
+  var response = await RestApiClient().requestGet('logs');
+  var data = parseWordData(response);
+  if (data.isNotEmpty) {
     sendPort.send(data);
-  });
+  }
+
+  try {
+    Timer.periodic(Duration(seconds: 2), (timer) async {
+      var response = await RestApiClient().requestGet('logs');
+      var data = parseWordData(response);
+      if (data.isNotEmpty) {
+        sendPort.send(data);
+      }
+    });
+  } catch (e) {
+    print(e);
+  }
 }

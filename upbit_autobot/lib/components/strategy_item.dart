@@ -11,7 +11,6 @@ class StrategyItem extends StatefulWidget {
 
 class _StrategyItemState extends State<StrategyItem> {
   bool _isHover = false;
-  double _opacity = 1;
   final _color =
       Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(0.8);
 

@@ -7,6 +7,7 @@ environment:
   sdk: '>=3.0.0-312.0.dev <4.0.0'
 
 dependencies:
+  bouncing_draggable_dialog: ^1.0.2
   flutter:
     sdk: flutter
   flutter_acrylic: ^1.1.0

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -5,8 +7,10 @@ import 'package:upbit_autobot/components/buy_item_list.dart';
 import 'package:upbit_autobot/components/refresh_button.dart';
 
 import '../animation/wave.dart';
+import '../components/add_dialog.dart';
 import '../components/balance_monitor.dart';
 import '../components/buy_item.dart';
+import '../components/draggable.dart';
 import '../components/loggerBox.dart';
 import '../components/strategy_item.dart';
 import '../provider.dart';
@@ -202,7 +206,19 @@ class _HomeState extends State<Home> {
                                                                 66, 66, 0.9),
                                                         actions: [
                                                           IconButton(
-                                                            onPressed: () {},
+                                                            onPressed: () {
+                                                              showDialog(
+                                                                  context:
+                                                                      context,
+                                                                  builder:
+                                                                      (context) {
+                                                                    return Builder(
+                                                                        builder:
+                                                                            (context) {
+                                                                      return AddDialog();
+                                                                    });
+                                                                  });
+                                                            },
                                                             icon: Icon(
                                                                 FontAwesomeIcons
                                                                     .plus),

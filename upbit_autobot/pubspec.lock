@@ -17,6 +17,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  bouncing_draggable_dialog:
+    dependency: "direct main"
+    description:
+      name: bouncing_draggable_dialog
+      sha256: "3a04769cf5fb583beada625be55e0affbe002ab03c93c90b243a832becc9ec47"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
   characters:
     dependency: transitive
     description:
