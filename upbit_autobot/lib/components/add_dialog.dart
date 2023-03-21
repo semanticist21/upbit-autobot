@@ -93,6 +93,8 @@ class _AddDialogState extends State<AddDialog> {
                                           if (_provider.items.length >= 10) {
                                             return '최대 전략 개수 10개';
                                           }
+
+                                          return null;
                                         },
                                         style: TextStyle(fontSize: 12),
                                         decoration: InputDecoration(
@@ -235,10 +237,13 @@ class _AddDialogState extends State<AddDialog> {
           if (value!.isEmpty) {
             return '값을 입력하세요.';
           }
+
           var num = int.tryParse(value);
           if (num != null && num >= 50) {
             return '50 이하 입력하세요.';
           }
+
+          return null;
         },
         decoration: InputDecoration(
             errorStyle: _errorTextStyle(),
