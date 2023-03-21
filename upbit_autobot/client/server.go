@@ -11,6 +11,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/sangx2/upbit"
 	"github.com/semanticist21/upbit-client-server/converter"
+	"github.com/semanticist21/upbit-client-server/detector"
 	"github.com/semanticist21/upbit-client-server/model"
 	"github.com/semanticist21/upbit-client-server/singleton"
 )
@@ -42,7 +43,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 
 	if isSuccesful {
 		singleton.InitClient(keys.PublicKey, keys.SecretKey)
-		singleton.InitAccount(singleton.InstanceClient())
+		singleton.InitWithClient(singleton.InstanceClient(), &detector.CycleStarter{})
 		w.WriteHeader(http.StatusOK)
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
@@ -249,7 +250,7 @@ func doPostHandleItems(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	item := singleton.StrategyItemInfos{}
+	item := model.StrategyItemInfos{}
 
 	marshalErr := json.Unmarshal(data, &item)
 

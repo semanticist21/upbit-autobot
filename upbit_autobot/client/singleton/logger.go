@@ -5,29 +5,21 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/semanticist21/upbit-client-server/model"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
-type Logger struct {
-	Msgs      chan string
-	Errs      chan error
-	Warnings  chan error
-	MsgQueue  *bytes.Buffer
-	IsRunning bool
-}
-
-var logger *Logger
-var loggerWriter *zap.Logger
+var logger *model.Logger
 
 //go:inline
-func InstanceLogger() *Logger {
+func InstanceLogger() *model.Logger {
 	return logger
 }
 
 //go:inline
 func InitLogger() {
-	logger = &Logger{
+	logger = &model.Logger{
 		Msgs:      make(chan string),
 		Errs:      make(chan error),
 		Warnings:  make(chan error),
@@ -55,32 +47,7 @@ func InitLogger() {
 		zapcore.NewCore(outputEncoder, zapcore.AddSync(logger.MsgQueue), level),
 	)
 
-	loggerWriter = zap.New(core)
-}
+	loggerWriter := zap.New(core)
 
-//go:inline
-func (logger *Logger) RunLogger() {
-	if logger.IsRunning {
-		return
-	}
-	logger.IsRunning = true
-
-	go func() {
-		for {
-			select {
-			case msg := <-logger.Msgs:
-				writeLog(msg)
-			case err := <-logger.Errs:
-				writeErr(err)
-			}
-		}
-	}()
-}
-
-func writeLog(msg string) {
-	loggerWriter.Info(msg)
-}
-
-func writeErr(err error) {
-	loggerWriter.Error(err.Error())
+	logger.LoggerWriter = loggerWriter
 }

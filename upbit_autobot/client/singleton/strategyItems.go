@@ -4,33 +4,19 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+
+	"github.com/semanticist21/upbit-client-server/model"
 )
 
-type StrategyItemInfos struct {
-	Items []*StrategyItemInfo `json:"items"`
-}
-
-var items *StrategyItemInfos
-
-type StrategyItemInfo struct {
-	Color               string  `json:"color"`
-	ItemId              string  `json:"itemId"`
-	CoinMarketName      string  `json:"coinMarketName"`
-	BollingerLength     int     `json:"bollingerLength"`
-	BollingerMultiplier int     `json:"bollingerMultiplier"`
-	PurchaseCount       int     `json:"purchaseCount"`
-	ProfitLine          float64 `json:"profitLine"`
-	LossLine            float64 `json:"lossLine"`
-	LastBoughtTimestamp string  `json:"lastBoughtTimeStamp"`
-}
+var items *model.StrategyItemInfos
 
 //go:inline
-func InstanceItems() *StrategyItemInfos {
+func InstanceItems() *model.StrategyItemInfos {
 	return items
 }
 
 //go:inline
-func SetInstanceItems(newItems *StrategyItemInfos) {
+func SetInstanceItems(newItems *model.StrategyItemInfos) {
 	items = newItems
 	saveStrategyItems()
 }
@@ -57,7 +43,7 @@ func InitStrategyItems() {
 		return
 	}
 
-	var saveditems *StrategyItemInfos
+	var saveditems *model.StrategyItemInfos
 
 	marshalErr := json.Unmarshal(data, &saveditems)
 
