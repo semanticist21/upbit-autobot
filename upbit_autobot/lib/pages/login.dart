@@ -227,10 +227,11 @@ class _LoginState extends State<Login> {
     var data = acc.toJson();
     var client = RestApiClient();
 
-    var response = await client.requestPost('login', encodeData(data));
+    var response =
+        await client.requestPost('login', RestApiClient.encodeData(data));
 
     // login fail case
-    if (response!.statusCode != HttpStatus.ok) {
+    if (response == null || response.statusCode != HttpStatus.ok) {
       _loadingText = '';
       _warningText = '로딩에 실패했습니다.';
       _isIndicatorVisible = false;

@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:upbit_autobot/components/buy_item_list.dart';
 import 'package:upbit_autobot/components/refresh_button.dart';
+import 'package:upbit_autobot/components/strategy_scroll_view.dart';
 
 import '../animation/wave.dart';
 import '../components/add_dialog.dart';
@@ -128,9 +129,9 @@ class _HomeState extends State<Home> {
                                                                 callback:
                                                                     () async {
                                                               await _provider
-                                                                  .doCoinBalanceRequest(
+                                                                  .doCoinBalanceGetRequest(
                                                                       _provider
-                                                                          .buyItems);
+                                                                          .boughtItems);
                                                             }),
                                                           ])),
                                                       titlePadding:
@@ -189,84 +190,7 @@ class _HomeState extends State<Home> {
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             10)),
-                                                child: CustomScrollView(
-                                                    physics: BouncingScrollPhysics(
-                                                        decelerationRate:
-                                                            ScrollDecelerationRate
-                                                                .fast),
-                                                    shrinkWrap: true,
-                                                    // 리스트 아이템들
-                                                    slivers: [
-                                                      SliverAppBar(
-                                                        pinned: true,
-                                                        automaticallyImplyLeading:
-                                                            false,
-                                                        backgroundColor:
-                                                            Color.fromRGBO(66,
-                                                                66, 66, 0.9),
-                                                        actions: [
-                                                          IconButton(
-                                                            onPressed: () {
-                                                              showDialog(
-                                                                  context:
-                                                                      context,
-                                                                  builder:
-                                                                      (context) {
-                                                                    return Builder(
-                                                                        builder:
-                                                                            (context) {
-                                                                      return AddDialog();
-                                                                    });
-                                                                  });
-                                                            },
-                                                            icon: Icon(
-                                                                FontAwesomeIcons
-                                                                    .plus),
-                                                            iconSize: 20,
-                                                            padding:
-                                                                EdgeInsets.zero,
-                                                            splashRadius: 15,
-                                                          ),
-                                                          IconButton(
-                                                            onPressed: () {},
-                                                            icon: Icon(
-                                                              FontAwesomeIcons
-                                                                  .solidFloppyDisk,
-                                                            ),
-                                                            iconSize: 20,
-                                                            padding:
-                                                                EdgeInsets.zero,
-                                                            splashRadius: 15,
-                                                          ),
-                                                        ],
-                                                      ),
-                                                      // 아이템 있는 부분
-                                                      SliverPadding(
-                                                          padding:
-                                                              EdgeInsets.all(5),
-                                                          sliver: SliverGrid
-                                                              .builder(
-                                                                  itemBuilder:
-                                                                      (context,
-                                                                          index) {
-                                                                    return StrategyItem(
-                                                                      itemKey:
-                                                                          ValueKey(
-                                                                              index),
-                                                                    );
-                                                                  },
-                                                                  gridDelegate:
-                                                                      SliverGridDelegateWithFixedCrossAxisCount(
-                                                                    crossAxisCount:
-                                                                        2,
-                                                                    childAspectRatio:
-                                                                        2,
-                                                                    crossAxisSpacing:
-                                                                        5,
-                                                                    mainAxisSpacing:
-                                                                        5,
-                                                                  )))
-                                                    ]))),
+                                                child: strategyScrollView())),
                                         SizedBox(height: 10),
                                         // 로그 부분
                                         Expanded(flex: 1, child: LoggerBox())

@@ -1,16 +1,20 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:isolate';
 
 import 'package:flutter/widgets.dart';
+import 'package:upbit_autobot/model/log.dart';
 
 import 'client/client.dart';
 import 'model/balance.dart';
+import 'model/strategy_item_info.dart';
 
 class AppProvider extends ChangeNotifier {
   TextEditingController controller = TextEditingController();
   var _isInitRequest = true;
 
-  List<CoinBalance> buyItems = new List.empty(growable: true);
+  List<CoinBalance> boughtItems = new List.empty(growable: true);
+  List<StrategyItemInfo> items = List.empty(growable: true);
 
   AppProvider._init() {
     controller.text = '';
@@ -21,9 +25,9 @@ class AppProvider extends ChangeNotifier {
     return _instance;
   }
 
-  Future<void> doCoinBalanceRequest(List<CoinBalance> buyItems) async {
+  Future<void> doCoinBalanceGetRequest(List<CoinBalance> buyItems) async {
     var response = await RestApiClient().requestGet("balance/all");
-    var parsedResult = parseResponseData(response);
+    var parsedResult = RestApiClient.parseResponseData(response);
 
     var key = 'balances';
     if (parsedResult.containsKey(key)) {
@@ -31,11 +35,7 @@ class AppProvider extends ChangeNotifier {
       buyItems.clear();
 
       items.forEach((element) {
-        var coinBalance = CoinBalance(
-            coinName: element['coinName'],
-            avgBuyPrice: element['avgBuyPrice'],
-            balance: element['balance']);
-
+        var coinBalance = CoinBalance.fromJson(element);
         buyItems.add(coinBalance);
       });
     }
@@ -43,14 +43,36 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> doLoggerRequest(TextEditingController controller) async {
+  void removeItemFromItems(int index) {
+    items.removeAt(index);
+    notifyListeners();
+  }
+
+  Future<void> doInitialItemsRequest() async {
+    var response = await RestApiClient().requestGet('items');
+
+    // data empty case
+    if (response.body == 'null') {
+      return;
+    }
+
+    Map<String, dynamic> data = jsonDecode(response.body);
+    List<dynamic> sentItems = data['items'];
+    items.clear();
+
+    sentItems.forEach((el) => items.add(StrategyItemInfo.fromJson(el)));
+    notifyListeners();
+  }
+
+  Future<void> doStartLoggerGetRequestCycle(
+      TextEditingController controller) async {
     if (!_isInitRequest) {
       return;
     }
 
     _isInitRequest = false;
     var receivePort = ReceivePort();
-    await Isolate.spawn(updateLogger, receivePort.sendPort);
+    await Isolate.spawn(_doUpdateLogger, receivePort.sendPort);
 
     receivePort.listen((message) {
       var text = controller.text;
@@ -71,9 +93,9 @@ class AppProvider extends ChangeNotifier {
   }
 }
 
-Future<void> updateLogger(SendPort sendPort) async {
+Future<void> _doUpdateLogger(SendPort sendPort) async {
   var response = await RestApiClient().requestGet('logs');
-  var data = parseWordData(response);
+  var data = RestApiClient.parseWordData(response);
   if (data.isNotEmpty) {
     sendPort.send(data);
   }
@@ -81,7 +103,7 @@ Future<void> updateLogger(SendPort sendPort) async {
   try {
     Timer.periodic(Duration(seconds: 2), (timer) async {
       var response = await RestApiClient().requestGet('logs');
-      var data = parseWordData(response);
+      var data = RestApiClient.parseWordData(response);
       if (data.isNotEmpty) {
         sendPort.send(data);
       }

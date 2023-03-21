@@ -21,6 +21,7 @@ func startServer() {
 	router.HandleFunc("/login", handleLogin)
 	router.HandleFunc("/balance/{name}", handleBalance)
 	router.HandleFunc("/logs", handleLogs)
+	router.HandleFunc("/items", handleItems)
 	http.Handle("/", router)
 	http.ListenAndServe(":8080", nil)
 }
@@ -50,7 +51,6 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 
 //go:inline
 func checkLogin(w *http.ResponseWriter, r *http.Request) (bool, *model.Key) {
-
 	body, err := io.ReadAll(r.Body)
 
 	if err != nil {
@@ -175,15 +175,91 @@ func doAllHandle(w http.ResponseWriter, r *http.Request) {
 	singleton.InstanceLogger().Msgs <- "코인 구매내역 전송되었습니다."
 }
 
+//go:inline
 func handleLogs(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+	switch r.Method {
+	case http.MethodGet:
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(singleton.InstanceLogger().MsgQueue.Bytes())
+		singleton.InstanceLogger().MsgQueue.Reset()
+	case http.MethodPost:
+		if r.Body == nil {
+			incurBadRequestError(w)
+			return
+		}
+		body, err := io.ReadAll(r.Body)
+
+		if err != nil {
+			singleton.InstanceLogger().Errs <- err
+			incurBadRequestError(w)
+			return
+		}
+
+		var log model.Log
+		json.Unmarshal(body, &log)
+
+		if log.Msg != "" {
+			singleton.InstanceLogger().Msgs <- log.Msg
+		}
+
+		if log.ErrorMsg != "" {
+			singleton.InstanceLogger().Errs <- fmt.Errorf(log.ErrorMsg)
+		}
+	}
+}
+
+//go:inline
+func handleItems(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		// items update
+		doGetHandleItems(w)
+	case http.MethodPost:
+		doPostHandleItems(w, r)
+	}
+}
+
+//go:inline
+func doGetHandleItems(w http.ResponseWriter) {
+	// items update
+	w.Header().Set("Content-Type", "application/json")
+	data, err := json.Marshal(singleton.InstanceItems())
+
+	if err != nil {
+		singleton.InstanceLogger().Errs <- err
 		incurBadRequestError(w)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(singleton.InstanceLogger().MsgQueue.Bytes())
-	singleton.InstanceLogger().MsgQueue.Reset()
+	w.Write(data)
+	singleton.InstanceLogger().Msgs <- "전략 아이템 전송되었습니다."
+}
+
+//go:inline
+func doPostHandleItems(w http.ResponseWriter, r *http.Request) {
+	if r.Body == nil {
+		incurBadRequestError(w)
+	}
+
+	data, err := io.ReadAll(r.Body)
+
+	if err != nil {
+		singleton.InstanceLogger().Errs <- err
+		incurBadRequestError(w)
+		return
+	}
+
+	item := singleton.StrategyItemInfos{}
+
+	marshalErr := json.Unmarshal(data, &item)
+
+	if marshalErr != nil {
+		singleton.InstanceLogger().Errs <- marshalErr
+		return
+	}
+
+	singleton.SetInstanceItems(&item)
+	singleton.InstanceLogger().Msgs <- "전략 아이템 저장되었습니다."
 }
 
 //go:inline

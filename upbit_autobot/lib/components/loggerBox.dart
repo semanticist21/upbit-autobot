@@ -23,8 +23,9 @@ class _LoggerBoxState extends State<LoggerBox> {
   @override
   Widget build(BuildContext context) {
     _provider = Provider.of<AppProvider>(context, listen: true);
+
     if (_isInit) {
-      _provider.doLoggerRequest(_provider.controller);
+      _provider.doStartLoggerGetRequestCycle(_provider.controller);
       _isInit = false;
     }
 

@@ -76,7 +76,7 @@ class _BalanceMonitorState extends State<BalanceMonitor> {
   Future<void> DoBalanceRequest() async {
     var result = await RestApiClient().requestGet("balance/krw");
 
-    Map<String, dynamic> parsedResult = parseResponseData(result);
+    Map<String, dynamic> parsedResult = RestApiClient.parseResponseData(result);
 
     var key = 'balance';
     if (parsedResult.containsKey(key)) {

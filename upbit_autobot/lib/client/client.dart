@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 
+import '../model/log.dart';
+
 class RestApiClient {
   RestApiClient._internal();
   static final RestApiClient _instance = RestApiClient._internal();
@@ -33,30 +35,46 @@ class RestApiClient {
   }
 
   Uri getUri(String pageUrl) => Uri.parse('$_baseUri/$pageUrl');
-}
 
-String encodeData(Map<String, dynamic> data) => json.encode(data);
-
-Map<String, dynamic> parseResponseData(http.Response response) {
-  if (response.statusCode >= 200 && response.statusCode < 300) {
-    if (response.body.isNotEmpty) {
-      return jsonDecode(response.body);
+  static Map<String, dynamic> parseResponseData(http.Response response) {
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      if (response.body.isNotEmpty) {
+        return jsonDecode(response.body);
+      } else {
+        return {};
+      }
     } else {
+      doLoggerPostRequest('잘못된 응답입니다.');
       return {};
     }
-  } else {
-    return {};
   }
-}
 
-String parseWordData(http.Response response) {
-  if (response.statusCode >= 200 && response.statusCode < 300) {
-    if (response.body.isNotEmpty) {
-      return utf8.decode(response.bodyBytes);
+  static String parseWordData(http.Response response) {
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      if (response.body.isNotEmpty) {
+        return utf8.decode(response.bodyBytes);
+      } else {
+        return '';
+      }
     } else {
+      doLoggerPostRequest('잘못된 응답입니다.');
       return '';
     }
-  } else {
-    return '';
   }
+
+  static Future<void> doLoggerPostRequest(String msg) async {
+    var log = Log();
+    log.msg = msg;
+
+    await RestApiClient().requestPost('logs', encodeData(log.toJson()));
+  }
+
+  static Future<void> doLoggerPostErrorRequest(String msg) async {
+    var log = Log();
+    log.errorMsg = msg;
+
+    await RestApiClient().requestPost('logs', encodeData(log.toJson()));
+  }
+
+  static String encodeData(Map<String, dynamic> data) => json.encode(data);
 }

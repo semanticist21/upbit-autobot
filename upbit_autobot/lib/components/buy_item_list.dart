@@ -29,14 +29,14 @@ class _BuyItemListState extends State<BuyItemList> {
   Widget build(BuildContext context) {
     _provider = Provider.of<AppProvider>(context, listen: true);
     if (_isInit) {
-      _provider.doCoinBalanceRequest(_provider.buyItems);
+      _provider.doCoinBalanceGetRequest(_provider.boughtItems);
       _isInit = false;
     }
 
     return SliverList.builder(
-        itemCount: _provider.buyItems.length,
+        itemCount: _provider.boughtItems.length,
         itemBuilder: (context, index) {
-          return BuyItem(coinBalance: _provider.buyItems.elementAt(index));
+          return BuyItem(coinBalance: _provider.boughtItems.elementAt(index));
         });
   }
 }

@@ -1,7 +1,14 @@
 class CoinBalance {
-  String coinName;
-  String avgBuyPrice;
-  String balance;
+  final String coinName;
+  final String avgBuyPrice;
+  final String balance;
+
+  factory CoinBalance.fromJson(Map<String, dynamic> json) {
+    return CoinBalance(
+        coinName: json['coinName'],
+        avgBuyPrice: json['avgBuyPrice'],
+        balance: json['balance']);
+  }
 
   CoinBalance(
       {required this.coinName,
