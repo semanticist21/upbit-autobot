@@ -12,6 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_acrylic: ^1.1.0
+  flutter_launcher_icons: ^0.12.0
   font_awesome_flutter: ^10.4.0
   http: ^0.13.5
   provider: ^6.0.5
@@ -27,3 +28,21 @@ flutter:
   uses-material-design: true
   assets:
     - lib/assets/
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: false
+  image_path: "lib/assets/icon.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  web:
+    generate: true
+    image_path: "lib/assets/icon.png"
+    background_color: "#ffffff"
+    theme_color: "#ffffff"
+  windows:
+    generate: true
+    image_path: "lib/assets/icon.png"
+    icon_size: 48 # min:48, max:256, default: 48
+  macos:
+    generate: true
+    image_path: "lib/assets/icon.png"    
