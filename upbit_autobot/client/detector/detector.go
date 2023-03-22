@@ -116,7 +116,7 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 
 			orderResult, err := order.BuyOrder(client, &orderInfo)
 			if err != nil {
-				singleton.InstanceLogger().Errs <- fmt.Errorf("%s 에러 발생 코인 이름: %s", err.Error(), item.CoinMarketName)
+				singleton.InstanceLogger().Errs <- fmt.Errorf("%s #에러 발생 코인 이름: %s", err.Error(), item.CoinMarketName)
 				continue
 			}
 
@@ -127,6 +127,13 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 			// put order info to selltarget items.
 			// end if proflt/loss is 0%
 
+			time.Sleep(time.Millisecond * 500)
+			orderedResult, _, _ := client.GetOrder(orderResult.UUID, "")
+
+			fmt.Println(orderResult.UUID)
+			fmt.Printf("%+v\n", orderedResult)
+			singleton.InstanceLogger().Msgs <- fmt.Sprintf("매수 성공! 매수 코인 : %s, 매수 볼륨(KRW) : %s,", orderResult.Market, orderResult.Price)
+
 			item.PurchaseCount -= 1
 			item.LastBoughtTimestamp = converter.NowToISO8601()
 
@@ -135,9 +142,6 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 				singleton.InstanceItems().Items = append(singleton.InstanceItems().Items[:i], singleton.InstanceItems().Items[i+1:]...)
 				singleton.SaveStrategyItems()
 			}
-
-			fmt.Println(orderResult)
-
 		}
 
 		time.Sleep(time.Millisecond * 300000)

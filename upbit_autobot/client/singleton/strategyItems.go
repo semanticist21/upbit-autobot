@@ -5,20 +5,22 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"sync"
 
 	"github.com/semanticist21/upbit-client-server/model"
 )
 
-var items *model.StrategyItemInfos
-var sellTargetitems *model.StrategyItemInfos
+var BuyTargetitems *model.StrategyItemInfos
+var sellTargetitems *model.SellTargetStrategyItemInfos
+var mutex sync.Mutex
 
 //go:inline
 func InstanceItems() *model.StrategyItemInfos {
-	return items
+	return BuyTargetitems
 }
 
 //go:inline
-func InstanceSellTargetItems() *model.StrategyItemInfos {
+func InstanceSellTargetItems() *model.SellTargetStrategyItemInfos {
 	return sellTargetitems
 }
 
@@ -26,7 +28,7 @@ func InstanceSellTargetItems() *model.StrategyItemInfos {
 func SetInstanceItems(newItems *model.StrategyItemInfos) {
 	dic := make(map[string]int)
 
-	for idx, item := range items.Items {
+	for idx, item := range BuyTargetitems.Items {
 		dic[item.ItemId] = idx
 	}
 
@@ -34,20 +36,20 @@ func SetInstanceItems(newItems *model.StrategyItemInfos) {
 		newItem := newItems.Items[i]
 
 		if _, ok := dic[newItem.ItemId]; ok {
-			newItems.Items[i] = items.Items[dic[newItem.ItemId]]
+			newItems.Items[i] = BuyTargetitems.Items[dic[newItem.ItemId]]
 		}
 	}
 
-	items = newItems
+	BuyTargetitems = newItems
 	SaveStrategyItems()
 }
 
-var fileName = "items.json"
+var buyFileName = "items.json"
 var sellFileName = "boughtItems.json"
 
 //go:inline
 func InitStrategyItems() {
-	file, err := os.OpenFile(fileName, os.O_RDWR|os.O_CREATE, 0644)
+	file, err := os.OpenFile(buyFileName, os.O_RDWR|os.O_CREATE, 0644)
 
 	if err != nil {
 		InstanceLogger().Errs <- err
@@ -63,7 +65,7 @@ func InitStrategyItems() {
 	}
 
 	if len(bytes) == 0 {
-		items = &model.StrategyItemInfos{}
+		BuyTargetitems = &model.StrategyItemInfos{}
 		return
 	}
 
@@ -75,17 +77,7 @@ func InitStrategyItems() {
 		InstanceLogger().Errs <- err
 	}
 
-	items = saveditems
-}
-
-//go:inline
-func SaveStrategyItems() {
-	data, _ := json.Marshal(items)
-	err := ioutil.WriteFile(fileName, data, 0644)
-
-	if err != nil {
-		InstanceLogger().Errs <- err
-	}
+	BuyTargetitems = saveditems
 }
 
 //go:inline
@@ -118,9 +110,23 @@ func InitSellStrategyItems() {
 }
 
 //go:inline
+func SaveStrategyItems() {
+	mutex.Lock()
+	saveInJson(BuyTargetitems, buyFileName)
+	mutex.Unlock()
+}
+
+//go:inline
 func SaveSellTargetStrategyItems() {
-	data, _ := json.Marshal(sellTargetitems)
-	err := ioutil.WriteFile(sellFileName, data, 0644)
+	mutex.Lock()
+	saveInJson(sellTargetitems, sellFileName)
+	mutex.Unlock()
+}
+
+//go:inline
+func saveInJson(items interface{}, fileName string) {
+	data, _ := json.Marshal(items)
+	err := ioutil.WriteFile(fileName, data, 0644)
 
 	if err != nil {
 		InstanceLogger().Errs <- err

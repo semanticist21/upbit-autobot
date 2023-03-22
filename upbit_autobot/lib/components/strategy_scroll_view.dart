@@ -55,6 +55,13 @@ class _strategyScrollViewState extends State<strategyScrollView> {
                   )),
               SizedBox(width: 10),
               IconButton(
+                onPressed: () => _doItemRequest(_provider),
+                icon: Icon(FontAwesomeIcons.arrowsRotate),
+                iconSize: 20,
+                padding: EdgeInsets.zero,
+                splashRadius: 15,
+              ),
+              IconButton(
                 onPressed: () {
                   showDialog(
                       context: context,
@@ -62,7 +69,7 @@ class _strategyScrollViewState extends State<strategyScrollView> {
                         return Builder(builder: (context) {
                           return AddDialog();
                         });
-                      }).then((value) => AddnewList(_provider, value));
+                      }).then((value) => _addnewList(_provider, value));
                 },
                 icon: Icon(FontAwesomeIcons.plus),
                 iconSize: 20,
@@ -70,7 +77,7 @@ class _strategyScrollViewState extends State<strategyScrollView> {
                 splashRadius: 15,
               ),
               IconButton(
-                onPressed: () => SaveItems(_provider),
+                onPressed: () => _saveItems(_provider),
                 icon: Icon(
                   FontAwesomeIcons.solidFloppyDisk,
                 ),
@@ -100,7 +107,7 @@ class _strategyScrollViewState extends State<strategyScrollView> {
         ]);
   }
 
-  AddnewList(AppProvider provider, value) {
+  _addnewList(AppProvider provider, value) {
     if (value.runtimeType != StrategyItemInfo) {
       return;
     }
@@ -109,7 +116,7 @@ class _strategyScrollViewState extends State<strategyScrollView> {
     setState(() {});
   }
 
-  Future<void> SaveItems(AppProvider provider) async {
+  Future<void> _saveItems(AppProvider provider) async {
     setState(() => _visible = true);
 
     var items = provider.items;
@@ -119,6 +126,12 @@ class _strategyScrollViewState extends State<strategyScrollView> {
     await RestApiClient().requestPost('items', result);
     await provider.doItemsRequest();
 
+    setState(() => _visible = false);
+  }
+
+  Future<void> _doItemRequest(AppProvider provider) async {
+    setState(() => _visible = true);
+    await provider.doItemsRequest();
     setState(() => _visible = false);
   }
 }

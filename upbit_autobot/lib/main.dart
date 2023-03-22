@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -21,6 +23,9 @@ void main() async {
   await Window.initialize();
   await Window.setEffect(
       effect: WindowEffect.acrylic, color: const Color.fromARGB(50, 0, 0, 0));
+
+  FlutterError.onError =
+      (FlutterErrorDetails details) => FlutterError.presentError(details);
 
   runApp(const MainApp());
 }

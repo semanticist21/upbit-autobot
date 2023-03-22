@@ -21,14 +21,9 @@ class _StrategyItemState extends State<StrategyItem> {
   bool _isPurchased = false;
 
   @override
-  void initState() {
-    bool _isPurchased = widget.item.lastBoughtTimeStamp.isEmpty ? false : true;
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     _provider = Provider.of(context);
+    _isPurchased = widget.item.lastBoughtTimeStamp.isEmpty ? false : true;
     return SizedBox(
         key: widget.key,
         width: double.infinity,

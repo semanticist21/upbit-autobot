@@ -85,7 +85,9 @@ class _LoginState extends State<Login> {
                             fontSize: 25),
                       ),
                       Spacer(),
-                      Text('ID 저장'),
+                      Text('ID / PW 저장',
+                          style: TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.w400)),
                       Checkbox(
                         value: _isSave,
                         onChanged: (value) {
@@ -303,15 +305,21 @@ class _LoginState extends State<Login> {
   }
 
   Future<void> _getSavePreferences() async {
-    _isIndicatorVisible = true;
-    _prefs = await SharedPreferences.getInstance();
-    var flag = _prefs.getBool(_isSaveKey);
+    setState(() => _isIndicatorVisible = true);
+    try {
+      _prefs = await SharedPreferences.getInstance();
+      var flag = _prefs.getBool(_isSaveKey);
 
-    if (flag != null) {
-      _isSave = flag;
+      if (flag != null) {
+        _isSave = flag;
+      }
+      if (_isSave) {
+        await _getSavedloginData();
+      }
+    } catch (err) {
+      print(err);
     }
-    _isIndicatorVisible = false;
-    _getSavedloginData();
+    setState(() => _isIndicatorVisible = false);
   }
 
   Future<void> _getSavedloginData() async {
