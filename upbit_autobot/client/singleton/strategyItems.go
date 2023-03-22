@@ -2,6 +2,7 @@ package singleton
 
 import (
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"os"
 
@@ -9,6 +10,7 @@ import (
 )
 
 var items *model.StrategyItemInfos
+var sellTargetitems *model.StrategyItemInfos
 
 //go:inline
 func InstanceItems() *model.StrategyItemInfos {
@@ -16,12 +18,32 @@ func InstanceItems() *model.StrategyItemInfos {
 }
 
 //go:inline
+func InstanceSellTargetItems() *model.StrategyItemInfos {
+	return sellTargetitems
+}
+
+//go:inline
 func SetInstanceItems(newItems *model.StrategyItemInfos) {
+	dic := make(map[string]int)
+
+	for idx, item := range items.Items {
+		dic[item.ItemId] = idx
+	}
+
+	for i := 0; i < len(newItems.Items); i++ {
+		newItem := newItems.Items[i]
+
+		if _, ok := dic[newItem.ItemId]; ok {
+			newItems.Items[i] = items.Items[dic[newItem.ItemId]]
+		}
+	}
+
 	items = newItems
-	saveStrategyItems()
+	SaveStrategyItems()
 }
 
 var fileName = "items.json"
+var sellFileName = "boughtItems.json"
 
 //go:inline
 func InitStrategyItems() {
@@ -32,20 +54,22 @@ func InitStrategyItems() {
 		return
 	}
 
-	data, err := ioutil.ReadAll(file)
+	defer file.Close()
+	bytes, err := io.ReadAll(file)
 
 	if err != nil {
 		InstanceLogger().Errs <- err
 		return
 	}
 
-	if len(data) == 0 {
+	if len(bytes) == 0 {
+		items = &model.StrategyItemInfos{}
 		return
 	}
 
 	var saveditems *model.StrategyItemInfos
 
-	marshalErr := json.Unmarshal(data, &saveditems)
+	marshalErr := json.Unmarshal(bytes, &saveditems)
 
 	if marshalErr != nil {
 		InstanceLogger().Errs <- err
@@ -55,9 +79,48 @@ func InitStrategyItems() {
 }
 
 //go:inline
-func saveStrategyItems() {
+func SaveStrategyItems() {
 	data, _ := json.Marshal(items)
 	err := ioutil.WriteFile(fileName, data, 0644)
+
+	if err != nil {
+		InstanceLogger().Errs <- err
+	}
+}
+
+//go:inline
+func InitSellStrategyItems() {
+	file, err := os.OpenFile(sellFileName, os.O_RDWR|os.O_CREATE, 0644)
+
+	if err != nil {
+		InstanceLogger().Errs <- err
+		return
+	}
+
+	defer file.Close()
+	bytes, err := io.ReadAll(file)
+
+	if err != nil {
+		InstanceLogger().Errs <- err
+		return
+	}
+
+	if len(bytes) == 0 {
+		return
+	}
+
+	err = json.Unmarshal(bytes, sellTargetitems)
+
+	if err != nil {
+		InstanceLogger().Errs <- err
+		return
+	}
+}
+
+//go:inline
+func SaveSellTargetStrategyItems() {
+	data, _ := json.Marshal(sellTargetitems)
+	err := ioutil.WriteFile(sellFileName, data, 0644)
 
 	if err != nil {
 		InstanceLogger().Errs <- err

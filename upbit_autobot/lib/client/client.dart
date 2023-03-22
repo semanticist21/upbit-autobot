@@ -28,8 +28,35 @@ class RestApiClient {
     return response;
   }
 
+  Future<http.Response?> requestPostWithParamas(
+      String pageUrl, String dataBody, Map<String, String> params) async {
+    var resultUrl = getUri(pageUrl);
+    resultUrl = resultUrl.replace(queryParameters: params);
+    http.Response? response;
+
+    try {
+      response = await _client.post(resultUrl,
+          headers: {'Content-Type': 'application/json'}, body: dataBody);
+    } catch (_) {
+      response = null;
+      return response;
+    }
+
+    return response;
+  }
+
   Future<http.Response> requestGet(String pageUrl) async {
     var response = await _client.get(getUri(pageUrl));
+
+    return response;
+  }
+
+  Future<http.Response> requestGetWithParams(
+      String pageUrl, Map<String, String> params) async {
+    var resulturl = getUri(pageUrl);
+    resulturl = resulturl.replace(queryParameters: params);
+
+    var response = await _client.get(resulturl);
 
     return response;
   }

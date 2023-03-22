@@ -25,9 +25,16 @@ class _LoggerBoxState extends State<LoggerBox> {
     _provider = Provider.of<AppProvider>(context, listen: true);
 
     if (_isInit) {
-      _provider.doStartLoggerGetRequestCycle(_provider.controller);
+      _provider.doStartLoggerGetRequestCycle();
       _isInit = false;
     }
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _provider.scrollController.animateTo(
+          _provider.scrollController.position.maxScrollExtent,
+          duration: Duration(milliseconds: 200),
+          curve: Curves.easeInOut);
+    });
 
     return Container(
         width: double.infinity,
@@ -50,18 +57,21 @@ class _LoggerBoxState extends State<LoggerBox> {
               ])),
           Expanded(
               child: SingleChildScrollView(
+            controller: _provider.scrollController,
             physics:
                 BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
             scrollDirection: Axis.vertical,
-            child: Padding(
+            child: Container(
+                width: double.infinity,
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                child: TextFormField(
-                  controller: _provider.controller,
-                  enabled: true,
+                child: SelectableText(
+                  _provider.loggerText,
+                  // enabled: true,
+                  textAlign: TextAlign.left,
                   maxLines: null,
-                  readOnly: true,
-                  style: TextStyle(fontSize: 12),
-                  decoration: InputDecoration(border: InputBorder.none),
+                  // readOnly: true,
+                  style: TextStyle(fontSize: 12, fontFamily: 'Arial'),
+                  // decoration: InputDecoration(border: InputBorder.none),
                 )),
           ))
         ]));

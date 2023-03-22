@@ -10,15 +10,15 @@ import 'model/balance.dart';
 import 'model/strategy_item_info.dart';
 
 class AppProvider extends ChangeNotifier {
-  TextEditingController controller = TextEditingController();
+  // TextEditingController loggerController = TextEditingController();
+  var loggerText = '';
+  var scrollController = ScrollController();
   var _isInitRequest = true;
 
   List<CoinBalance> boughtItems = new List.empty(growable: true);
   List<StrategyItemInfo> items = List.empty(growable: true);
 
-  AppProvider._init() {
-    controller.text = '';
-  }
+  AppProvider._init() {}
   static AppProvider _instance = AppProvider._init();
 
   factory AppProvider() {
@@ -48,7 +48,7 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> doInitialItemsRequest() async {
+  Future<void> doItemsRequest() async {
     var response = await RestApiClient().requestGet('items');
 
     // data empty case
@@ -57,6 +57,10 @@ class AppProvider extends ChangeNotifier {
     }
 
     Map<String, dynamic> data = jsonDecode(response.body);
+    if (data['items'] == null) {
+      return;
+    }
+
     List<dynamic> sentItems = data['items'];
     items.clear();
 
@@ -64,8 +68,7 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> doStartLoggerGetRequestCycle(
-      TextEditingController controller) async {
+  Future<void> doStartLoggerGetRequestCycle() async {
     if (!_isInitRequest) {
       return;
     }
@@ -75,16 +78,26 @@ class AppProvider extends ChangeNotifier {
     await Isolate.spawn(_doUpdateLogger, receivePort.sendPort);
 
     receivePort.listen((message) {
-      var text = controller.text;
+      if (loggerText.length >= 10000) {
+        var strings = loggerText.split('\n');
+        strings = strings.sublist(2);
+        loggerText = strings.join('\n');
+      }
+
       var msgStr = message as String;
-      msgStr = msgStr.replaceAll('T', ' ');
+      var strs = msgStr.split('\n');
+
+      strs = strs.map((element) => element.replaceFirst('T', ' ')).toList();
+      msgStr = strs.join('\n');
+
       msgStr = msgStr.replaceAll('+0900', '');
 
-      if (text == '') {
-        controller.text = '$msgStr';
+      if (loggerText != '') {
+        loggerText = '$loggerText$msgStr';
       } else {
-        controller.text = '$text$msgStr';
+        loggerText = '$msgStr';
       }
+
       notifyListeners();
     }, onError: (error) {
       print(error);
@@ -100,15 +113,13 @@ Future<void> _doUpdateLogger(SendPort sendPort) async {
     sendPort.send(data);
   }
 
-  try {
-    Timer.periodic(Duration(seconds: 2), (timer) async {
+  await Timer.periodic(Duration(seconds: 2), (timer) async {
+    try {
       var response = await RestApiClient().requestGet('logs');
       var data = RestApiClient.parseWordData(response);
       if (data.isNotEmpty) {
         sendPort.send(data);
       }
-    });
-  } catch (e) {
-    print(e);
-  }
+    } catch (_) {}
+  });
 }

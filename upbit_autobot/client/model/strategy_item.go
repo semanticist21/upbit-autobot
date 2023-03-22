@@ -14,4 +14,6 @@ type StrategyItemInfo struct {
 	ProfitLine          float64 `json:"profitLine"`
 	LossLine            float64 `json:"lossLine"`
 	LastBoughtTimestamp string  `json:"lastBoughtTimeStamp"`
+	DesiredBuyAmount    float64 `json:"desiredBuyAmount"`
+	CandleBaseMinute    int     `json:"candleBaseMinute"`
 }

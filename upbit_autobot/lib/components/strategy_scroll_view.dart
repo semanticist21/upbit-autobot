@@ -1,9 +1,5 @@
-import 'dart:convert';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:upbit_autobot/components/strategy_item.dart';
 import 'package:upbit_autobot/model/strategy_item_info.dart';
@@ -34,7 +30,7 @@ class _strategyScrollViewState extends State<strategyScrollView> {
     _provider = Provider.of(context, listen: true);
 
     if (_isinit) {
-      _provider.doInitialItemsRequest();
+      _provider.doItemsRequest();
       _isinit = false;
     }
 
@@ -97,7 +93,7 @@ class _strategyScrollViewState extends State<strategyScrollView> {
                   },
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    childAspectRatio: 2,
+                    childAspectRatio: 1.5,
                     crossAxisSpacing: 5,
                     mainAxisSpacing: 5,
                   )))
@@ -114,14 +110,15 @@ class _strategyScrollViewState extends State<strategyScrollView> {
   }
 
   Future<void> SaveItems(AppProvider provider) async {
-    _visible = true;
+    setState(() => _visible = true);
 
     var items = provider.items;
     var data = items.map((element) => element.toJson()).toList();
     var result = RestApiClient.encodeData({'items': data});
 
     await RestApiClient().requestPost('items', result);
+    await provider.doItemsRequest();
 
-    _visible = false;
+    setState(() => _visible = false);
   }
 }

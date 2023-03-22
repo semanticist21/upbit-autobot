@@ -19,12 +19,32 @@ class _AddDialogState extends State<AddDialog> {
   var _purchaseCount = TextEditingController(text: '3');
   var _profitLine = TextEditingController(text: '5');
   var _lossLine = TextEditingController(text: '5');
+  var _desiredBuyAmount = TextEditingController(text: '1');
+  var _minuteCandle = TextEditingController(text: '15');
 
   final _coinMarketIdKey = GlobalKey<FormState>();
   final _optionFormKey = GlobalKey<FormState>();
   final _withSuffixFormKey = GlobalKey<FormState>();
 
   late AppProvider _provider;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _coinMarketName.dispose();
+    _bollingerLength.dispose();
+    _bollingerMultiplier.dispose();
+    _purchaseCount.dispose();
+    _profitLine.dispose();
+    _lossLine.dispose();
+    _desiredBuyAmount.dispose();
+    _minuteCandle.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,10 +58,10 @@ class _AddDialogState extends State<AddDialog> {
             borderRadius: BorderRadius.circular(10),
             side: BorderSide(color: Colors.grey)),
         elevation: 1,
-        backgroundColor: Theme.of(context).colorScheme.onPrimary,
         child: Container(
-            width: 300,
-            height: 270,
+            padding: EdgeInsets.all(1),
+            width: 330,
+            height: 330,
             child: Column(children: [
               Expanded(
                   flex: 1,
@@ -69,12 +89,16 @@ class _AddDialogState extends State<AddDialog> {
                                           if (value!.isEmpty) {
                                             return '값을 입력하세요.';
                                           }
-                                          if (!value.contains('-KRW')) {
-                                            return '-KRW를 입력하세요.';
+                                          if (!value.contains('KRW-')) {
+                                            return 'KRW-를 입력하세요.';
                                           }
 
-                                          if (!value.endsWith('-KRW')) {
-                                            return '-KRW를 입력하세요.';
+                                          if (!value.startsWith('KRW-')) {
+                                            return 'KRW-를 입력하세요.';
+                                          }
+
+                                          if (value.length >= 10) {
+                                            return '값이 너무 깁니다.';
                                           }
 
                                           var isDuplicate = false;
@@ -101,7 +125,7 @@ class _AddDialogState extends State<AddDialog> {
                                             errorStyle: _errorTextStyle(),
                                             hintStyle: TextStyle(fontSize: 13),
                                             labelStyle: TextStyle(fontSize: 11),
-                                            hintText: 'BTC-KRW'),
+                                            hintText: 'KRW-BTC'),
                                       ))),
                             ]),
                         Expanded(
@@ -117,7 +141,7 @@ class _AddDialogState extends State<AddDialog> {
                     ),
                   )),
               Expanded(
-                  flex: 4,
+                  flex: 5,
                   child: Container(
                       width: double.infinity,
                       height: double.infinity,
@@ -150,6 +174,9 @@ class _AddDialogState extends State<AddDialog> {
                                                     _getOptionForm(
                                                         _purchaseCount,
                                                         '구매 회수(최대 3회)'),
+                                                    _getOptionFormForMinuteCandle(
+                                                        _minuteCandle,
+                                                        '기준 분봉(최대 240분)'),
                                                   ])))),
                                   VerticalDivider(),
                                   Expanded(
@@ -165,6 +192,10 @@ class _AddDialogState extends State<AddDialog> {
                                                   _profitLine, "익절 기준"),
                                               _getOptionWithSuffixForm(
                                                   _lossLine, "손절 기준"),
+                                              _getOptionWithSuffixFormUptoFourDigit(
+                                                  _desiredBuyAmount,
+                                                  "구매 수량(최소 0.0001 개)"),
+                                              SizedBox(height: 10),
                                               Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.end,
@@ -219,6 +250,37 @@ class _AddDialogState extends State<AddDialog> {
     return TextFormField(
       controller: controller,
       validator: (value) => value!.isEmpty ? '값을 입력하세요.' : null,
+      onTap: () => controller.selection = TextSelection(
+          baseOffset: 0, extentOffset: controller.value.text.length),
+      decoration: InputDecoration(
+          errorStyle: _errorTextStyle(),
+          labelText: labelText,
+          labelStyle: TextStyle(fontSize: 11)),
+      keyboardType:
+          TextInputType.numberWithOptions(signed: false, decimal: false),
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+    );
+  }
+
+  TextFormField _getOptionFormForMinuteCandle(
+      TextEditingController controller, String labelText) {
+    final List<String> candles = ['1', '3', '5', '15', '30', '60', '240'];
+
+    return TextFormField(
+      controller: controller,
+      validator: (value) {
+        if (value!.isEmpty) {
+          return '값을 입력하세요.';
+        }
+
+        if (!candles.contains(value)) {
+          return '분봉 값이 부적절합니다.';
+        }
+
+        return null;
+      },
+      onTap: () => controller.selection = TextSelection(
+          baseOffset: 0, extentOffset: controller.value.text.length),
       decoration: InputDecoration(
           errorStyle: _errorTextStyle(),
           labelText: labelText,
@@ -238,22 +300,58 @@ class _AddDialogState extends State<AddDialog> {
             return '값을 입력하세요.';
           }
 
-          var num = int.tryParse(value);
+          var num = double.tryParse(value);
           if (num != null && num >= 50) {
-            return '50 이하 입력하세요.';
+            if (num >= 50) {
+              return '50 이하 입력하세요.';
+            }
           }
 
           return null;
         },
+        onTap: () => controller.selection = TextSelection(
+            baseOffset: 0, extentOffset: controller.value.text.length),
         decoration: InputDecoration(
             errorStyle: _errorTextStyle(),
             labelText: labelText,
             labelStyle: TextStyle(fontSize: 11),
-            suffixText: '%'),
+            suffixText: '%',
+            suffixStyle: TextStyle(fontSize: 11)),
         keyboardType:
-            TextInputType.numberWithOptions(signed: false, decimal: false),
+            TextInputType.numberWithOptions(signed: false, decimal: true),
         inputFormatters: [
-          FilteringTextInputFormatter.allow(RegExp(r'^\d+(\.\d{1})?$'))
+          FilteringTextInputFormatter.allow(RegExp(r'^(\d+)?(\.)?(\d{0,1})?$'))
+        ]);
+  }
+
+  TextFormField _getOptionWithSuffixFormUptoFourDigit(
+      TextEditingController controller, String labelText) {
+    return TextFormField(
+        controller: controller,
+        validator: (value) {
+          if (value!.isEmpty) {
+            return '값을 입력하세요.';
+          }
+
+          var num = double.tryParse(value);
+          if (num != null && num == 0) {
+            return '0 이상 입력하세요.';
+          }
+
+          return null;
+        },
+        onTap: () => controller.selection = TextSelection(
+            baseOffset: 0, extentOffset: controller.value.text.length),
+        decoration: InputDecoration(
+            errorStyle: _errorTextStyle(),
+            labelText: labelText,
+            labelStyle: TextStyle(fontSize: 11),
+            suffixText: '개',
+            suffixStyle: TextStyle(fontSize: 11)),
+        keyboardType:
+            TextInputType.numberWithOptions(signed: false, decimal: true),
+        inputFormatters: [
+          FilteringTextInputFormatter.allow(RegExp(r'^(\d+)?(\.)?(\d{0,4})?$'))
         ]);
   }
 
@@ -280,19 +378,28 @@ class _AddDialogState extends State<AddDialog> {
     }
 
     var count = int.tryParse(_purchaseCount.text);
+    var length = int.tryParse(_bollingerLength.text);
+    var multiplier = int.tryParse(_bollingerMultiplier.text);
 
     if (count != null && count > 3) {
       count = 3;
     }
+    if (length != null && length > 100) {
+      count = 100;
+    }
+    if (multiplier != null && multiplier > 100) {
+      count = 100;
+    }
 
     var newModel = StrategyItemInfo.new(
-      _coinMarketName.text,
-      int.tryParse(_bollingerLength.text)!,
-      int.tryParse(_bollingerMultiplier.text)!,
-      count!,
-      double.tryParse(_profitLine.text)!,
-      double.tryParse(_profitLine.text)!,
-    );
+        _coinMarketName.text.toUpperCase(),
+        length!,
+        multiplier!,
+        count!,
+        double.parse(_profitLine.text),
+        double.parse(_profitLine.text),
+        double.parse(_desiredBuyAmount.text),
+        int.parse(_minuteCandle.text));
 
     Navigator.pop(context, newModel);
   }

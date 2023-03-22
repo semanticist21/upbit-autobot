@@ -11,6 +11,8 @@ class StrategyItemInfo {
   int purchaseCount;
   double profitLine;
   double lossLine;
+  double desiredBuyAmount;
+  int candleBaseMinute;
   // ISO8601
   late String lastBoughtTimeStamp;
 
@@ -20,14 +22,18 @@ class StrategyItemInfo {
       int bollingerMultiplier,
       int purchaseCount,
       double profitLine,
-      double lossLine) {
+      double lossLine,
+      double desiredAmount,
+      int minuteCandle) {
     var model = StrategyItemInfo.base(
         coinMarKetName: coinMarKetName,
         bollingerLength: bollingerLength,
         bollingerMultiplier: bollingerMultiplier,
         purchaseCount: purchaseCount,
         profitLine: profitLine,
-        lossLine: lossLine);
+        lossLine: lossLine,
+        desiredBuyAmount: desiredAmount,
+        candleBaseMinute: minuteCandle);
 
     model.color = ColorInfo(color: ColorInfo.generateRandomColor());
     model.itemId = generateRandomString();
@@ -45,14 +51,18 @@ class StrategyItemInfo {
       int purchaseCount,
       double profitLine,
       double lossLine,
-      String lastBoughtTimeStamp) {
+      String lastBoughtTimeStamp,
+      double desiredAmount,
+      int minuteCandle) {
     var model = StrategyItemInfo.base(
         coinMarKetName: coinMarKetName,
         bollingerLength: bollingerLength,
         bollingerMultiplier: bollingerMultiplier,
         purchaseCount: purchaseCount,
         profitLine: profitLine,
-        lossLine: lossLine);
+        lossLine: lossLine,
+        desiredBuyAmount: desiredAmount,
+        candleBaseMinute: minuteCandle);
 
     model.color = color;
     model.itemId = itemId;
@@ -68,7 +78,9 @@ class StrategyItemInfo {
         bollingerMultiplier: map['bollingerMultiplier'],
         purchaseCount: map['purchaseCount'],
         profitLine: double.tryParse(map['profitLine'].toString())!,
-        lossLine: double.tryParse(map['lossLine'].toString())!);
+        lossLine: double.tryParse(map['lossLine'].toString())!,
+        desiredBuyAmount: double.tryParse(map['desiredBuyAmount'].toString())!,
+        candleBaseMinute: map['candleBaseMinute']);
 
     model.color = ColorInfo.FromHex(map['color']);
     model.itemId = map['itemId'];
@@ -83,7 +95,9 @@ class StrategyItemInfo {
       required this.bollingerMultiplier,
       required this.purchaseCount,
       required this.profitLine,
-      required this.lossLine});
+      required this.lossLine,
+      required this.desiredBuyAmount,
+      required this.candleBaseMinute});
 
   static String generateRandomString() {
     var random = Random();
@@ -104,31 +118,8 @@ class StrategyItemInfo {
       'profitLine': profitLine,
       'lossLine': lossLine,
       'lastBoughtTimeStamp': lastBoughtTimeStamp,
+      'desiredBuyAmount': desiredBuyAmount,
+      'candleBaseMinute': candleBaseMinute,
     };
-  }
-
-  StrategyItemInfo fromJson(Map<String, dynamic> json) {
-    var colorHex = json['color'];
-    var itemId = json['itemId'];
-    var coinMarKetName = json['coinMarKetName'];
-    var bollingerLength = json['bollingerLength'];
-    var bollingerMultiplier = json['bollingerMultiplier'];
-    var purchaseCount = json['purchaseCount'];
-    var profitLine = json['profitLine'];
-    var lossLine = json['lossLine'];
-    var timestamp = json['timestamp'];
-
-    var result = StrategyItemInfo.from(
-        color,
-        itemId,
-        coinMarKetName,
-        bollingerLength,
-        bollingerMultiplier,
-        purchaseCount,
-        profitLine,
-        lossLine,
-        timestamp);
-
-    return result;
   }
 }

@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,11 +18,17 @@ class _StrategyItemState extends State<StrategyItem> {
   bool _isHover = false;
   final GlobalKey cardKey = GlobalKey();
   late AppProvider _provider;
+  bool _isPurchased = false;
+
+  @override
+  void initState() {
+    bool _isPurchased = widget.item.lastBoughtTimeStamp.isEmpty ? false : true;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     _provider = Provider.of(context);
-
     return SizedBox(
         key: widget.key,
         width: double.infinity,
@@ -43,7 +47,7 @@ class _StrategyItemState extends State<StrategyItem> {
                     ),
                     items: [
                       PopupMenuItem(
-                          child: Text('삭제'),
+                          child: Center(child: Text('삭제')),
                           onTap: () {
                             var hashId = widget.item.itemId;
                             for (var i = 0; i < _provider.items.length; i++) {
@@ -75,7 +79,7 @@ class _StrategyItemState extends State<StrategyItem> {
                             Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text("마켓 ID : "),
+                                  Text('마켓 ID : '),
                                   Text(widget.item.coinMarKetName),
                                 ]),
                             Divider(),
@@ -92,36 +96,54 @@ class _StrategyItemState extends State<StrategyItem> {
                                                     MainAxisAlignment
                                                         .spaceEvenly,
                                                 children: [
-                                              Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
-                                                  children: [
-                                                    Text("볼린저 길이 : "),
-                                                    Text(widget
-                                                        .item.bollingerLength
-                                                        .toString())
-                                                  ]),
-                                              Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
-                                                  children: [
-                                                    Text("볼린저 곱 : "),
-                                                    Text(widget.item
-                                                        .bollingerMultiplier
-                                                        .toString())
-                                                  ]),
-                                              Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
-                                                  children: [
-                                                    Text("카운트: "),
-                                                    Text(widget
-                                                        .item.purchaseCount
-                                                        .toString())
-                                                  ]),
+                                              FittedBox(
+                                                  fit: BoxFit.contain,
+                                                  child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceEvenly,
+                                                      children: [
+                                                        Text('볼린저 길이 : '),
+                                                        Text(widget.item
+                                                            .bollingerLength
+                                                            .toString())
+                                                      ])),
+                                              FittedBox(
+                                                  fit: BoxFit.contain,
+                                                  child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceEvenly,
+                                                      children: [
+                                                        Text('볼린저 곱 : '),
+                                                        Text(widget.item
+                                                            .bollingerMultiplier
+                                                            .toString())
+                                                      ])),
+                                              FittedBox(
+                                                  fit: BoxFit.contain,
+                                                  child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceEvenly,
+                                                      children: [
+                                                        Text('카운트 : '),
+                                                        Text(widget
+                                                            .item.purchaseCount
+                                                            .toString())
+                                                      ])),
+                                              FittedBox(
+                                                  fit: BoxFit.contain,
+                                                  child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceEvenly,
+                                                      children: [
+                                                        Text('기준 분봉 : '),
+                                                        Text(widget.item
+                                                            .candleBaseMinute
+                                                            .toString())
+                                                      ])),
                                             ])),
                                         VerticalDivider(),
                                         Expanded(
@@ -136,11 +158,11 @@ class _StrategyItemState extends State<StrategyItem> {
                                                         MainAxisAlignment
                                                             .spaceEvenly,
                                                     children: [
-                                                      Text("익절 기준 : "),
+                                                      Text('익절 기준 : '),
                                                       Text(widget
                                                           .item.profitLine
                                                           .toString()),
-                                                      Text("%"),
+                                                      Text('%'),
                                                     ])),
                                             FittedBox(
                                                 fit: BoxFit.contain,
@@ -149,11 +171,40 @@ class _StrategyItemState extends State<StrategyItem> {
                                                         MainAxisAlignment
                                                             .spaceEvenly,
                                                     children: [
-                                                      Text("익절 기준 : "),
+                                                      Text('손절 기준 : '),
                                                       Text(widget.item.lossLine
                                                           .toString()),
-                                                      Text("%")
-                                                    ]))
+                                                      Text('%')
+                                                    ])),
+                                            FittedBox(
+                                                fit: BoxFit.contain,
+                                                child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceEvenly,
+                                                    children: [
+                                                      Text('수량 : '),
+                                                      Text(widget
+                                                          .item.desiredBuyAmount
+                                                          .toString()),
+                                                      Text(' 개')
+                                                    ])),
+                                            FittedBox(
+                                                fit: BoxFit.contain,
+                                                child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceEvenly,
+                                                    children: [
+                                                      Text('구매 진행 여부 : '),
+                                                      Checkbox(
+                                                          splashRadius: 0,
+                                                          mouseCursor:
+                                                              MouseCursor
+                                                                  .uncontrolled,
+                                                          value: _isPurchased,
+                                                          onChanged: (value) {})
+                                                    ])),
                                           ],
                                         ))
                                       ],

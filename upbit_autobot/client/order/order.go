@@ -8,6 +8,7 @@ import (
 	"github.com/sangx2/upbit/model/exchange"
 	"github.com/sangx2/upbit/model/exchange/order"
 	"github.com/semanticist21/upbit-client-server/converter"
+	"github.com/semanticist21/upbit-client-server/model"
 )
 
 type Minutes int
@@ -21,8 +22,17 @@ const (
 	TwoForty Minutes = 240
 )
 
-func GetCandles(client *upbit.Upbit, coinId string, length int, minute Minutes) ([]float64, error) {
-	candles, _, err := client.GetMinuteCandles(coinId, "", strconv.Itoa(length), strconv.Itoa(int(minute)))
+func IntToMinutesType(val int) (Minutes, error) {
+	switch val {
+	case 3, 5, 15, 30, 60, 240:
+		return Minutes(val), nil
+	default:
+		return 0, fmt.Errorf("%d분 :: 적합한 분봉이 아닙니다. 3, 5, 15, 30, 60, 240분 중 하나여야 합니다", val)
+	}
+}
+
+func GetCandles(client *upbit.Upbit, marketName string, length int, minute Minutes) ([]float64, error) {
+	candles, _, err := client.GetMinuteCandles(marketName, "", strconv.Itoa(length), strconv.Itoa(int(minute)))
 
 	if err != nil {
 		return nil, err
@@ -36,7 +46,7 @@ func GetCandles(client *upbit.Upbit, coinId string, length int, minute Minutes) 
 	return prices, nil
 }
 
-func GetAllCoinIds(client *upbit.Upbit) (map[string]string, error) {
+func GetAllCoinMarketNames(client *upbit.Upbit) (map[string]string, error) {
 	market, _, err := client.GetMarkets()
 	coinInfos := make(map[string]string)
 
@@ -51,8 +61,8 @@ func GetAllCoinIds(client *upbit.Upbit) (map[string]string, error) {
 	return coinInfos, nil
 }
 
-func BuyOrder(client *upbit.Upbit, orderInfo *OrderInfo) (*order.Order, error) {
-	order, _, err := client.PurchaseOrder(orderInfo.CoinId, "", converter.Float64ToString(orderInfo.BuyAmountKrw, 2), exchange.ORDER_TYPE_PRICE, "")
+func BuyOrder(client *upbit.Upbit, orderInfo *model.OrderInfo) (*order.Order, error) {
+	order, _, err := client.PurchaseOrder(orderInfo.MarketName, "", converter.Float64ToString(orderInfo.BuyAmountInKrw, 2), exchange.ORDER_TYPE_PRICE, "")
 
 	if err != nil {
 		return nil, err

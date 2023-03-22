@@ -6,6 +6,7 @@ import (
 	"io"
 	"math"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gorilla/mux"
@@ -29,25 +30,138 @@ func startServer() {
 
 //go:inline
 func handleLogin(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		doGetHandleLogin(w, r)
+	case http.MethodPost:
+		doHandlePostLogin(w, r)
+	}
+
+}
+
+func doGetHandleLogin(w http.ResponseWriter, r *http.Request) {
+	password := r.URL.Query().Get("password")
+
+	if password != "ca788859970da3ad18b0d2ceabdaf6d10e5a91edb10e2e7dc79268aefa54141f" {
+		incurBadRequestError(w)
+		return
+	}
+
+	file, err := getAccountFile()
+
+	if err != nil {
+		incurBadRequest(w, err.Error())
+		return
+	}
+
+	bytes, err := io.ReadAll(file)
+
+	if err != nil {
+		incurBadRequest(w, err.Error())
+		return
+	}
+
+	key := model.Key{}
+
+	json.Unmarshal(bytes, &key)
+
+	decryptedPublicStr, err := converter.DecryptString(key.PublicKey)
+	if err != nil {
+		incurBadRequest(w, err.Error())
+		return
+	}
+
+	encryptedSecretStr, err := converter.DecryptString(key.SecretKey)
+	if err != nil {
+		incurBadRequest(w, err.Error())
+		return
+	}
+
+	key.PublicKey = decryptedPublicStr
+	key.SecretKey = encryptedSecretStr
+
+	resultBytes, err := json.Marshal(&key)
+
+	if err != nil {
+		incurBadRequest(w, err.Error())
+	}
+
+	w.Header().Set("Content-Type", "applicaiton/json")
+	w.Write(resultBytes)
+}
+
+func doHandlePostLogin(w http.ResponseWriter, r *http.Request) {
 	// already logined case
 	if singleton.InstanceClient() != nil {
-		return
+		singleton.InstanceLogger().Msgs <- "이미 서버에 로그인되어있는 정보를 삭제 후 새로 로그인합니다."
 	}
 
 	isSuccesful := false
 	var keys *model.Key
 
-	if r.Method == http.MethodPost {
-		isSuccesful, keys = checkLogin(&w, r)
-	}
+	isSuccesful, keys = checkLogin(&w, r)
+	queryBool := r.URL.Query().Get("isSave")
 
 	if isSuccesful {
 		singleton.InitClient(keys.PublicKey, keys.SecretKey)
 		singleton.InitWithClient(singleton.InstanceClient(), &detector.CycleStarter{})
 		w.WriteHeader(http.StatusOK)
+
+		file, err := getAccountFile()
+
+		if err != nil {
+			singleton.InstanceLogger().Errs <- err
+			return
+		}
+
+		defer file.Close()
+
+		if queryBool == "true" {
+			encryptedPublic, err := converter.EncryptString(keys.PublicKey)
+			if err == nil {
+				keys.PublicKey = encryptedPublic
+			}
+
+			encryptedSecret, err := converter.EncryptString(keys.SecretKey)
+			if err == nil {
+				keys.SecretKey = encryptedSecret
+			}
+
+			bytes, err := json.Marshal(keys)
+			if err != nil {
+				singleton.InstanceLogger().Errs <- err
+				return
+			}
+
+			file.Write(bytes)
+		} else {
+			file.Truncate(0)
+		}
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
+
+		if queryBool != "true" {
+			file, err := getAccountFile()
+
+			if err != nil {
+				singleton.InstanceLogger().Errs <- err
+				return
+			}
+
+			file.Truncate(0)
+		}
 	}
+}
+
+func getAccountFile() (*os.File, error) {
+	fileName := "account.json"
+
+	file, err := os.OpenFile(fileName, os.O_CREATE|os.O_RDWR, 0644)
+	if err != nil {
+		return nil, err
+	}
+
+	return file, nil
 }
 
 //go:inline
@@ -191,8 +305,7 @@ func handleLogs(w http.ResponseWriter, r *http.Request) {
 		body, err := io.ReadAll(r.Body)
 
 		if err != nil {
-			singleton.InstanceLogger().Errs <- err
-			incurBadRequestError(w)
+			incurBadRequest(w, err.Error())
 			return
 		}
 
@@ -245,8 +358,7 @@ func doPostHandleItems(w http.ResponseWriter, r *http.Request) {
 	data, err := io.ReadAll(r.Body)
 
 	if err != nil {
-		singleton.InstanceLogger().Errs <- err
-		incurBadRequestError(w)
+		incurBadRequest(w, err.Error())
 		return
 	}
 
@@ -261,11 +373,12 @@ func doPostHandleItems(w http.ResponseWriter, r *http.Request) {
 
 	singleton.SetInstanceItems(&item)
 	singleton.InstanceLogger().Msgs <- "전략 아이템 저장되었습니다."
+	w.WriteHeader(http.StatusOK)
 }
 
 //go:inline
 func incurBadRequest(w http.ResponseWriter, msg string) {
-	w.WriteHeader(http.StatusBadRequest)
+	http.Error(w, msg, http.StatusBadRequest)
 	singleton.InstanceLogger().Errs <- fmt.Errorf(msg)
 }
 

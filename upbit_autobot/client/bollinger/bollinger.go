@@ -3,13 +3,13 @@ package bollinger
 import "math"
 
 //go:inline
-func GetBollinger(multiplier float64, candles *[]float64) (float64, float64, float64) {
+func GetBollinger(multiplier int, candles *[]float64) (float64, float64, float64) {
 	sma := getSMA(candles)
 	sd := getSD(candles)
 
 	middle := sma
-	upper := sma + multiplier*sd
-	lower := sma - multiplier*sd
+	upper := sma + float64(multiplier)*sd
+	lower := sma - float64(multiplier)*sd
 
 	return upper, middle, lower
 }

@@ -14,9 +14,9 @@ func Init() {
 	InitStrategyItems()
 }
 
-func InitWithClient(upbit *upbit.Upbit, cycleStarter interfaces.IStartInit) {
-	InitAccount(upbit)
-	cycleStarter.StartInit(upbit)
+func InitWithClient(client *upbit.Upbit, cycleStarter interfaces.IStartInit) {
+	InitAccount(client)
+	cycleStarter.StartInit(client)
 }
 
 func CloseWithDefer() {

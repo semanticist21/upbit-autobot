@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:upbit_autobot/client/client.dart';
 import 'package:upbit_autobot/model/account.dart';
 
@@ -17,18 +19,26 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final TextEditingController _publicField = TextEditingController();
   final TextEditingController _secretField = TextEditingController();
+  late final SharedPreferences _prefs;
 
   String _warningText = '';
   String _loadingText = '로딩 중..';
   bool _isIndicatorVisible = false;
+  bool _isSave = false;
+  String _isSaveKey = 'isSave';
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     _publicField.removeListener(_checkPublicString);
     _secretField.removeListener(_checkSecretString);
     _publicField.addListener(_checkPublicString);
     _secretField.addListener(_checkSecretString);
+    _getSavePreferences();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Row(
@@ -68,12 +78,25 @@ class _LoginState extends State<Login> {
                     Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                       SizedBox(width: 5),
                       Text(
-                        "Login",
+                        'Login',
                         style: TextStyle(
                             color: Colors.white70,
                             fontWeight: FontWeight.w900,
                             fontSize: 25),
-                      )
+                      ),
+                      Spacer(),
+                      Text('ID 저장'),
+                      Checkbox(
+                        value: _isSave,
+                        onChanged: (value) {
+                          setState(() {
+                            _isSave = !_isSave;
+                            _prefs.setBool(_isSaveKey, _isSave);
+                          });
+                        },
+                        checkColor: ThemeData.dark().primaryColor,
+                        activeColor: ThemeData.light().canvasColor,
+                      ),
                     ]),
                     SizedBox(height: 20),
                     TextField(
@@ -220,6 +243,7 @@ class _LoginState extends State<Login> {
 
     _loadingText = '로딩 중입니다..';
     _isIndicatorVisible = true;
+
     setState(() {});
 
     var acc =
@@ -227,13 +251,15 @@ class _LoginState extends State<Login> {
     var data = acc.toJson();
     var client = RestApiClient();
 
-    var response =
-        await client.requestPost('login', RestApiClient.encodeData(data));
+    var params = {'isSave': _isSave.toString()};
+
+    var response = await client.requestPostWithParamas(
+        'login', RestApiClient.encodeData(data), params);
 
     // login fail case
     if (response == null || response.statusCode != HttpStatus.ok) {
       _loadingText = '';
-      _warningText = '로딩에 실패했습니다.';
+      _warningText = '로그인에 실패했습니다.';
       _isIndicatorVisible = false;
       setState(() {});
       return;
@@ -274,5 +300,42 @@ class _LoginState extends State<Login> {
     setState(() {
       _warningText = '';
     });
+  }
+
+  Future<void> _getSavePreferences() async {
+    _isIndicatorVisible = true;
+    _prefs = await SharedPreferences.getInstance();
+    var flag = _prefs.getBool(_isSaveKey);
+
+    if (flag != null) {
+      _isSave = flag;
+    }
+    _isIndicatorVisible = false;
+    _getSavedloginData();
+  }
+
+  Future<void> _getSavedloginData() async {
+    var password = {
+      'password':
+          'ca788859970da3ad18b0d2ceabdaf6d10e5a91edb10e2e7dc79268aefa54141f'
+    };
+    var response =
+        await RestApiClient().requestGetWithParams('login', password);
+
+    var keyMap = RestApiClient.parseResponseData(response);
+    var publicKey = 'publicKey';
+    var secretKey = 'secretKey';
+
+    if (keyMap.isEmpty) {
+      return;
+    }
+
+    if (keyMap.containsKey(publicKey)) {
+      _publicField.text = keyMap[publicKey];
+    }
+
+    if (keyMap.containsKey(secretKey)) {
+      _secretField.text = keyMap[secretKey];
+    }
   }
 }
