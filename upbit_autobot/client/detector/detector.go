@@ -48,6 +48,12 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 		}
 		// check whether market exists.
 		for i := 0; i < len(singleton.InstanceItems().Items); i++ {
+			// prevent from indexing non-existant item
+			// for case when item deleted during iteration.
+			if singleton.InstanceItems().Items[i] == nil {
+				continue
+			}
+
 			item := singleton.InstanceItems().Items[i]
 			if _, ok := marketMap[item.CoinMarketName]; !ok {
 				singleton.InstanceLogger().Errs <- fmt.Errorf("%s 해당 마켓이 업비트에 존재하지 않아 구매 감시대상에서 제외합니다. 뷰에 반영을 원할 시 새로고침을 눌러주세요", item.CoinMarketName)
