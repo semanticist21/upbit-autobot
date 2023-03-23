@@ -154,8 +154,8 @@ class _StrategyItemState extends State<StrategyItem> {
                                                             .spaceEvenly,
                                                     children: [
                                                       Text('익절 기준 : '),
-                                                      Text(widget
-                                                          .item.profitLine
+                                                      Text(widget.item
+                                                          .profitLinePercent
                                                           .toString()),
                                                       Text('%'),
                                                     ])),
@@ -167,7 +167,8 @@ class _StrategyItemState extends State<StrategyItem> {
                                                             .spaceEvenly,
                                                     children: [
                                                       Text('손절 기준 : '),
-                                                      Text(widget.item.lossLine
+                                                      Text(widget
+                                                          .item.lossLinePercent
                                                           .toString()),
                                                       Text('%')
                                                     ])),

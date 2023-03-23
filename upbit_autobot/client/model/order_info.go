@@ -1,6 +1,11 @@
 package model
 
-type OrderInfo struct {
+type BuyOrderInfo struct {
 	MarketName     string
 	BuyAmountInKrw float64
+}
+
+type SellOrderInfo struct {
+	MarketName string
+	Volume     float64
 }

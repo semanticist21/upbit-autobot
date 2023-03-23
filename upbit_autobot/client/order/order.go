@@ -61,8 +61,18 @@ func GetAllCoinMarketNames(client *upbit.Upbit) (map[string]string, error) {
 	return coinInfos, nil
 }
 
-func BuyOrder(client *upbit.Upbit, orderInfo *model.OrderInfo) (*order.Order, error) {
+func BuyOrder(client *upbit.Upbit, orderInfo *model.BuyOrderInfo) (*order.Order, error) {
 	order, _, err := client.PurchaseOrder(orderInfo.MarketName, "", converter.Float64ToString(orderInfo.BuyAmountInKrw, 2), exchange.ORDER_TYPE_PRICE, "")
+
+	if err != nil {
+		return nil, err
+	}
+
+	return order, nil
+}
+
+func SellOrder(client *upbit.Upbit, orderInfo *model.SellOrderInfo) (*order.Order, error) {
+	order, _, err := client.SellOrder(orderInfo.MarketName, converter.Float64ToString(orderInfo.Volume, 4), "", exchange.ORDER_TYPE_MARKET, "")
 
 	if err != nil {
 		return nil, err

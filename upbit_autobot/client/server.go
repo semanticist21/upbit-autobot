@@ -258,13 +258,13 @@ func doAllHandle(w http.ResponseWriter, r *http.Request) {
 
 	coinBalances := &model.CoinBalances{}
 	for _, balance := range balances {
-		avgBuyPrice, err := converter.FloatStringToFloatRoundedString(balance.AvgBuyPrice, 2)
+		avgBuyPrice, err := converter.StringToFloatDigitString(balance.AvgBuyPrice, 4)
 
 		if err != nil {
 			incurParseError(w)
 			return
 		}
-		coinAmount, err := converter.FloatStringToFloatRoundedString(balance.Balance, 4)
+		coinAmount, err := converter.StringToFloatDigitString(balance.Balance, 4)
 		if err != nil {
 			incurParseError(w)
 			return

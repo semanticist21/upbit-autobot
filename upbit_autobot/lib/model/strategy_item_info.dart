@@ -9,8 +9,8 @@ class StrategyItemInfo {
   int bollingerLength;
   int bollingerMultiplier;
   int purchaseCount;
-  double profitLine;
-  double lossLine;
+  double profitLinePercent;
+  double lossLinePercent;
   double desiredBuyAmount;
   int candleBaseMinute;
   // ISO8601
@@ -21,8 +21,8 @@ class StrategyItemInfo {
       int bollingerLength,
       int bollingerMultiplier,
       int purchaseCount,
-      double profitLine,
-      double lossLine,
+      double profitLinePercent,
+      double lossLinePercent,
       double desiredAmount,
       int minuteCandle) {
     var model = StrategyItemInfo.base(
@@ -30,8 +30,8 @@ class StrategyItemInfo {
         bollingerLength: bollingerLength,
         bollingerMultiplier: bollingerMultiplier,
         purchaseCount: purchaseCount,
-        profitLine: profitLine,
-        lossLine: lossLine,
+        profitLinePercent: profitLinePercent,
+        lossLinePercent: lossLinePercent,
         desiredBuyAmount: desiredAmount,
         candleBaseMinute: minuteCandle);
 
@@ -49,8 +49,8 @@ class StrategyItemInfo {
       int bollingerLength,
       int bollingerMultiplier,
       int purchaseCount,
-      double profitLine,
-      double lossLine,
+      double profitLinePercent,
+      double lossLinePercent,
       String lastBoughtTimeStamp,
       double desiredAmount,
       int minuteCandle) {
@@ -59,8 +59,8 @@ class StrategyItemInfo {
         bollingerLength: bollingerLength,
         bollingerMultiplier: bollingerMultiplier,
         purchaseCount: purchaseCount,
-        profitLine: profitLine,
-        lossLine: lossLine,
+        profitLinePercent: profitLinePercent,
+        lossLinePercent: lossLinePercent,
         desiredBuyAmount: desiredAmount,
         candleBaseMinute: minuteCandle);
 
@@ -77,8 +77,9 @@ class StrategyItemInfo {
         bollingerLength: map['bollingerLength'],
         bollingerMultiplier: map['bollingerMultiplier'],
         purchaseCount: map['purchaseCount'],
-        profitLine: double.tryParse(map['profitLine'].toString())!,
-        lossLine: double.tryParse(map['lossLine'].toString())!,
+        profitLinePercent:
+            double.tryParse(map['profitLinePercent'].toString())!,
+        lossLinePercent: double.tryParse(map['lossLinePercent'].toString())!,
         desiredBuyAmount: double.tryParse(map['desiredBuyAmount'].toString())!,
         candleBaseMinute: map['candleBaseMinute']);
 
@@ -94,8 +95,8 @@ class StrategyItemInfo {
       required this.bollingerLength,
       required this.bollingerMultiplier,
       required this.purchaseCount,
-      required this.profitLine,
-      required this.lossLine,
+      required this.profitLinePercent,
+      required this.lossLinePercent,
       required this.desiredBuyAmount,
       required this.candleBaseMinute});
 
@@ -115,8 +116,8 @@ class StrategyItemInfo {
       'bollingerLength': bollingerLength,
       'bollingerMultiplier': bollingerMultiplier,
       'purchaseCount': purchaseCount,
-      'profitLine': profitLine,
-      'lossLine': lossLine,
+      'profitLinePercent': profitLinePercent,
+      'lossLinePercent': lossLinePercent,
       'lastBoughtTimeStamp': lastBoughtTimeStamp,
       'desiredBuyAmount': desiredBuyAmount,
       'candleBaseMinute': candleBaseMinute,

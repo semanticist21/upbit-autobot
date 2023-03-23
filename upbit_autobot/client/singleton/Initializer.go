@@ -12,6 +12,7 @@ func Init() {
 
 	// get saved items
 	InitStrategyItems()
+	InitSellStrategyItems()
 }
 
 func InitWithClient(client *upbit.Upbit, cycleStarter interfaces.IStartInit) {

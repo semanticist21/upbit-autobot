@@ -29,7 +29,7 @@ func BufferTo64EncodeString(buf *bytes.Buffer) string {
 }
 
 //go:inline
-func FloatStringToFloatRoundedString(str string, decimal int) (string, error) {
+func StringToFloatDigitString(str string, decimal int) (string, error) {
 	num, err := strconv.ParseFloat(str, 64)
 	if err != nil {
 		return "", err
@@ -39,6 +39,29 @@ func FloatStringToFloatRoundedString(str string, decimal int) (string, error) {
 		return Float64ToString(math.Round(num), decimal), nil
 	} else {
 		return Float64ToString(math.Round(num*math.Pow(10, float64(decimal)))/math.Pow(10, float64(decimal)), decimal), nil
+	}
+}
+
+//go:inline
+func StringToFloatWithDigit(str string, decimal int) (float64, error) {
+	num, err := strconv.ParseFloat(str, 64)
+	if err != nil {
+		return -1, err
+	}
+
+	if decimal == 0 {
+		return math.Round(num), nil
+	} else {
+		return math.Round(num*math.Pow(10, float64(decimal))) / math.Pow(10, float64(decimal)), nil
+	}
+}
+
+//go:inline
+func FloatToFloatwithDigit(num float64, decimal int) float64 {
+	if decimal == 0 {
+		return math.Round(num)
+	} else {
+		return math.Round(num*math.Pow(10, float64(decimal))) / math.Pow(10, float64(decimal))
 	}
 }
 

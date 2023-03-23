@@ -11,8 +11,8 @@ type StrategyItemInfo struct {
 	BollingerLength     int     `json:"bollingerLength"`
 	BollingerMultiplier int     `json:"bollingerMultiplier"`
 	PurchaseCount       int     `json:"purchaseCount"`
-	ProfitLine          float64 `json:"profitLine"`
-	LossLine            float64 `json:"lossLine"`
+	ProfitLinePercent   float64 `json:"profitLinePercent"`
+	LossLinePercent     float64 `json:"lossLinePercent"`
 	LastBoughtTimestamp string  `json:"lastBoughtTimeStamp"`
 	DesiredBuyAmount    float64 `json:"desiredBuyAmount"`
 	CandleBaseMinute    int     `json:"candleBaseMinute"`

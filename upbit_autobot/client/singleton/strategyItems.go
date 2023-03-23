@@ -3,7 +3,6 @@ package singleton
 import (
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"os"
 	"sync"
 
@@ -35,6 +34,8 @@ func SetInstanceItems(newItems *model.StrategyItemInfos) {
 	for i := 0; i < len(newItems.Items); i++ {
 		newItem := newItems.Items[i]
 
+		// items from client, if there are items which are in server too,
+		// then replace with it.
 		if _, ok := dic[newItem.ItemId]; ok {
 			newItems.Items[i] = BuyTargetitems.Items[dic[newItem.ItemId]]
 		}
@@ -65,7 +66,7 @@ func InitStrategyItems() {
 	}
 
 	if len(bytes) == 0 {
-		BuyTargetitems = &model.StrategyItemInfos{}
+		BuyTargetitems = &model.StrategyItemInfos{Items: []*model.StrategyItemInfo{}}
 		return
 	}
 
@@ -98,6 +99,7 @@ func InitSellStrategyItems() {
 	}
 
 	if len(bytes) == 0 {
+		sellTargetitems = &model.SellTargetStrategyItemInfos{BoughtItems: []*model.SellTargetStrategyItemInfo{}}
 		return
 	}
 
@@ -126,7 +128,7 @@ func SaveSellTargetStrategyItems() {
 //go:inline
 func saveInJson(items interface{}, fileName string) {
 	data, _ := json.Marshal(items)
-	err := ioutil.WriteFile(fileName, data, 0644)
+	err := os.WriteFile(fileName, data, 0644)
 
 	if err != nil {
 		InstanceLogger().Errs <- err
