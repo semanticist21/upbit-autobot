@@ -32,13 +32,11 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 	for {
 		// 전체 사이클 회수(최대 10개니 대략 5~6초 소요)
 		// whole cycle wait(without it, maximum it takes 5-6seconds)
-		time.Sleep(time.Millisecond * 1000)
+		time.Sleep(time.Millisecond * 5000)
 
 		if len(singleton.InstanceBuyTargetItems().Items) == 0 {
-			time.Sleep(time.Millisecond * 1000)
 			continue
 		}
-		fmt.Println("도는중임")
 		markets, _, _ := client.GetMarkets()
 		marketMap := make(map[string]bool)
 
@@ -92,6 +90,16 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 			minutes, err := order.IntToMinutesType(item.CandleBaseMinute)
 			if err != nil {
 				singleton.InstanceLogger().Errs <- err
+				singleton.InstanceLogger().Errs <- fmt.Errorf("%s 분봉이 잘못된 전략을 삭제합니다. 다시 생성해 주세요", item.CoinMarketName)
+				singleton.InstanceBuyTargetItems().Items = append(singleton.InstanceBuyTargetItems().Items[:i], singleton.InstanceBuyTargetItems().Items[i+1:]...)
+				singleton.SaveStrategyBuyTargetItems()
+
+				// queue in deletion
+				data := model.ItemCollectionForSocketNew()
+				data.DeletedItemId = &item.ItemId
+				singleton.InstanceItemsCollectionCh() <- data
+
+				i -= 1
 				continue
 			}
 
@@ -309,7 +317,7 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 	singleton.InstanceLogger().Msgs <- "판매 감시 봇 작동 시작."
 	for {
 		// whole cycle wait
-		time.Sleep(time.Millisecond * 1000)
+		time.Sleep(time.Millisecond * 5000)
 
 		if len(singleton.InstanceSellTargetItems().BoughtItems) == 0 {
 			continue

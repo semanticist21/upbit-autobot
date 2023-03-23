@@ -121,7 +121,7 @@ class _AddDialogState extends State<AddDialog> {
 
                                           return null;
                                         },
-                                        style: TextStyle(fontSize: 12),
+                                        style: TextStyle(fontSize: 15),
                                         decoration: InputDecoration(
                                             errorStyle: _errorTextStyle(),
                                             hintStyle: TextStyle(fontSize: 17),
@@ -402,7 +402,7 @@ class _AddDialogState extends State<AddDialog> {
         multiplier!,
         count!,
         double.parse(_profitLine.text),
-        double.parse(_profitLine.text),
+        double.parse(_lossLine.text),
         double.parse(_desiredBuyAmount.text),
         int.parse(_minuteCandle.text));
 

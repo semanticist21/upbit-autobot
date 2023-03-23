@@ -19,6 +19,7 @@ class _strategyScrollViewState extends State<strategyScrollView> {
   late AppProvider _provider;
   bool _visible = false;
   bool _isinit = true;
+  var _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -36,7 +37,9 @@ class _strategyScrollViewState extends State<strategyScrollView> {
     }
 
     return CustomScrollView(
+        controller: _scrollController,
         physics: BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
             decelerationRate: ScrollDecelerationRate.fast),
         shrinkWrap: true,
         // 리스트 아이템들
@@ -108,12 +111,17 @@ class _strategyScrollViewState extends State<strategyScrollView> {
         ]);
   }
 
-  _addnewList(AppProvider provider, value) {
+  void _addnewList(AppProvider provider, value) {
     if (value.runtimeType != StrategyItemInfo) {
       return;
     }
 
     provider.items.add(value as StrategyItemInfo);
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) =>
+        _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+            duration: Duration(milliseconds: 500), curve: Curves.easeInOut));
+
     setState(() {});
   }
 

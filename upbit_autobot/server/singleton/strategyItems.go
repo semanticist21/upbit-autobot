@@ -2,7 +2,6 @@ package singleton
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"os"
 	"sync"
@@ -114,11 +113,9 @@ func InitSellStrategyItems() {
 
 //go:inline
 func SaveStrategyBuyTargetItems() {
-	fmt.Println("들어갔다")
 	mutex.Lock()
 	saveInJson(buyTargetitems, buyFileName)
 	mutex.Unlock()
-	fmt.Println("나왔다")
 }
 
 //go:inline
