@@ -85,6 +85,5 @@ class _BalanceMonitorState extends State<BalanceMonitor> {
 
   Future<void> doBalanceRequest(AppProvider provider) async {
     await _provider.doKrwBalanceRequest();
-    setState(() {});
   }
 }
