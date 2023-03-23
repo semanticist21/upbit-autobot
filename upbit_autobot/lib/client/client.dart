@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:upbit_autobot/client/password.dart';
 
 import '../model/log.dart';
 
@@ -11,6 +12,7 @@ class RestApiClient {
   factory RestApiClient() => _instance;
 
   final String _baseUri = 'http://localhost:8080';
+  final String _baseSocketUri = 'ws://localhost:8080';
   final http.Client _client = http.Client();
 
   Future<http.Response?> requestPost(String pageUrl, String dataBody) async {
@@ -19,7 +21,7 @@ class RestApiClient {
 
     try {
       response = await _client.post(resultUrl,
-          headers: {'Content-Type': 'application/json'}, body: dataBody);
+          headers: passwordJsonMap, body: dataBody);
     } catch (_) {
       response = null;
       return response;
@@ -36,7 +38,7 @@ class RestApiClient {
 
     try {
       response = await _client.post(resultUrl,
-          headers: {'Content-Type': 'application/json'}, body: dataBody);
+          headers: passwordJsonMap, body: dataBody);
     } catch (_) {
       response = null;
       return response;
@@ -46,7 +48,7 @@ class RestApiClient {
   }
 
   Future<http.Response> requestGet(String pageUrl) async {
-    var response = await _client.get(getUri(pageUrl));
+    var response = await _client.get(getUri(pageUrl), headers: passwordMap);
 
     return response;
   }
@@ -56,10 +58,19 @@ class RestApiClient {
     var resulturl = getUri(pageUrl);
     resulturl = resulturl.replace(queryParameters: params);
 
-    var response = await _client.get(resulturl);
+    var response = await _client.get(
+      resulturl,
+      headers: passwordMap,
+    );
 
     return response;
   }
+
+  Future<WebSocket> doConnectToWebSocket(String pageUrl) async =>
+      await WebSocket.connect(getSocketUri(pageUrl).toString(),
+          headers: passwordMap);
+
+  Uri getSocketUri(String pageUrl) => Uri.parse('$_baseSocketUri/$pageUrl');
 
   Uri getUri(String pageUrl) => Uri.parse('$_baseUri/$pageUrl');
 

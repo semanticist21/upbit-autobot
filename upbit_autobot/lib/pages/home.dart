@@ -85,7 +85,7 @@ class _HomeState extends State<Home> {
                                             borderRadius:
                                                 BorderRadius.circular(10)),
                                         width: 300,
-                                        height: 400,
+                                        height: 550,
                                         child: ScrollConfiguration(
                                             behavior:
                                                 ScrollConfiguration.of(context)
@@ -99,6 +99,7 @@ class _HomeState extends State<Home> {
                                                 clipBehavior: Clip.antiAlias,
                                                 slivers: [
                                                   SliverAppBar(
+                                                    pinned: true,
                                                     floating: true,
                                                     stretch: true,
                                                     expandedHeight: 60,

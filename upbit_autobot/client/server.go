@@ -10,6 +10,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/websocket"
 	"github.com/sangx2/upbit"
 	"github.com/semanticist21/upbit-client-server/converter"
 	"github.com/semanticist21/upbit-client-server/detector"
@@ -17,15 +18,45 @@ import (
 	"github.com/semanticist21/upbit-client-server/singleton"
 )
 
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		if r.Header.Get("password") == passwordKey {
+			return true
+		} else {
+			return false
+		}
+	},
+}
+
+const (
+	passwordKey string = "ca788859970da3ad18b0d2ceabdaf6d10e5a91edb10e2e7dc79268aefa54141f"
+)
+
 //go:inline
 func startServer() {
 	router := mux.NewRouter()
-	router.HandleFunc("/login", handleLogin)
-	router.HandleFunc("/balance/{name}", handleBalance)
-	router.HandleFunc("/logs", handleLogs)
-	router.HandleFunc("/items", handleItems)
+	router.HandleFunc("/login", originCheckingMiddleware(handleLogin))
+	router.HandleFunc("/balance/{name}", originCheckingMiddleware(handleBalance))
+	router.HandleFunc("/logs", originCheckingMiddleware(handleLogs))
+	router.HandleFunc("/items", originCheckingMiddleware(handleItems))
+	router.HandleFunc("/socket/logs", handleSocketLog)
+	router.HandleFunc("/socket/items", handleSocketItems)
 	http.Handle("/", router)
 	http.ListenAndServe(":8080", nil)
+}
+
+//go:inline
+func originCheckingMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		password := r.Header.Get("password")
+		if password == passwordKey {
+			next(w, r)
+		} else {
+			http.Error(w, "Forbidden", http.StatusForbidden)
+		}
+	}
 }
 
 //go:inline
@@ -40,13 +71,6 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func doGetHandleLogin(w http.ResponseWriter, r *http.Request) {
-	password := r.URL.Query().Get("password")
-
-	if password != "ca788859970da3ad18b0d2ceabdaf6d10e5a91edb10e2e7dc79268aefa54141f" {
-		incurBadRequestError(w)
-		return
-	}
-
 	file, err := getAccountFile()
 
 	if err != nil {
@@ -93,7 +117,9 @@ func doGetHandleLogin(w http.ResponseWriter, r *http.Request) {
 func doHandlePostLogin(w http.ResponseWriter, r *http.Request) {
 	// already logined case
 	if singleton.InstanceClient() != nil {
-		singleton.InstanceLogger().Msgs <- "이미 서버에 로그인되어있는 정보를 삭제 후 새로 로그인합니다."
+		singleton.InstanceLogger().Msgs <- "이미 서버에 로그인되어있는 정보가 있습니다. 서버를 재시작하세요."
+		incurBadRequestError(w)
+		return
 	}
 
 	isSuccesful := false
@@ -337,7 +363,7 @@ func handleItems(w http.ResponseWriter, r *http.Request) {
 func doGetHandleItems(w http.ResponseWriter) {
 	// items update
 	w.Header().Set("Content-Type", "application/json")
-	data, err := json.Marshal(singleton.InstanceItems())
+	data, err := json.Marshal(singleton.InstanceBuyTargetItems())
 
 	if err != nil {
 		singleton.InstanceLogger().Errs <- err
@@ -353,6 +379,7 @@ func doGetHandleItems(w http.ResponseWriter) {
 func doPostHandleItems(w http.ResponseWriter, r *http.Request) {
 	if r.Body == nil {
 		incurBadRequestError(w)
+		return
 	}
 
 	data, err := io.ReadAll(r.Body)
@@ -362,7 +389,7 @@ func doPostHandleItems(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	item := model.StrategyItemInfos{}
+	item := model.BuyStrategyItemInfos{}
 
 	marshalErr := json.Unmarshal(data, &item)
 
@@ -371,9 +398,44 @@ func doPostHandleItems(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	singleton.SetInstanceItems(&item)
+	singleton.SetBuyTargetItemsInstance(&item)
 	singleton.InstanceLogger().Msgs <- "전략 아이템 저장되었습니다."
 	w.WriteHeader(http.StatusOK)
+}
+
+//go:inline
+func handleSocketLog(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		singleton.InstanceLogger().Errs <- err
+		incurBadRequestError(w)
+		return
+	}
+
+	defer conn.Close()
+
+	for {
+		singleton.InstanceLogger().WriteLogReponse(conn)
+	}
+}
+
+//go:inline
+func handleSocketItems(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		singleton.InstanceLogger().Errs <- err
+		incurBadRequestError(w)
+		return
+	}
+
+	defer conn.Close()
+
+	for v := range singleton.InstanceItemsCollectionCh() {
+		err := conn.WriteJSON(v)
+		if err != nil {
+			singleton.InstanceLogger().Errs <- err
+		}
+	}
 }
 
 //go:inline
@@ -382,7 +444,7 @@ func incurBadRequest(w http.ResponseWriter, msg string) {
 	singleton.InstanceLogger().Errs <- fmt.Errorf(msg)
 }
 
-//go:inlinincurBadRequestError
+//go:inline
 func incurBadRequestError(w http.ResponseWriter) {
 	incurBadRequest(w, "the request is bad")
 }

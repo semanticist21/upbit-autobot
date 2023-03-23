@@ -1,10 +1,11 @@
 package model
 
-type StrategyItemInfos struct {
-	Items []*StrategyItemInfo `json:"items"`
+type BuyStrategyItemInfos struct {
+	Items []*BuyStrategyItemInfo `json:"items"`
 }
 
-type StrategyItemInfo struct {
+// Buy startegy Item info.
+type BuyStrategyItemInfo struct {
 	Color               string  `json:"color"`
 	ItemId              string  `json:"itemId"`
 	CoinMarketName      string  `json:"coinMarketName"`

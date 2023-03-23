@@ -1,12 +1,15 @@
 package singleton
 
 import (
+	"sync"
+
 	"github.com/sangx2/upbit"
 	"github.com/sangx2/upbit/model/exchange/account"
 )
 
 var krwAccount *account.Account
 var coinAccounts []*account.Account
+var mutexAcc sync.Mutex
 
 func InstanceKrwBalance() *account.Account {
 	return krwAccount
@@ -24,6 +27,7 @@ func InitAccount(client *upbit.Upbit) {
 
 //go:inline
 func RefreshAccount(client *upbit.Upbit) {
+	mutexAcc.Lock()
 	logger := InstanceLogger()
 	accounts, _, err := client.GetAccounts()
 	coinAccounts = []*account.Account{}
@@ -40,4 +44,6 @@ func RefreshAccount(client *upbit.Upbit) {
 			coinAccounts = append(coinAccounts, account)
 		}
 	}
+	mutexAcc.Unlock()
+
 }

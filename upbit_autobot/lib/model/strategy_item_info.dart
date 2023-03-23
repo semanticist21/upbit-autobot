@@ -83,7 +83,9 @@ class StrategyItemInfo {
         desiredBuyAmount: double.tryParse(map['desiredBuyAmount'].toString())!,
         candleBaseMinute: map['candleBaseMinute']);
 
-    model.color = ColorInfo.FromHex(map['color']);
+    model.color = map['color'] == ''
+        ? ColorInfo(color: ColorInfo.generateRandomColor())
+        : ColorInfo.FromHex(map['color']);
     model.itemId = map['itemId'];
     model.lastBoughtTimeStamp = map['lastBoughtTimeStamp'];
 

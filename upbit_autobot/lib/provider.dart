@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:isolate';
 
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 import 'package:upbit_autobot/model/log.dart';
 
 import 'client/client.dart';
@@ -15,6 +16,8 @@ class AppProvider extends ChangeNotifier {
   var scrollController = ScrollController();
   var _isInitRequest = true;
 
+  var krwBalance = '0';
+
   List<CoinBalance> boughtItems = new List.empty(growable: true);
   List<StrategyItemInfo> items = List.empty(growable: true);
 
@@ -25,22 +28,34 @@ class AppProvider extends ChangeNotifier {
     return _instance;
   }
 
-  Future<void> doCoinBalanceGetRequest(List<CoinBalance> buyItems) async {
+  Future<void> DoKrwBalanceRequest() async {
+    var result = await RestApiClient().requestGet("balance/krw");
+
+    Map<String, dynamic> parsedResult = RestApiClient.parseResponseData(result);
+
+    var key = 'balance';
+    if (parsedResult.containsKey(key)) {
+      krwBalance = parsedResult[key];
+      notifyListeners();
+      return;
+    }
+  }
+
+  Future<void> doCoinBalanceGetRequest(List<CoinBalance> boughtItems) async {
     var response = await RestApiClient().requestGet("balance/all");
     var parsedResult = RestApiClient.parseResponseData(response);
 
     var key = 'balances';
     if (parsedResult.containsKey(key)) {
       List<dynamic> items = parsedResult[key];
-      buyItems.clear();
+      boughtItems.clear();
 
       items.forEach((element) {
         var coinBalance = CoinBalance.fromJson(element);
-        buyItems.add(coinBalance);
+        boughtItems.add(coinBalance);
       });
+      notifyListeners();
     }
-
-    notifyListeners();
   }
 
   void removeItemFromItems(int index) {
@@ -48,7 +63,7 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> doItemsRequest() async {
+  Future<void> doBuyItemsRequest() async {
     var response = await RestApiClient().requestGet('items');
 
     // data empty case
@@ -68,14 +83,86 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> doStartLoggerGetRequestCycle() async {
+  Future<void> startLoggerGetByWebSocket() async {
+    var socket = await RestApiClient().doConnectToWebSocket('socket/logs');
+    socket.listen((event) {
+      if (event.runtimeType == String) {
+        // when logger too long.
+        if (loggerText.length >= 30000) {
+          loggerText = '로그 3만자 이상 초기화 됐습니다.';
+        }
+
+        var msgStr = event as String;
+        var strs = msgStr.split('\n');
+
+        strs = strs.map((element) => element.replaceFirst('T', ' ')).toList();
+        msgStr = strs.join('\n');
+        msgStr = msgStr.replaceAll('+0900', '');
+        loggerText = '$loggerText$msgStr';
+      }
+      notifyListeners();
+    });
+  }
+
+  Future<void> startItemsManagementByWebSocket() async {
+    var socket = await RestApiClient().doConnectToWebSocket('socket/items');
+    socket.listen((event) {
+      if (event.runtimeType != String) {
+        return;
+      }
+
+      var data = json.decode(event) as Map<String, dynamic>;
+
+      if (data.containsKey('krwBalance') &&
+          data['krwBalance']['balance'] != '') {
+        krwBalance = data['krwBalance']['balance'];
+      }
+
+      if (data.containsKey('coinBalance') &&
+          data['coinBalance']['balances'] != null) {
+        List<dynamic> items = data['coinBalance']['balances'];
+        boughtItems.clear();
+        items.forEach((element) {
+          var coinBalance = CoinBalance.fromJson(element);
+          boughtItems.add(coinBalance);
+
+          notifyListeners();
+        });
+      }
+
+      if (data.containsKey('item')) {
+        var sentItem = StrategyItemInfo.fromJson(data['item']);
+        if (sentItem.itemId != '') {
+          for (var i = 0; i < items.length; i++) {
+            if (items[i].itemId == sentItem.itemId) {
+              items[i] = sentItem;
+              break;
+            }
+          }
+        }
+      }
+
+      if (data.containsKey('DeletedItemId') && data['DeletedItemId'] != '') {
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].itemId == data['DeletedItemId']) {
+            items.removeAt(i);
+            break;
+          }
+        }
+      }
+
+      notifyListeners();
+    });
+  }
+
+// no more use
+  Future<void> startLoggerGetRequestCycle() async {
     if (!_isInitRequest) {
       return;
     }
-
     _isInitRequest = false;
     var receivePort = ReceivePort();
-    await Isolate.spawn(_doUpdateLogger, receivePort.sendPort);
+    await Isolate.spawn(_updateLogger, receivePort.sendPort);
 
     receivePort.listen((message) {
       if (loggerText.length >= 10000) {
@@ -106,7 +193,7 @@ class AppProvider extends ChangeNotifier {
   }
 }
 
-Future<void> _doUpdateLogger(SendPort sendPort) async {
+Future<void> _updateLogger(SendPort sendPort) async {
   var response = await RestApiClient().requestGet('logs');
   var data = RestApiClient.parseWordData(response);
   if (data.isNotEmpty) {

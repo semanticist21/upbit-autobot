@@ -25,7 +25,7 @@ class _LoggerBoxState extends State<LoggerBox> {
     _provider = Provider.of<AppProvider>(context, listen: true);
 
     if (_isInit) {
-      _provider.doStartLoggerGetRequestCycle();
+      _provider.startLoggerGetByWebSocket();
       _isInit = false;
     }
 
@@ -49,11 +49,21 @@ class _LoggerBoxState extends State<LoggerBox> {
               color: Color.fromRGBO(66, 66, 66, 0.9),
               child:
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                Spacer(),
+                SizedBox(width: 50),
                 Icon(FontAwesomeIcons.clockRotateLeft, size: 15),
-                SizedBox(width: 15),
+                SizedBox(width: 10),
                 Text("로그",
                     style:
-                        TextStyle(fontSize: 15, fontWeight: FontWeight.normal))
+                        TextStyle(fontSize: 15, fontWeight: FontWeight.normal)),
+                Spacer(),
+                IconButton(
+                    onPressed: () {
+                      _provider.loggerText = '';
+                      setState(() {});
+                    },
+                    icon: Icon(FontAwesomeIcons.trash, size: 13)),
+                SizedBox(width: 5)
               ])),
           Expanded(
               child: SingleChildScrollView(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:upbit_autobot/components/coin_image.dart';
+import 'package:upbit_autobot/components/converter.dart';
 import 'package:upbit_autobot/model/balance.dart';
 
 class BuyItem extends StatefulWidget {
@@ -73,7 +74,10 @@ class _BuyItemState extends State<BuyItem> {
                                   '평균 매수가',
                                   style: TextStyle(fontSize: 12),
                                 ),
-                                Text(widget.coinBalance.avgBuyPrice),
+                                Text(Converter.currencyFormat4digit(
+                                        double.parse(
+                                            widget.coinBalance.avgBuyPrice)) +
+                                    ' 원'),
                                 Divider(),
                                 Text('수량', style: TextStyle(fontSize: 12)),
                                 Text(widget.coinBalance.balance),

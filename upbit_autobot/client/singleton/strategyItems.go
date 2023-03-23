@@ -2,6 +2,7 @@ package singleton
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 	"sync"
@@ -9,13 +10,13 @@ import (
 	"github.com/semanticist21/upbit-client-server/model"
 )
 
-var BuyTargetitems *model.StrategyItemInfos
+var buyTargetitems *model.BuyStrategyItemInfos
 var sellTargetitems *model.SellTargetStrategyItemInfos
 var mutex sync.Mutex
 
 //go:inline
-func InstanceItems() *model.StrategyItemInfos {
-	return BuyTargetitems
+func InstanceBuyTargetItems() *model.BuyStrategyItemInfos {
+	return buyTargetitems
 }
 
 //go:inline
@@ -24,10 +25,10 @@ func InstanceSellTargetItems() *model.SellTargetStrategyItemInfos {
 }
 
 //go:inline
-func SetInstanceItems(newItems *model.StrategyItemInfos) {
+func SetBuyTargetItemsInstance(newItems *model.BuyStrategyItemInfos) {
 	dic := make(map[string]int)
 
-	for idx, item := range BuyTargetitems.Items {
+	for idx, item := range buyTargetitems.Items {
 		dic[item.ItemId] = idx
 	}
 
@@ -37,12 +38,12 @@ func SetInstanceItems(newItems *model.StrategyItemInfos) {
 		// items from client, if there are items which are in server too,
 		// then replace with it.
 		if _, ok := dic[newItem.ItemId]; ok {
-			newItems.Items[i] = BuyTargetitems.Items[dic[newItem.ItemId]]
+			newItems.Items[i] = buyTargetitems.Items[dic[newItem.ItemId]]
 		}
 	}
 
-	BuyTargetitems = newItems
-	SaveStrategyItems()
+	buyTargetitems = newItems
+	SaveStrategyBuyTargetItems()
 }
 
 var buyFileName = "items.json"
@@ -66,11 +67,11 @@ func InitStrategyItems() {
 	}
 
 	if len(bytes) == 0 {
-		BuyTargetitems = &model.StrategyItemInfos{Items: []*model.StrategyItemInfo{}}
+		buyTargetitems = &model.BuyStrategyItemInfos{Items: []*model.BuyStrategyItemInfo{}}
 		return
 	}
 
-	var saveditems *model.StrategyItemInfos
+	var saveditems *model.BuyStrategyItemInfos
 
 	marshalErr := json.Unmarshal(bytes, &saveditems)
 
@@ -78,7 +79,7 @@ func InitStrategyItems() {
 		InstanceLogger().Errs <- err
 	}
 
-	BuyTargetitems = saveditems
+	buyTargetitems = saveditems
 }
 
 //go:inline
@@ -112,10 +113,12 @@ func InitSellStrategyItems() {
 }
 
 //go:inline
-func SaveStrategyItems() {
+func SaveStrategyBuyTargetItems() {
+	fmt.Println("들어갔다")
 	mutex.Lock()
-	saveInJson(BuyTargetitems, buyFileName)
+	saveInJson(buyTargetitems, buyFileName)
 	mutex.Unlock()
+	fmt.Println("나왔다")
 }
 
 //go:inline

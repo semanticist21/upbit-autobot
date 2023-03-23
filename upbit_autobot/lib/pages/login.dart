@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -7,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:upbit_autobot/client/client.dart';
 import 'package:upbit_autobot/model/account.dart';
 
+import '../client/password.dart';
 import 'home.dart';
 
 class Login extends StatefulWidget {
@@ -311,24 +311,24 @@ class _LoginState extends State<Login> {
       var flag = _prefs.getBool(_isSaveKey);
 
       if (flag != null) {
-        _isSave = flag;
+        setState(() {
+          _isSave = flag;
+        });
       }
+
       if (_isSave) {
         await _getSavedloginData();
       }
     } catch (err) {
       print(err);
+    } finally {
+      setState(() => _isIndicatorVisible = false);
     }
     setState(() => _isIndicatorVisible = false);
   }
 
   Future<void> _getSavedloginData() async {
-    var password = {
-      'password':
-          'ca788859970da3ad18b0d2ceabdaf6d10e5a91edb10e2e7dc79268aefa54141f'
-    };
-    var response =
-        await RestApiClient().requestGetWithParams('login', password);
+    var response = await RestApiClient().requestGet('login');
 
     var keyMap = RestApiClient.parseResponseData(response);
     var publicKey = 'publicKey';

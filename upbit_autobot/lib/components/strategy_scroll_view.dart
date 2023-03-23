@@ -30,7 +30,8 @@ class _strategyScrollViewState extends State<strategyScrollView> {
     _provider = Provider.of(context, listen: true);
 
     if (_isinit) {
-      _provider.doItemsRequest();
+      _provider.doBuyItemsRequest();
+      _provider.startItemsManagementByWebSocket();
       _isinit = false;
     }
 
@@ -124,14 +125,14 @@ class _strategyScrollViewState extends State<strategyScrollView> {
     var result = RestApiClient.encodeData({'items': data});
 
     await RestApiClient().requestPost('items', result);
-    await provider.doItemsRequest();
+    await provider.doBuyItemsRequest();
 
     setState(() => _visible = false);
   }
 
   Future<void> _doItemRequest(AppProvider provider) async {
     setState(() => _visible = true);
-    await provider.doItemsRequest();
+    await provider.doBuyItemsRequest();
     setState(() => _visible = false);
   }
 }

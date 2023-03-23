@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:upbit_autobot/client/client.dart';
+import 'package:upbit_autobot/components/converter.dart';
 import 'package:upbit_autobot/components/refresh_button.dart';
+import 'package:upbit_autobot/provider.dart';
 
 import '../animation/wave.dart';
 
@@ -13,16 +16,23 @@ class BalanceMonitor extends StatefulWidget {
 }
 
 class _BalanceMonitorState extends State<BalanceMonitor> {
-  var _balance = '0';
+  late AppProvider _provider;
+  bool _isInit = true;
 
   @override
   void initState() {
     super.initState();
-    DoBalanceRequest();
   }
 
   @override
   Widget build(BuildContext context) {
+    _provider = Provider.of(context, listen: true);
+
+    if (_isInit) {
+      DoBalanceRequest(_provider);
+      _isInit = false;
+    }
+
     return Stack(children: [
       const Opacity(opacity: 0.4, child: Wave()),
       Padding(
@@ -43,7 +53,7 @@ class _BalanceMonitorState extends State<BalanceMonitor> {
                   ]),
                   Spacer(),
                   RefreshButton(callback: () async {
-                    await DoBalanceRequest();
+                    await DoBalanceRequest(_provider);
                   })
                 ],
               ),
@@ -58,7 +68,8 @@ class _BalanceMonitorState extends State<BalanceMonitor> {
                         children: [
                           SizedBox(width: 10),
                           Text(
-                            _balance,
+                            Converter.currencyFormat(
+                                int.parse(_provider.krwBalance)),
                             style: TextStyle(fontSize: 25),
                           ),
                           SizedBox(width: 5),
@@ -73,16 +84,8 @@ class _BalanceMonitorState extends State<BalanceMonitor> {
     ]);
   }
 
-  Future<void> DoBalanceRequest() async {
-    var result = await RestApiClient().requestGet("balance/krw");
-
-    Map<String, dynamic> parsedResult = RestApiClient.parseResponseData(result);
-
-    var key = 'balance';
-    if (parsedResult.containsKey(key)) {
-      _balance = parsedResult[key];
-      setState(() {});
-      return;
-    }
+  Future<void> DoBalanceRequest(AppProvider provider) async {
+    await _provider.DoKrwBalanceRequest();
+    setState(() {});
   }
 }
