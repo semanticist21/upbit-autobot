@@ -149,11 +149,12 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 			// end if proflt/loss is 0%
 			singleton.InstanceLogger().Msgs <- fmt.Sprintf("매수 성공! 매수 코인 : %s, 매수 볼륨(KRW) : %s", orderResult.Market, orderResult.Price)
 
-			// apply krw, coin changes
-			SendKrwAndCoinBalance(client)
-
 			item.PurchaseCount -= 1
 			item.LastBoughtTimestamp = converter.NowToISO8601()
+			singleton.SaveStrategyBuyTargetItems()
+
+			// apply krw, coin changes
+			SendKrwAndCoinBalance(client)
 
 			if item.PurchaseCount == 0 {
 				singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 코인 구매회수 소진되었습니다.", item.CoinMarketName)
@@ -161,7 +162,7 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 
 			// apply purchase count
 			data := model.ItemCollectionForSocketNew()
-			data.BuyStartegyItems = item
+			data.BuyStartegyItem = item
 			singleton.InstanceItemsCollectionCh() <- data
 
 			// if profit line and lossline 0, pass inserting sell detector bot
@@ -170,17 +171,23 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 			}
 
 			// wait until order complete
-			time.Sleep(time.Millisecond * 500)
+			time.Sleep(time.Millisecond * 1000)
 			orderedResult, _, err := client.GetOrder(orderResult.UUID, "")
 
-			if err != nil || orderResult.State != "done" {
+			startTime := time.Now()
+			for orderResult.State != "done" || err != nil {
+				diff := time.Since(startTime)
+				if diff > time.Second*10 {
+					break
+				}
+
 				time.Sleep(time.Millisecond * 500)
 				orderedResult, _, err = client.GetOrder(orderResult.UUID, "")
+			}
 
-				if err != nil || orderResult.State != "done" {
-					singleton.InstanceLogger().Errs <- fmt.Errorf("볼륨 취득에 실패했습니다. 판매 감시봇 진입 실패! #에러 발생 코인 이름: %s", item.CoinMarketName)
-					continue
-				}
+			if orderResult.State != "done" {
+				singleton.InstanceLogger().Errs <- fmt.Errorf("볼륨 취득에 실패했습니다. 판매 감시봇 진입 실패! #에러 발생 코인 이름: %s", item.CoinMarketName)
+				continue
 			}
 
 			// check whether the item exists in sell target items.
@@ -481,6 +488,20 @@ func SendKrwAndCoinBalance(client *upbit.Upbit) {
 	data := model.ItemCollectionForSocketNew()
 	data.KrwBalanceItem = &model.KrwBalance{Balance: singleton.InstanceKrwBalance().Balance}
 	data.CoinBalanceItem = &coinbalances
-	data.BuyStartegyItems = &model.BuyStrategyItemInfo{}
+	singleton.InstanceItemsCollectionCh() <- data
+}
+
+func SendAllBalanceAndItem(client *upbit.Upbit, item *model.BuyStrategyItemInfo) {
+	singleton.RefreshAccount(client)
+	coinbalances := model.CoinBalances{Balances: []*model.CoinBalance{}}
+	for _, balance := range singleton.InstanceCoinBalances() {
+
+		coinBalance := model.CoinBalance{CoinName: balance.Currency, Balance: balance.Balance, AvgBuyPrice: balance.AvgBuyPrice}
+		coinbalances.Balances = append(coinbalances.Balances, &coinBalance)
+	}
+	data := model.ItemCollectionForSocketNew()
+	data.KrwBalanceItem = &model.KrwBalance{Balance: singleton.InstanceKrwBalance().Balance}
+	data.CoinBalanceItem = &coinbalances
+	data.BuyStartegyItem = item
 	singleton.InstanceItemsCollectionCh() <- data
 }
