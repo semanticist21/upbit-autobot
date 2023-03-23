@@ -132,7 +132,7 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 			buyAmountInKrw := price * item.DesiredBuyAmount
 			buyAmountInKrw = math.Round(buyAmountInKrw)
 
-			singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s를 %.4f가격에 %.4f(한화 : %f) 만큼 매수를 시도합니다.", item.CoinMarketName, price, item.DesiredBuyAmount, buyAmountInKrw)
+			singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s를 %.4f가격에 %.8f(한화 : %f) 만큼 매수를 시도합니다.", item.CoinMarketName, price, item.DesiredBuyAmount, buyAmountInKrw)
 			orderInfo := model.BuyOrderInfo{MarketName: item.CoinMarketName, BuyAmountInKrw: buyAmountInKrw}
 
 			orderResult, err := order.BuyOrder(client, &orderInfo)
@@ -234,7 +234,7 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 					newLossTargetPrice := newAvgPrice - newAvgPrice*(item.ProfitLinePercent/100)
 
 					newAvgPrice = converter.FloatToFloatwithDigit(newAvgPrice, 4)
-					newExecutedVolume = converter.FloatToFloatwithDigit(newExecutedVolume, 4)
+					newExecutedVolume = converter.FloatToFloatwithDigit(newExecutedVolume, 8)
 					newProfitTargetPrice = converter.FloatToFloatwithDigit(newProfitTargetPrice, 4)
 					newLossTargetPrice = converter.FloatToFloatwithDigit(newLossTargetPrice, 4)
 
@@ -296,7 +296,7 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 			profitTargetPrice := converter.FloatToFloatwithDigit(currentExecutedPrice+currentExecutedPrice*(item.ProfitLinePercent/100), 4)
 			lossTargetPrice := converter.FloatToFloatwithDigit(currentExecutedPrice-currentExecutedPrice*(item.LossLinePercent/100), 4)
 			currentExecutedPrice = converter.FloatToFloatwithDigit(currentExecutedPrice, 4)
-			currentExecutedVolume = converter.FloatToFloatwithDigit(currentExecutedVolume, 4)
+			currentExecutedVolume = converter.FloatToFloatwithDigit(currentExecutedVolume, 8)
 
 			// when user don't want to sell with profit
 			if item.ProfitLinePercent == 0. {
@@ -374,13 +374,13 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 			if err == nil {
 				for _, account := range accounts {
 					if account.GetMarketID() == sellTargetItem.CoinMarketName {
-						accBalance, err := converter.StringToFloatWithDigit(account.Balance, 4)
+						accBalance, err := converter.StringToFloatWithDigit(account.Balance, 8)
 						if err != nil {
 							singleton.InstanceLogger().Errs <- fmt.Errorf("%s, #에러 발생 코인 이름: %s", err.Error(), sellTargetItem.CoinMarketName)
 						}
 
 						if accBalance < sellTargetItem.ExecutedVolume {
-							singleton.InstanceLogger().Msgs <- fmt.Sprintf("전략 매도 잔고보다 현재 코인의 잔고가 더 낮아 현재 계좌 코인의 잔고로 재조정합니다. #코인 이름: %s, #전략 잔고: %.4f, #계좌 잔고 %.4f", sellTargetItem.CoinMarketName, sellTargetItem.ExecutedVolume, accBalance)
+							singleton.InstanceLogger().Msgs <- fmt.Sprintf("전략 매도 잔고보다 현재 코인의 잔고가 더 낮아 현재 계좌 코인의 잔고로 재조정합니다. #코인 이름: %s, #전략 잔고: %.8f, #계좌 잔고 %.8f", sellTargetItem.CoinMarketName, sellTargetItem.ExecutedVolume, accBalance)
 							sellTargetItem.ExecutedVolume = accBalance
 						}
 						break
@@ -417,7 +417,7 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 					// delete from sell target coin
 					singleton.InstanceSellTargetItems().BoughtItems = append(singleton.InstanceSellTargetItems().BoughtItems[:i], singleton.InstanceSellTargetItems().BoughtItems[i+1:]...)
 					singleton.SaveSellTargetStrategyItems()
-					singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 익절 완료, 매도 양: %.4f, 매도 가격: %s", sellTargetItem.CoinMarketName, sellTargetItem.ExecutedVolume, orderResult.Price)
+					singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 익절 완료, 매도 양: %.8f, 매도 가격: %s", sellTargetItem.CoinMarketName, sellTargetItem.ExecutedVolume, orderResult.Price)
 
 					// buy strategy item loop
 					for j := 0; j < len(singleton.InstanceBuyTargetItems().Items); j++ {
@@ -460,7 +460,7 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 					// delete from sell target coin
 					singleton.InstanceSellTargetItems().BoughtItems = append(singleton.InstanceSellTargetItems().BoughtItems[:i], singleton.InstanceSellTargetItems().BoughtItems[i+1:]...)
 					singleton.SaveSellTargetStrategyItems()
-					singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 손절 완료, 매도 양: %.4f, 매도 가격: %s", sellTargetItem.CoinMarketName, sellTargetItem.ExecutedVolume, orderResult.Price)
+					singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 손절 완료, 매도 양: %.8f, 매도 가격: %s", sellTargetItem.CoinMarketName, sellTargetItem.ExecutedVolume, orderResult.Price)
 
 					for j := 0; j < len(singleton.InstanceBuyTargetItems().Items); j++ {
 						if singleton.InstanceBuyTargetItems().Items[j] == nil {

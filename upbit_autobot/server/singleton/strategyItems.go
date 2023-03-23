@@ -102,13 +102,16 @@ func InitSellStrategyItems() {
 		sellTargetitems = &model.SellTargetStrategyItemInfos{BoughtItems: []*model.SellTargetStrategyItemInfo{}}
 		return
 	}
+	var savedItems *model.SellTargetStrategyItemInfos
 
-	err = json.Unmarshal(bytes, sellTargetitems)
+	err = json.Unmarshal(bytes, &savedItems)
 
 	if err != nil {
 		InstanceLogger().Errs <- err
-		return
+		panic("can't initialize sell items")
 	}
+
+	sellTargetitems = savedItems
 }
 
 //go:inline
