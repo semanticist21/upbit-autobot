@@ -322,7 +322,7 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 				ItemId:            item.ItemId,
 				CoinMarketName:    item.CoinMarketName,
 				AvgBuyPrice:       currentExecutedPrice,
-				ExecutedVolume:    currentExecutedVolume - 0.00000001,
+				ExecutedVolume:    currentExecutedVolume,
 				ProfitTargetPrice: profitTargetPrice,
 				LossTargetPrice:   lossTargetPrice}
 
@@ -380,8 +380,10 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 						}
 
 						if accBalance < sellTargetItem.ExecutedVolume {
-							singleton.InstanceLogger().Msgs <- fmt.Sprintf("전략 매도 잔고보다 현재 코인의 잔고가 더 낮아 현재 계좌 코인의 잔고로 재조정합니다. #코인 이름: %s, #전략 잔고: %.8f, #계좌 잔고 %.8f", sellTargetItem.CoinMarketName, sellTargetItem.ExecutedVolume, accBalance)
+							singleton.InstanceLogger().Msgs <- fmt.Sprintf("전략 매도 잔고보다 현재 코인의 잔고가 더 낮아 현재 계좌 코인의 잔고로 재조정합니다. #코인 이름: %s, #전략 잔고: %.8f, #계좌 잔고 %.8f (마켓 매수라 가격 차이가 생길 시 발생)", sellTargetItem.CoinMarketName, sellTargetItem.ExecutedVolume, accBalance)
 							sellTargetItem.ExecutedVolume = accBalance
+
+							singleton.SaveSellTargetStrategyItems()
 						}
 						break
 					}
@@ -425,14 +427,20 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 							continue
 						}
 
-						// 전략 아이템에서 제거
+						// delete if count == 0
 						if singleton.InstanceBuyTargetItems().Items[j].ItemId == sellTargetItem.ItemId {
 							if singleton.InstanceBuyTargetItems().Items[j].PurchaseCount == 0 {
 								singleton.InstanceBuyTargetItems().Items = append(singleton.InstanceBuyTargetItems().Items[:j], singleton.InstanceBuyTargetItems().Items[j+1:]...)
 								singleton.SaveStrategyBuyTargetItems()
-								singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 구매 회수 소진되어 아이템에서 삭제됩니다.", sellTargetItem.CoinMarketName)
+
+								// queue in delete
+								data := model.ItemCollectionForSocketNew()
+								data.DeletedItemId = &sellTargetItem.ItemId
+								singleton.InstanceItemsCollectionCh() <- data
+								singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 전략 매수, 매도 모두 완료되어 목록에서 삭제합니다. 실행된 볼륨 : %.8f, 가격 : %s 익절 실행가 : %.8f", sellTargetItem.CoinMarketName, sellTargetItem.ExecutedVolume, orderResult.Price, sellTargetItem.ProfitTargetPrice)
+
+								break
 							}
-							break
 						}
 					}
 
@@ -453,7 +461,7 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 					orderResult, err := order.SellOrder(client, &sellOrderInfo)
 
 					if err != nil {
-						singleton.InstanceLogger().Errs <- fmt.Errorf("%s #에러 발생 코인 이름: %s, 시도 볼륨: %.8f", err.Error(), sellTargetItem.CoinMarketName, sellTargetItem.ExecutedVolume)
+						singleton.InstanceLogger().Errs <- fmt.Errorf("%s #에러 발생 코인 이름: %s, 시도 볼륨: %.8f, 시도 현재 가격: %.4f", err.Error(), sellTargetItem.CoinMarketName, sellTargetItem.ExecutedVolume, price)
 						continue
 					}
 
@@ -477,8 +485,10 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 								data := model.ItemCollectionForSocketNew()
 								data.DeletedItemId = &sellTargetItem.ItemId
 								singleton.InstanceItemsCollectionCh() <- data
+								singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 전략 매수, 매도 모두 완료되어 목록에서 삭제합니다. 실행된 볼륨 : %.8f, 가격 : %s 손절 실행가 : %.8f", sellTargetItem.CoinMarketName, sellTargetItem.ExecutedVolume, orderResult.Price, sellTargetItem.LossTargetPrice)
+
+								break
 							}
-							break
 						}
 					}
 

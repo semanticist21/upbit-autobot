@@ -78,7 +78,7 @@ func BuyOrder(client *upbit.Upbit, orderInfo *model.BuyOrderInfo) (*order.Order,
 
 //go:inline
 func SellOrder(client *upbit.Upbit, orderInfo *model.SellOrderInfo) (*order.Order, error) {
-	order, _, err := client.SellOrder(orderInfo.MarketName, converter.Float64ToString(orderInfo.Volume, 4), "", exchange.ORDER_TYPE_MARKET, "")
+	order, _, err := client.SellOrder(orderInfo.MarketName, converter.Float64ToString(orderInfo.Volume, 8), "", exchange.ORDER_TYPE_MARKET, "")
 
 	if err != nil {
 		return nil, err
