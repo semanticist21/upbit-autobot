@@ -85,7 +85,7 @@ class _HomeState extends State<Home> {
                                             borderRadius:
                                                 BorderRadius.circular(10)),
                                         width: 300,
-                                        height: 550,
+                                        height: 400,
                                         child: ScrollConfiguration(
                                             behavior:
                                                 ScrollConfiguration.of(context)

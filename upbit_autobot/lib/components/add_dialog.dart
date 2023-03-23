@@ -27,6 +27,7 @@ class _AddDialogState extends State<AddDialog> {
   final _withSuffixFormKey = GlobalKey<FormState>();
 
   late AppProvider _provider;
+  final List<String> candles = ['1', '3', '5', '15', '30', '60', '240'];
 
   @override
   void initState() {
@@ -61,7 +62,7 @@ class _AddDialogState extends State<AddDialog> {
         child: Container(
             padding: EdgeInsets.all(1),
             width: 330,
-            height: 330,
+            height: 350,
             child: Column(children: [
               Expanded(
                   flex: 1,
@@ -123,7 +124,7 @@ class _AddDialogState extends State<AddDialog> {
                                         style: TextStyle(fontSize: 12),
                                         decoration: InputDecoration(
                                             errorStyle: _errorTextStyle(),
-                                            hintStyle: TextStyle(fontSize: 13),
+                                            hintStyle: TextStyle(fontSize: 17),
                                             labelStyle: TextStyle(fontSize: 11),
                                             hintText: 'KRW-BTC'),
                                       ))),
@@ -153,95 +154,101 @@ class _AddDialogState extends State<AddDialog> {
                               padding: EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 10),
                               child: IntrinsicHeight(
-                                  child: Row(
-                                children: [
-                                  Expanded(
-                                      child: Container(
-                                          color: Colors.transparent,
-                                          child: Form(
-                                              key: _optionFormKey,
-                                              child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    _getOptionForm(
-                                                        _bollingerLength,
-                                                        '볼린저 길이'),
-                                                    _getOptionForm(
-                                                        _bollingerMultiplier,
-                                                        '볼린저 곱'),
-                                                    _getOptionForm(
-                                                        _purchaseCount,
-                                                        '구매 회수(최대 3회)'),
-                                                    _getOptionFormForMinuteCandle(
-                                                        _minuteCandle,
-                                                        '기준 분봉(최대 240분)'),
-                                                  ])))),
-                                  VerticalDivider(),
-                                  Expanded(
-                                      child: Container(
-                                    color: Colors.transparent,
-                                    child: Form(
-                                        key: _withSuffixFormKey,
-                                        child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              _getOptionWithSuffixForm(
-                                                  _profitLine, "익절 기준"),
-                                              _getOptionWithSuffixForm(
-                                                  _lossLine, "손절 기준"),
-                                              _getOptionWithSuffixFormUptoFourDigit(
-                                                  _desiredBuyAmount,
-                                                  "구매 수량(최소 0.0001 개)"),
-                                              SizedBox(height: 10),
-                                              Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.end,
-                                                  children: [
-                                                    Container(
-                                                        width: 40,
-                                                        height: 20,
-                                                        child:
-                                                            FloatingActionButton
-                                                                .small(
-                                                          child: Text('저장',
-                                                              style: TextStyle(
-                                                                  fontSize: 11,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w500)),
-                                                          elevation: 5,
-                                                          hoverColor:
-                                                              const Color
-                                                                      .fromARGB(
-                                                                  255,
-                                                                  205,
-                                                                  205,
-                                                                  205),
-                                                          backgroundColor:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .onSurface,
-                                                          shape: ContinuousRectangleBorder(
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          5),
-                                                              side: BorderSide(
-                                                                  color: Colors
-                                                                      .blueGrey)),
-                                                          onPressed: () =>
-                                                              _doSaveAction(
-                                                                  context),
-                                                        )),
-                                                    SizedBox(width: 2),
-                                                  ])
-                                            ])),
-                                  ))
-                                ],
-                              )))))),
+                                  child: Container(
+                                      height: 260,
+                                      child: Row(
+                                        children: [
+                                          Expanded(
+                                              child: Container(
+                                                  color: Colors.transparent,
+                                                  child: Form(
+                                                      key: _optionFormKey,
+                                                      child: Column(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: [
+                                                            _getOptionForm(
+                                                                _bollingerLength,
+                                                                '볼린저 길이'),
+                                                            _getOptionForm(
+                                                                _bollingerMultiplier,
+                                                                '볼린저 곱'),
+                                                            _getOptionForm(
+                                                                _purchaseCount,
+                                                                '구매 회수(최대 10회)'),
+                                                            _getOptionFormForMinuteCandle(
+                                                                _minuteCandle,
+                                                                '기준 분봉(최대 240분)'),
+                                                          ])))),
+                                          VerticalDivider(),
+                                          Expanded(
+                                              child: Container(
+                                            color: Colors.transparent,
+                                            child: Form(
+                                                key: _withSuffixFormKey,
+                                                child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      _getOptionWithSuffixForm(
+                                                          _profitLine, "익절 기준"),
+                                                      _getOptionWithSuffixForm(
+                                                          _lossLine, "손절 기준"),
+                                                      _getOptionWithSuffixFormUptoFourDigit(
+                                                          _desiredBuyAmount,
+                                                          "구매 수량(최소 0.0001 개)"),
+                                                      SizedBox(height: 10),
+                                                      Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .end,
+                                                          children: [
+                                                            Container(
+                                                                width: 50,
+                                                                height: 30,
+                                                                child:
+                                                                    FloatingActionButton
+                                                                        .small(
+                                                                  child: Text(
+                                                                      '저장',
+                                                                      style: TextStyle(
+                                                                          color: Colors.grey[
+                                                                              600],
+                                                                          fontSize:
+                                                                              15,
+                                                                          fontWeight:
+                                                                              FontWeight.w500)),
+                                                                  elevation: 5,
+                                                                  hoverColor:
+                                                                      const Color
+                                                                              .fromARGB(
+                                                                          255,
+                                                                          205,
+                                                                          205,
+                                                                          205),
+                                                                  backgroundColor: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .onSurface,
+                                                                  shape: ContinuousRectangleBorder(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              5),
+                                                                      side: BorderSide(
+                                                                          color:
+                                                                              Colors.blueGrey)),
+                                                                  onPressed: () =>
+                                                                      _doSaveAction(
+                                                                          context),
+                                                                )),
+                                                            SizedBox(width: 2),
+                                                          ])
+                                                    ])),
+                                          ))
+                                        ],
+                                      ))))))),
             ])));
   }
 
@@ -255,7 +262,7 @@ class _AddDialogState extends State<AddDialog> {
       decoration: InputDecoration(
           errorStyle: _errorTextStyle(),
           labelText: labelText,
-          labelStyle: TextStyle(fontSize: 11)),
+          labelStyle: TextStyle(fontSize: 12)),
       keyboardType:
           TextInputType.numberWithOptions(signed: false, decimal: false),
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -264,8 +271,6 @@ class _AddDialogState extends State<AddDialog> {
 
   TextFormField _getOptionFormForMinuteCandle(
       TextEditingController controller, String labelText) {
-    final List<String> candles = ['1', '3', '5', '15', '30', '60', '240'];
-
     return TextFormField(
       controller: controller,
       validator: (value) {
@@ -284,7 +289,7 @@ class _AddDialogState extends State<AddDialog> {
       decoration: InputDecoration(
           errorStyle: _errorTextStyle(),
           labelText: labelText,
-          labelStyle: TextStyle(fontSize: 11)),
+          labelStyle: TextStyle(fontSize: 12)),
       keyboardType:
           TextInputType.numberWithOptions(signed: false, decimal: false),
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -314,9 +319,9 @@ class _AddDialogState extends State<AddDialog> {
         decoration: InputDecoration(
             errorStyle: _errorTextStyle(),
             labelText: labelText,
-            labelStyle: TextStyle(fontSize: 11),
+            labelStyle: TextStyle(fontSize: 12),
             suffixText: '%',
-            suffixStyle: TextStyle(fontSize: 11)),
+            suffixStyle: TextStyle(fontSize: 15)),
         keyboardType:
             TextInputType.numberWithOptions(signed: false, decimal: true),
         inputFormatters: [
@@ -345,9 +350,9 @@ class _AddDialogState extends State<AddDialog> {
         decoration: InputDecoration(
             errorStyle: _errorTextStyle(),
             labelText: labelText,
-            labelStyle: TextStyle(fontSize: 11),
+            labelStyle: TextStyle(fontSize: 12),
             suffixText: '개',
-            suffixStyle: TextStyle(fontSize: 11)),
+            suffixStyle: TextStyle(fontSize: 15)),
         keyboardType:
             TextInputType.numberWithOptions(signed: false, decimal: true),
         inputFormatters: [
@@ -381,14 +386,14 @@ class _AddDialogState extends State<AddDialog> {
     var length = int.tryParse(_bollingerLength.text);
     var multiplier = int.tryParse(_bollingerMultiplier.text);
 
-    if (count != null && count > 3) {
-      count = 3;
+    if (count != null && count > 10) {
+      count = 10;
     }
     if (length != null && length > 100) {
-      count = 100;
+      length = 100;
     }
     if (multiplier != null && multiplier > 100) {
-      count = 100;
+      multiplier = 100;
     }
 
     var newModel = StrategyItemInfo.new(
