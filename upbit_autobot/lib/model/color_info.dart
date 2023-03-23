@@ -7,10 +7,10 @@ class ColorInfo {
   late final String hexCode;
 
   ColorInfo({required this.color}) {
-    hexCode = colorToHex(this.color);
+    hexCode = colorToHex(color);
   }
 
-  factory ColorInfo.FromHex(String hex) {
+  factory ColorInfo.fromHex(String hex) {
     if (hex.startsWith('#')) {
       hex = hex.substring(1);
     }

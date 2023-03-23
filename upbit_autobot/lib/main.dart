@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -38,7 +36,7 @@ class MainApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => AppProvider(),
       child: MaterialApp(
-        scrollBehavior: MaterialScrollBehavior().copyWith(
+        scrollBehavior: const MaterialScrollBehavior().copyWith(
           dragDevices: {
             PointerDeviceKind.mouse,
             PointerDeviceKind.touch,

@@ -10,7 +10,7 @@ class Wave extends StatefulWidget {
 }
 
 class _WaveState extends State<Wave> {
-  static const _backgroundColor = const Color.fromRGBO(59, 130, 246, 0.8);
+  static const _backgroundColor = Color.fromRGBO(59, 130, 246, 0.8);
 
   static const _colors = [
     Color.fromRGBO(179, 207, 239, 0.5),

@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'dart:isolate';
 
 import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
-import 'package:upbit_autobot/model/log.dart';
 
 import 'client/client.dart';
 import 'model/balance.dart';
@@ -18,17 +16,17 @@ class AppProvider extends ChangeNotifier {
 
   var krwBalance = '0';
 
-  List<CoinBalance> boughtItems = new List.empty(growable: true);
+  List<CoinBalance> boughtItems = List.empty(growable: true);
   List<StrategyItemInfo> items = List.empty(growable: true);
 
-  AppProvider._init() {}
-  static AppProvider _instance = AppProvider._init();
+  AppProvider._init();
+  static final AppProvider _instance = AppProvider._init();
 
   factory AppProvider() {
     return _instance;
   }
 
-  Future<void> DoKrwBalanceRequest() async {
+  Future<void> doKrwBalanceRequest() async {
     var result = await RestApiClient().requestGet("balance/krw");
 
     Map<String, dynamic> parsedResult = RestApiClient.parseResponseData(result);
@@ -50,10 +48,10 @@ class AppProvider extends ChangeNotifier {
       List<dynamic> items = parsedResult[key];
       boughtItems.clear();
 
-      items.forEach((element) {
+      for (var element in items) {
         var coinBalance = CoinBalance.fromJson(element);
         boughtItems.add(coinBalance);
-      });
+      }
       notifyListeners();
     }
   }
@@ -79,7 +77,9 @@ class AppProvider extends ChangeNotifier {
     List<dynamic> sentItems = data['items'];
     items.clear();
 
-    sentItems.forEach((el) => items.add(StrategyItemInfo.fromJson(el)));
+    for (var el in sentItems) {
+      items.add(StrategyItemInfo.fromJson(el));
+    }
     notifyListeners();
   }
 
@@ -122,12 +122,12 @@ class AppProvider extends ChangeNotifier {
           data['coinBalance']['balances'] != null) {
         List<dynamic> items = data['coinBalance']['balances'];
         boughtItems.clear();
-        items.forEach((element) {
+        for (var element in items) {
           var coinBalance = CoinBalance.fromJson(element);
           boughtItems.add(coinBalance);
 
           notifyListeners();
-        });
+        }
       }
 
       if (data.containsKey('item')) {
@@ -182,12 +182,11 @@ class AppProvider extends ChangeNotifier {
       if (loggerText != '') {
         loggerText = '$loggerText$msgStr';
       } else {
-        loggerText = '$msgStr';
+        loggerText = msgStr;
       }
 
       notifyListeners();
     }, onError: (error) {
-      print(error);
       receivePort.close();
     });
   }
@@ -200,7 +199,7 @@ Future<void> _updateLogger(SendPort sendPort) async {
     sendPort.send(data);
   }
 
-  await Timer.periodic(Duration(seconds: 2), (timer) async {
+  Timer.periodic(const Duration(seconds: 2), (timer) async {
     try {
       var response = await RestApiClient().requestGet('logs');
       var data = RestApiClient.parseWordData(response);

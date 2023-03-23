@@ -28,20 +28,20 @@ class _BalanceMonitorState extends State<BalanceMonitor> {
     _provider = Provider.of(context, listen: true);
 
     if (_isInit) {
-      DoBalanceRequest(_provider);
+      doBalanceRequest(_provider);
       _isInit = false;
     }
 
     return Stack(children: [
       const Opacity(opacity: 0.4, child: Wave()),
       Padding(
-          padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+          padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
           child: Column(
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(children: [
+                  const Row(children: [
                     SizedBox(width: 10),
                     Icon(
                       FontAwesomeIcons.wonSign,
@@ -50,9 +50,9 @@ class _BalanceMonitorState extends State<BalanceMonitor> {
                     SizedBox(width: 8),
                     Text("업비트 나의 현금 잔고")
                   ]),
-                  Spacer(),
+                  const Spacer(),
                   RefreshButton(callback: () async {
-                    await DoBalanceRequest(_provider);
+                    await doBalanceRequest(_provider);
                   })
                 ],
               ),
@@ -65,14 +65,14 @@ class _BalanceMonitorState extends State<BalanceMonitor> {
                       alignment: Alignment.centerLeft,
                       child: Row(
                         children: [
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
                           Text(
                             Converter.currencyFormat(
                                 double.parse(_provider.krwBalance).toInt()),
-                            style: TextStyle(fontSize: 25),
+                            style: const TextStyle(fontSize: 25),
                           ),
-                          SizedBox(width: 5),
-                          Text(
+                          const SizedBox(width: 5),
+                          const Text(
                             'KRW',
                             style: TextStyle(fontSize: 20),
                           )
@@ -83,8 +83,8 @@ class _BalanceMonitorState extends State<BalanceMonitor> {
     ]);
   }
 
-  Future<void> DoBalanceRequest(AppProvider provider) async {
-    await _provider.DoKrwBalanceRequest();
+  Future<void> doBalanceRequest(AppProvider provider) async {
+    await _provider.doKrwBalanceRequest();
     setState(() {});
   }
 }

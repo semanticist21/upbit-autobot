@@ -16,7 +16,7 @@ class StrategyItemInfo {
   // ISO8601
   late String lastBoughtTimeStamp;
 
-  factory StrategyItemInfo.new(
+  factory StrategyItemInfo(
       String coinMarKetName,
       int bollingerLength,
       int bollingerMultiplier,
@@ -85,7 +85,7 @@ class StrategyItemInfo {
 
     model.color = map['color'] == ''
         ? ColorInfo(color: ColorInfo.generateRandomColor())
-        : ColorInfo.FromHex(map['color']);
+        : ColorInfo.fromHex(map['color']);
     model.itemId = map['itemId'];
     model.lastBoughtTimeStamp = map['lastBoughtTimeStamp'];
 

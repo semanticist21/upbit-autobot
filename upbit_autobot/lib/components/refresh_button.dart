@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class RefreshButton extends StatefulWidget {
-  RefreshButton({super.key, required this.callback});
+  const RefreshButton({super.key, required this.callback});
 
   final Future<void> Function() callback;
 

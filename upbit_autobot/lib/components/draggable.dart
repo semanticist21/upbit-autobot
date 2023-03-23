@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class DraggableWidget extends StatefulWidget {
-  DraggableWidget({super.key, required this.childWidget});
+  const DraggableWidget({super.key, required this.childWidget});
   final Widget childWidget;
 
   @override
@@ -14,7 +14,7 @@ class _DraggableWidgetState extends State<DraggableWidget> {
   @override
   void initState() {
     super.initState();
-    position = Offset(100, 100);
+    position = const Offset(100, 100);
   }
 
   @override

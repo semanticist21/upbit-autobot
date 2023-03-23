@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -7,13 +5,8 @@ import 'package:upbit_autobot/components/buy_item_list.dart';
 import 'package:upbit_autobot/components/refresh_button.dart';
 import 'package:upbit_autobot/components/strategy_scroll_view.dart';
 
-import '../animation/wave.dart';
-import '../components/add_dialog.dart';
 import '../components/balance_monitor.dart';
-import '../components/buy_item.dart';
-import '../components/draggable.dart';
-import '../components/loggerBox.dart';
-import '../components/strategy_item.dart';
+import '../components/logger_box.dart';
 import '../provider.dart';
 
 class Home extends StatefulWidget {
@@ -53,7 +46,7 @@ class _HomeState extends State<Home> {
                               decelerationRate: ScrollDecelerationRate.fast,
                               parent: AlwaysScrollableScrollPhysics()),
                           child: Padding(
-                              padding: EdgeInsets.all(15),
+                              padding: const EdgeInsets.all(15),
                               child: Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
@@ -75,13 +68,13 @@ class _HomeState extends State<Home> {
                                                         59, 130, 246, 0.8),
                                                 borderRadius:
                                                     BorderRadius.circular(10)),
-                                            child: BalanceMonitor())),
+                                            child: const BalanceMonitor())),
                                     const SizedBox(height: 15),
                                     // 아래 시작 부분
                                     Container(
                                         decoration: BoxDecoration(
-                                            color:
-                                                Color.fromRGBO(97, 97, 97, 0.8),
+                                            color: const Color.fromRGBO(
+                                                97, 97, 97, 0.8),
                                             borderRadius:
                                                 BorderRadius.circular(10)),
                                         width: 300,
@@ -91,10 +84,11 @@ class _HomeState extends State<Home> {
                                                 ScrollConfiguration.of(context)
                                                     .copyWith(scrollbars: true),
                                             child: CustomScrollView(
-                                                physics: BouncingScrollPhysics(
-                                                    decelerationRate:
-                                                        ScrollDecelerationRate
-                                                            .fast),
+                                                physics:
+                                                    const BouncingScrollPhysics(
+                                                        decelerationRate:
+                                                            ScrollDecelerationRate
+                                                                .fast),
                                                 shrinkWrap: true,
                                                 clipBehavior: Clip.antiAlias,
                                                 slivers: [
@@ -107,19 +101,20 @@ class _HomeState extends State<Home> {
                                                         false,
                                                     flexibleSpace:
                                                         FlexibleSpaceBar(
-                                                      title: Container(
+                                                      title: SizedBox(
                                                           child: Row(
                                                               mainAxisAlignment:
                                                                   MainAxisAlignment
                                                                       .start,
                                                               children: [
-                                                            Icon(
+                                                            const Icon(
                                                               FontAwesomeIcons
                                                                   .coins,
                                                               size: 15,
                                                             ),
-                                                            SizedBox(width: 15),
-                                                            Text(
+                                                            const SizedBox(
+                                                                width: 15),
+                                                            const Text(
                                                               '나의 구매 목록',
                                                               style: TextStyle(
                                                                 fontSize: 15,
@@ -136,7 +131,8 @@ class _HomeState extends State<Home> {
                                                             }),
                                                           ])),
                                                       titlePadding:
-                                                          EdgeInsets.fromLTRB(
+                                                          const EdgeInsets
+                                                                  .fromLTRB(
                                                               20, 20, 5, 20),
                                                       expandedTitleScale: 1.1,
                                                     ),
@@ -147,8 +143,8 @@ class _HomeState extends State<Home> {
                                                                     .circular(
                                                                         10)),
                                                   ),
-                                                  BuyItemList(),
-                                                  SliverToBoxAdapter(
+                                                  const BuyItemList(),
+                                                  const SliverToBoxAdapter(
                                                       child:
                                                           SizedBox(height: 20))
                                                 ])))
@@ -160,13 +156,13 @@ class _HomeState extends State<Home> {
                 child: Container(
                     width: double.infinity,
                     height: double.infinity,
-                    color: Color.fromRGBO(41, 41, 41, 0.8),
+                    color: const Color.fromRGBO(41, 41, 41, 0.8),
                     child: LayoutBuilder(builder: (context, constraints) {
                       return ScrollConfiguration(
                           behavior: ScrollConfiguration.of(context)
                               .copyWith(scrollbars: true),
                           child: SingleChildScrollView(
-                              physics: BouncingScrollPhysics(
+                              physics: const BouncingScrollPhysics(
                                   parent: AlwaysScrollableScrollPhysics(),
                                   decelerationRate:
                                       ScrollDecelerationRate.fast),
@@ -177,7 +173,7 @@ class _HomeState extends State<Home> {
                                     maxHeight: constraints.maxHeight,
                                   ),
                                   child: Padding(
-                                      padding: EdgeInsets.all(15),
+                                      padding: const EdgeInsets.all(15),
                                       child: Column(children: [
                                         // 위에 전략 부분
                                         Expanded(
@@ -191,10 +187,12 @@ class _HomeState extends State<Home> {
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                             10)),
-                                                child: strategyScrollView())),
-                                        SizedBox(height: 10),
+                                                child:
+                                                    const StrategyScrollView())),
+                                        const SizedBox(height: 10),
                                         // 로그 부분
-                                        Expanded(flex: 1, child: LoggerBox())
+                                        const Expanded(
+                                            flex: 1, child: LoggerBox())
                                       ])))));
                     })))
           ],

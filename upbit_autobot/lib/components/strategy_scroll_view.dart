@@ -8,18 +8,18 @@ import '../client/client.dart';
 import '../provider.dart';
 import 'add_dialog.dart';
 
-class strategyScrollView extends StatefulWidget {
-  const strategyScrollView({super.key});
+class StrategyScrollView extends StatefulWidget {
+  const StrategyScrollView({super.key});
 
   @override
-  State<strategyScrollView> createState() => _strategyScrollViewState();
+  State<StrategyScrollView> createState() => _StrategyScrollViewState();
 }
 
-class _strategyScrollViewState extends State<strategyScrollView> {
+class _StrategyScrollViewState extends State<StrategyScrollView> {
   late AppProvider _provider;
   bool _visible = false;
   bool _isinit = true;
-  var _scrollController = ScrollController();
+  final _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -38,7 +38,7 @@ class _strategyScrollViewState extends State<strategyScrollView> {
 
     return CustomScrollView(
         controller: _scrollController,
-        physics: BouncingScrollPhysics(
+        physics: const BouncingScrollPhysics(
             parent: AlwaysScrollableScrollPhysics(),
             decelerationRate: ScrollDecelerationRate.fast),
         shrinkWrap: true,
@@ -47,20 +47,20 @@ class _strategyScrollViewState extends State<strategyScrollView> {
           SliverAppBar(
             pinned: true,
             automaticallyImplyLeading: false,
-            backgroundColor: Color.fromRGBO(66, 66, 66, 0.9),
+            backgroundColor: const Color.fromRGBO(66, 66, 66, 0.9),
             actions: [
               Visibility(
                   visible: _visible,
-                  child: Center(
-                    child: Container(
+                  child: const Center(
+                    child: SizedBox(
                         width: 16,
                         height: 16,
                         child: CircularProgressIndicator()),
                   )),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
               IconButton(
                 onPressed: () => _doItemRequest(_provider),
-                icon: Icon(FontAwesomeIcons.arrowsRotate),
+                icon: const Icon(FontAwesomeIcons.arrowsRotate),
                 iconSize: 20,
                 padding: EdgeInsets.zero,
                 splashRadius: 15,
@@ -71,18 +71,18 @@ class _strategyScrollViewState extends State<strategyScrollView> {
                       context: context,
                       builder: (context) {
                         return Builder(builder: (context) {
-                          return AddDialog();
+                          return const AddDialog();
                         });
                       }).then((value) => _addnewList(_provider, value));
                 },
-                icon: Icon(FontAwesomeIcons.plus),
+                icon: const Icon(FontAwesomeIcons.plus),
                 iconSize: 20,
                 padding: EdgeInsets.zero,
                 splashRadius: 15,
               ),
               IconButton(
                 onPressed: () => _saveItems(_provider),
-                icon: Icon(
+                icon: const Icon(
                   FontAwesomeIcons.solidFloppyDisk,
                 ),
                 iconSize: 20,
@@ -93,7 +93,7 @@ class _strategyScrollViewState extends State<strategyScrollView> {
           ),
           // 아이템 있는 부분
           SliverPadding(
-              padding: EdgeInsets.all(5),
+              padding: const EdgeInsets.all(5),
               sliver: SliverGrid.builder(
                   itemCount: _provider.items.length,
                   itemBuilder: (context, index) {
@@ -102,7 +102,7 @@ class _strategyScrollViewState extends State<strategyScrollView> {
                       item: _provider.items[index],
                     );
                   },
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     childAspectRatio: 1.5,
                     crossAxisSpacing: 5,
@@ -120,7 +120,8 @@ class _strategyScrollViewState extends State<strategyScrollView> {
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) =>
         _scrollController.animateTo(_scrollController.position.maxScrollExtent,
-            duration: Duration(milliseconds: 500), curve: Curves.easeInOut));
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut));
 
     setState(() {});
   }

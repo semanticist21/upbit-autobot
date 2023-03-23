@@ -13,14 +13,14 @@ class AddDialog extends StatefulWidget {
 }
 
 class _AddDialogState extends State<AddDialog> {
-  var _coinMarketName = TextEditingController();
-  var _bollingerLength = TextEditingController(text: '20');
-  var _bollingerMultiplier = TextEditingController(text: '2');
-  var _purchaseCount = TextEditingController(text: '3');
-  var _profitLine = TextEditingController(text: '5');
-  var _lossLine = TextEditingController(text: '5');
-  var _desiredBuyAmount = TextEditingController(text: '1');
-  var _minuteCandle = TextEditingController(text: '15');
+  final _coinMarketName = TextEditingController();
+  final _bollingerLength = TextEditingController(text: '20');
+  final _bollingerMultiplier = TextEditingController(text: '2');
+  final _purchaseCount = TextEditingController(text: '3');
+  final _profitLine = TextEditingController(text: '5');
+  final _lossLine = TextEditingController(text: '5');
+  final _desiredBuyAmount = TextEditingController(text: '1');
+  final _minuteCandle = TextEditingController(text: '15');
 
   final _coinMarketIdKey = GlobalKey<FormState>();
   final _optionFormKey = GlobalKey<FormState>();
@@ -54,13 +54,13 @@ class _AddDialogState extends State<AddDialog> {
     return Dialog(
         alignment: Alignment.center,
         clipBehavior: Clip.antiAlias,
-        shadowColor: Color.fromRGBO(66, 66, 66, 1.0),
+        shadowColor: const Color.fromRGBO(66, 66, 66, 1.0),
         shape: ContinuousRectangleBorder(
             borderRadius: BorderRadius.circular(10),
-            side: BorderSide(color: Colors.grey)),
+            side: const BorderSide(color: Colors.grey)),
         elevation: 1,
         child: Container(
-            padding: EdgeInsets.all(1),
+            padding: const EdgeInsets.all(1),
             width: 330,
             height: 350,
             child: Column(children: [
@@ -69,20 +69,21 @@ class _AddDialogState extends State<AddDialog> {
                   child: Container(
                     width: double.infinity,
                     height: double.infinity,
-                    color: Color.fromRGBO(66, 66, 66, 1.0),
+                    color: const Color.fromRGBO(66, 66, 66, 1.0),
                     child: Row(
                       children: [
-                        Expanded(child: SizedBox()),
+                        const Expanded(child: SizedBox()),
                         Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(FontAwesomeIcons.paperclip, size: 15),
-                              SizedBox(width: 20),
+                              const Icon(FontAwesomeIcons.paperclip, size: 15),
+                              const SizedBox(width: 20),
                               Form(
                                   key: _coinMarketIdKey,
                                   child: Container(
                                       width: 150,
-                                      padding: EdgeInsets.fromLTRB(0, 0, 0, 15),
+                                      padding: const EdgeInsets.fromLTRB(
+                                          0, 0, 0, 15),
                                       child: TextFormField(
                                         controller: _coinMarketName,
                                         textAlign: TextAlign.center,
@@ -104,12 +105,12 @@ class _AddDialogState extends State<AddDialog> {
 
                                           var isDuplicate = false;
 
-                                          _provider.items.forEach((element) {
+                                          for (var element in _provider.items) {
                                             if (element.coinMarKetName ==
                                                 value) {
                                               isDuplicate = true;
                                             }
-                                          });
+                                          }
 
                                           if (isDuplicate) {
                                             return '동일 마켓이 존재합니다.';
@@ -121,11 +122,13 @@ class _AddDialogState extends State<AddDialog> {
 
                                           return null;
                                         },
-                                        style: TextStyle(fontSize: 15),
+                                        style: const TextStyle(fontSize: 15),
                                         decoration: InputDecoration(
                                             errorStyle: _errorTextStyle(),
-                                            hintStyle: TextStyle(fontSize: 17),
-                                            labelStyle: TextStyle(fontSize: 11),
+                                            hintStyle:
+                                                const TextStyle(fontSize: 17),
+                                            labelStyle:
+                                                const TextStyle(fontSize: 11),
                                             hintText: 'KRW-BTC'),
                                       ))),
                             ]),
@@ -135,7 +138,8 @@ class _AddDialogState extends State<AddDialog> {
                               children: [
                                 IconButton(
                                     onPressed: () => Navigator.pop(context),
-                                    icon: Icon(FontAwesomeIcons.x, size: 13))
+                                    icon: const Icon(FontAwesomeIcons.x,
+                                        size: 13))
                               ]),
                         )
                       ],
@@ -146,15 +150,15 @@ class _AddDialogState extends State<AddDialog> {
                   child: Container(
                       width: double.infinity,
                       height: double.infinity,
-                      color: Color.fromRGBO(97, 97, 97, 1.0),
+                      color: const Color.fromRGBO(97, 97, 97, 1.0),
                       child: SingleChildScrollView(
-                          physics: BouncingScrollPhysics(
+                          physics: const BouncingScrollPhysics(
                               parent: AlwaysScrollableScrollPhysics()),
                           child: Padding(
-                              padding: EdgeInsets.symmetric(
+                              padding: const EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 10),
                               child: IntrinsicHeight(
-                                  child: Container(
+                                  child: SizedBox(
                                       height: 260,
                                       child: Row(
                                         children: [
@@ -181,7 +185,7 @@ class _AddDialogState extends State<AddDialog> {
                                                                 _minuteCandle,
                                                                 '기준 분봉(최대 240분)'),
                                                           ])))),
-                                          VerticalDivider(),
+                                          const VerticalDivider(),
                                           Expanded(
                                               child: Container(
                                             color: Colors.transparent,
@@ -199,27 +203,19 @@ class _AddDialogState extends State<AddDialog> {
                                                       _getOptionWithSuffixFormUptoFourDigit(
                                                           _desiredBuyAmount,
                                                           "구매 수량(최소 0.0001 개)"),
-                                                      SizedBox(height: 10),
+                                                      const SizedBox(
+                                                          height: 10),
                                                       Row(
                                                           mainAxisAlignment:
                                                               MainAxisAlignment
                                                                   .end,
                                                           children: [
-                                                            Container(
+                                                            SizedBox(
                                                                 width: 50,
                                                                 height: 30,
                                                                 child:
                                                                     FloatingActionButton
                                                                         .small(
-                                                                  child: Text(
-                                                                      '저장',
-                                                                      style: TextStyle(
-                                                                          color: Colors.grey[
-                                                                              600],
-                                                                          fontSize:
-                                                                              15,
-                                                                          fontWeight:
-                                                                              FontWeight.w500)),
                                                                   elevation: 5,
                                                                   hoverColor:
                                                                       const Color
@@ -236,14 +232,24 @@ class _AddDialogState extends State<AddDialog> {
                                                                       borderRadius:
                                                                           BorderRadius.circular(
                                                                               5),
-                                                                      side: BorderSide(
+                                                                      side: const BorderSide(
                                                                           color:
                                                                               Colors.blueGrey)),
                                                                   onPressed: () =>
                                                                       _doSaveAction(
                                                                           context),
+                                                                  child: Text(
+                                                                      '저장',
+                                                                      style: TextStyle(
+                                                                          color: Colors.grey[
+                                                                              600],
+                                                                          fontSize:
+                                                                              15,
+                                                                          fontWeight:
+                                                                              FontWeight.w500)),
                                                                 )),
-                                                            SizedBox(width: 2),
+                                                            const SizedBox(
+                                                                width: 2),
                                                           ])
                                                     ])),
                                           ))
@@ -262,9 +268,9 @@ class _AddDialogState extends State<AddDialog> {
       decoration: InputDecoration(
           errorStyle: _errorTextStyle(),
           labelText: labelText,
-          labelStyle: TextStyle(fontSize: 12)),
+          labelStyle: const TextStyle(fontSize: 12)),
       keyboardType:
-          TextInputType.numberWithOptions(signed: false, decimal: false),
+          const TextInputType.numberWithOptions(signed: false, decimal: false),
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
     );
   }
@@ -289,9 +295,9 @@ class _AddDialogState extends State<AddDialog> {
       decoration: InputDecoration(
           errorStyle: _errorTextStyle(),
           labelText: labelText,
-          labelStyle: TextStyle(fontSize: 12)),
+          labelStyle: const TextStyle(fontSize: 12)),
       keyboardType:
-          TextInputType.numberWithOptions(signed: false, decimal: false),
+          const TextInputType.numberWithOptions(signed: false, decimal: false),
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
     );
   }
@@ -319,11 +325,11 @@ class _AddDialogState extends State<AddDialog> {
         decoration: InputDecoration(
             errorStyle: _errorTextStyle(),
             labelText: labelText,
-            labelStyle: TextStyle(fontSize: 12),
+            labelStyle: const TextStyle(fontSize: 12),
             suffixText: '%',
-            suffixStyle: TextStyle(fontSize: 15)),
+            suffixStyle: const TextStyle(fontSize: 15)),
         keyboardType:
-            TextInputType.numberWithOptions(signed: false, decimal: true),
+            const TextInputType.numberWithOptions(signed: false, decimal: true),
         inputFormatters: [
           FilteringTextInputFormatter.allow(RegExp(r'^(\d+)?(\.)?(\d{0,1})?$'))
         ]);
@@ -350,11 +356,11 @@ class _AddDialogState extends State<AddDialog> {
         decoration: InputDecoration(
             errorStyle: _errorTextStyle(),
             labelText: labelText,
-            labelStyle: TextStyle(fontSize: 12),
+            labelStyle: const TextStyle(fontSize: 12),
             suffixText: '개',
-            suffixStyle: TextStyle(fontSize: 15)),
+            suffixStyle: const TextStyle(fontSize: 15)),
         keyboardType:
-            TextInputType.numberWithOptions(signed: false, decimal: true),
+            const TextInputType.numberWithOptions(signed: false, decimal: true),
         inputFormatters: [
           FilteringTextInputFormatter.allow(RegExp(r'^(\d+)?(\.)?(\d{0,4})?$'))
         ]);
@@ -396,7 +402,7 @@ class _AddDialogState extends State<AddDialog> {
       multiplier = 100;
     }
 
-    var newModel = StrategyItemInfo.new(
+    var newModel = StrategyItemInfo(
         _coinMarketName.text.toUpperCase(),
         length!,
         multiplier!,
@@ -410,7 +416,7 @@ class _AddDialogState extends State<AddDialog> {
   }
 
   TextStyle _errorTextStyle() {
-    return TextStyle(
+    return const TextStyle(
       height: 0.5,
       fontSize: 10,
     );

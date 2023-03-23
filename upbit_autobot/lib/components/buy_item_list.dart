@@ -5,11 +5,10 @@ import 'package:upbit_autobot/provider.dart';
 import 'buy_item.dart';
 
 class BuyItemList extends StatefulWidget {
-  BuyItemList({super.key});
-  final _BuyItemListState _state = _BuyItemListState();
+  const BuyItemList({super.key});
 
   @override
-  State<BuyItemList> createState() => _state;
+  State<BuyItemList> createState() => _BuyItemListState();
 }
 
 class _BuyItemListState extends State<BuyItemList> {

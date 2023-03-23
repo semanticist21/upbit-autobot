@@ -17,7 +17,7 @@ class _BuyItemState extends State<BuyItem> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.fromLTRB(0, 1, 0, 1),
+        padding: const EdgeInsets.fromLTRB(0, 1, 0, 1),
         child: MouseRegion(
             onEnter: (details) => setState(() => _isHover = true),
             onExit: (details) => setState(() => _isHover = false),
@@ -26,29 +26,30 @@ class _BuyItemState extends State<BuyItem> {
                 height: 100,
                 decoration: BoxDecoration(
                     color: _isHover
-                        ? Color.fromRGBO(60, 60, 60, 0.4)
-                        : Color.fromRGBO(60, 60, 60, 0.6),
+                        ? const Color.fromRGBO(60, 60, 60, 0.4)
+                        : const Color.fromRGBO(60, 60, 60, 0.6),
                     borderRadius: BorderRadius.circular(5),
-                    border: Border.all(color: Color.fromRGBO(36, 36, 36, 0.3))),
+                    border: Border.all(
+                        color: const Color.fromRGBO(36, 36, 36, 0.3))),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
                         flex: 8,
                         child: Padding(
-                            padding: EdgeInsets.all(5),
+                            padding: const EdgeInsets.all(5),
                             child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  SizedBox(width: 15),
-                                  Container(
+                                  const SizedBox(width: 15),
+                                  SizedBox(
                                       width: 20,
                                       height: 20,
                                       child: CoinImage(
                                           coinNm: widget.coinBalance.coinName
                                               .toLowerCase())),
-                                  SizedBox(width: 15),
+                                  const SizedBox(width: 15),
                                   SizedBox(
                                       height: 25,
                                       width: 40,
@@ -56,7 +57,7 @@ class _BuyItemState extends State<BuyItem> {
                                           fit: BoxFit.contain,
                                           child: Text(
                                             widget.coinBalance.coinName,
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                                 fontSize: 15,
                                                 fontWeight: FontWeight.w400),
                                           )))
@@ -69,17 +70,16 @@ class _BuyItemState extends State<BuyItem> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                SizedBox(height: 5),
-                                Text(
+                                const SizedBox(height: 5),
+                                const Text(
                                   '평균 매수가',
                                   style: TextStyle(fontSize: 12),
                                 ),
-                                Text(Converter.currencyFormat4digit(
-                                        double.parse(
-                                            widget.coinBalance.avgBuyPrice)) +
-                                    ' 원'),
-                                Divider(),
-                                Text('수량', style: TextStyle(fontSize: 12)),
+                                Text(
+                                    '${Converter.currencyFormat4digit(double.parse(widget.coinBalance.avgBuyPrice))} 원'),
+                                const Divider(),
+                                const Text('수량',
+                                    style: TextStyle(fontSize: 12)),
                                 Text(widget.coinBalance.balance),
                               ],
                             )))

@@ -6,7 +6,7 @@ import 'package:upbit_autobot/model/strategy_item_info.dart';
 import 'package:upbit_autobot/provider.dart';
 
 class StrategyItem extends StatefulWidget {
-  StrategyItem({super.key, required this.itemKey, required this.item});
+  const StrategyItem({super.key, required this.itemKey, required this.item});
   final ValueKey itemKey;
   final StrategyItemInfo item;
 
@@ -42,7 +42,7 @@ class _StrategyItemState extends State<StrategyItem> {
                     ),
                     items: [
                       PopupMenuItem(
-                          child: Center(child: Text('삭제')),
+                          child: const Center(child: Text('삭제')),
                           onTap: () {
                             var hashId = widget.item.itemId;
                             for (var i = 0; i < _provider.items.length; i++) {
@@ -70,18 +70,18 @@ class _StrategyItemState extends State<StrategyItem> {
                       child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            SizedBox(height: 5),
+                            const SizedBox(height: 5),
                             Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text('마켓 ID : '),
+                                  const Text('마켓 ID : '),
                                   Text(widget.item.coinMarKetName),
                                 ]),
-                            Divider(),
+                            const Divider(),
                             Expanded(
                                 child: Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 5),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5),
                                     child: IntrinsicHeight(
                                         child: Row(
                                       children: [
@@ -98,7 +98,7 @@ class _StrategyItemState extends State<StrategyItem> {
                                                           MainAxisAlignment
                                                               .spaceEvenly,
                                                       children: [
-                                                        Text('볼린저 길이 : '),
+                                                        const Text('볼린저 길이 : '),
                                                         Text(widget.item
                                                             .bollingerLength
                                                             .toString())
@@ -110,7 +110,7 @@ class _StrategyItemState extends State<StrategyItem> {
                                                           MainAxisAlignment
                                                               .spaceEvenly,
                                                       children: [
-                                                        Text('볼린저 곱 : '),
+                                                        const Text('볼린저 곱 : '),
                                                         Text(widget.item
                                                             .bollingerMultiplier
                                                             .toString())
@@ -122,7 +122,7 @@ class _StrategyItemState extends State<StrategyItem> {
                                                           MainAxisAlignment
                                                               .spaceEvenly,
                                                       children: [
-                                                        Text('카운트 : '),
+                                                        const Text('카운트 : '),
                                                         Text(widget
                                                             .item.purchaseCount
                                                             .toString())
@@ -134,13 +134,13 @@ class _StrategyItemState extends State<StrategyItem> {
                                                           MainAxisAlignment
                                                               .spaceEvenly,
                                                       children: [
-                                                        Text('기준 분봉 : '),
+                                                        const Text('기준 분봉 : '),
                                                         Text(widget.item
                                                             .candleBaseMinute
                                                             .toString())
                                                       ])),
                                             ])),
-                                        VerticalDivider(),
+                                        const VerticalDivider(),
                                         Expanded(
                                             child: Column(
                                           mainAxisAlignment:
@@ -153,11 +153,11 @@ class _StrategyItemState extends State<StrategyItem> {
                                                         MainAxisAlignment
                                                             .spaceEvenly,
                                                     children: [
-                                                      Text('익절 기준 : '),
+                                                      const Text('익절 기준 : '),
                                                       Text(widget.item
                                                           .profitLinePercent
                                                           .toString()),
-                                                      Text('%'),
+                                                      const Text('%'),
                                                     ])),
                                             FittedBox(
                                                 fit: BoxFit.contain,
@@ -166,11 +166,11 @@ class _StrategyItemState extends State<StrategyItem> {
                                                         MainAxisAlignment
                                                             .spaceEvenly,
                                                     children: [
-                                                      Text('손절 기준 : '),
+                                                      const Text('손절 기준 : '),
                                                       Text(widget
                                                           .item.lossLinePercent
                                                           .toString()),
-                                                      Text('%')
+                                                      const Text('%')
                                                     ])),
                                             FittedBox(
                                                 fit: BoxFit.contain,
@@ -179,11 +179,11 @@ class _StrategyItemState extends State<StrategyItem> {
                                                         MainAxisAlignment
                                                             .spaceEvenly,
                                                     children: [
-                                                      Text('수량 : '),
+                                                      const Text('수량 : '),
                                                       Text(widget
                                                           .item.desiredBuyAmount
                                                           .toString()),
-                                                      Text(' 개')
+                                                      const Text(' 개')
                                                     ])),
                                             FittedBox(
                                                 fit: BoxFit.contain,
@@ -192,7 +192,7 @@ class _StrategyItemState extends State<StrategyItem> {
                                                         MainAxisAlignment
                                                             .spaceEvenly,
                                                     children: [
-                                                      Text('구매 진행 여부 : '),
+                                                      const Text('구매 진행 여부 : '),
                                                       Checkbox(
                                                           splashRadius: 0,
                                                           mouseCursor:
