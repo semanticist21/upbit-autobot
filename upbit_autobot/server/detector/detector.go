@@ -175,7 +175,7 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 			orderedResult, _, err := client.GetOrder(orderResult.UUID, "")
 
 			startTime := time.Now()
-			for orderResult.State != "done" || err != nil {
+			for orderResult.ExecutedVolume == "" || err != nil {
 				diff := time.Since(startTime)
 				if diff > time.Second*10 {
 					break
@@ -185,8 +185,23 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 				orderedResult, _, err = client.GetOrder(orderResult.UUID, "")
 			}
 
-			if orderResult.State != "done" {
+			if orderResult.ExecutedVolume != "" {
 				singleton.InstanceLogger().Errs <- fmt.Errorf("볼륨 취득에 실패했습니다. 판매 감시봇 진입 실패! #에러 발생 코인 이름: %s", item.CoinMarketName)
+				if item.PurchaseCount == 0 {
+					hasSellTargetItem := false
+					for _, sellTargetItem := range singleton.InstanceSellTargetItems().BoughtItems {
+						if item.ItemId == sellTargetItem.ItemId {
+							hasSellTargetItem = true
+						}
+					}
+
+					// case - there is no sell target item, and also consumed all purchased count.
+					if !hasSellTargetItem {
+						singleton.InstanceLogger().Errs <- fmt.Errorf("%s 볼륨 취득 실패 및 구매 횟수 소진으로 인해 아이템을 삭제합니다", item.CoinMarketName)
+						singleton.InstanceBuyTargetItems().Items = append(singleton.InstanceBuyTargetItems().Items[:i], singleton.InstanceBuyTargetItems().Items[i+1:]...)
+						singleton.SaveStrategyBuyTargetItems()
+					}
+				}
 				continue
 			}
 

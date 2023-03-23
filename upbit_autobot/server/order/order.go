@@ -14,6 +14,7 @@ import (
 type Minutes int
 
 const (
+	One      Minutes = 1
 	Three    Minutes = 3
 	Five     Minutes = 5
 	Fiften   Minutes = 15
@@ -25,10 +26,10 @@ const (
 //go:inline
 func IntToMinutesType(val int) (Minutes, error) {
 	switch val {
-	case 3, 5, 15, 30, 60, 240:
+	case 1, 3, 5, 15, 30, 60, 240:
 		return Minutes(val), nil
 	default:
-		return 0, fmt.Errorf("%d분 :: 적합한 분봉이 아닙니다. 3, 5, 15, 30, 60, 240분 중 하나여야 합니다", val)
+		return 0, fmt.Errorf("%d분 :: 적합한 분봉이 아닙니다. 1, 3, 5, 15, 30, 60, 240분 중 하나여야 합니다", val)
 	}
 }
 
