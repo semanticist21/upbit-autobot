@@ -185,7 +185,7 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 				orderedResult, _, err = client.GetOrder(orderResult.UUID, "")
 			}
 
-			if orderResult.ExecutedVolume != "" {
+			if orderResult.ExecutedVolume == "" {
 				singleton.InstanceLogger().Errs <- fmt.Errorf("볼륨 취득에 실패했습니다. 판매 감시봇 진입 실패! #에러 발생 코인 이름: %s", item.CoinMarketName)
 				if item.PurchaseCount == 0 {
 					hasSellTargetItem := false
