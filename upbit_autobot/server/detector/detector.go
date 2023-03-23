@@ -231,7 +231,7 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 					newExecutedVolume := currentExecutedVolume + existingSellTargetItem.ExecutedVolume
 					newAvgPrice := ((existingSellTargetItem.AvgBuyPrice * existingSellTargetItem.ExecutedVolume) + (currentExecutedPrice * currentExecutedVolume)) / (newExecutedVolume)
 					newProfitTargetPrice := newAvgPrice + newAvgPrice*(item.ProfitLinePercent/100)
-					newLossTargetPrice := newAvgPrice - newAvgPrice*(item.ProfitLinePercent/100)
+					newLossTargetPrice := newAvgPrice - newAvgPrice*(item.LossLinePercent/100)
 
 					newAvgPrice = converter.FloatToFloatwithDigit(newAvgPrice, 4)
 					newExecutedVolume = converter.FloatToFloatwithDigit(newExecutedVolume, 8)
@@ -287,7 +287,7 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 				continue
 			}
 
-			currentExecutedVolume, err := converter.StringToFloatWithDigit(orderedResult.ExecutedVolume, 4)
+			currentExecutedVolume, err := converter.StringToFloatWithDigit(orderedResult.ExecutedVolume, 8)
 			if err != nil {
 				singleton.InstanceLogger().Errs <- fmt.Errorf("볼륨 정보 취득 오류로 감시봇 진입 실패했습니다. #에러 발생 코인 이름: %s", item.CoinMarketName)
 				continue
@@ -322,7 +322,7 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 				ItemId:            item.ItemId,
 				CoinMarketName:    item.CoinMarketName,
 				AvgBuyPrice:       currentExecutedPrice,
-				ExecutedVolume:    currentExecutedVolume,
+				ExecutedVolume:    currentExecutedVolume - 0.00000001,
 				ProfitTargetPrice: profitTargetPrice,
 				LossTargetPrice:   lossTargetPrice}
 
@@ -453,7 +453,7 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 					orderResult, err := order.SellOrder(client, &sellOrderInfo)
 
 					if err != nil {
-						singleton.InstanceLogger().Errs <- fmt.Errorf("%s #에러 발생 코인 이름: %s", err.Error(), sellTargetItem.CoinMarketName)
+						singleton.InstanceLogger().Errs <- fmt.Errorf("%s #에러 발생 코인 이름: %s, 시도 볼륨: %.8f", err.Error(), sellTargetItem.CoinMarketName, sellTargetItem.ExecutedVolume)
 						continue
 					}
 
