@@ -11,10 +11,12 @@ var krwAccount *account.Account
 var coinAccounts []*account.Account
 var mutexAcc sync.Mutex
 
+//go:inline
 func InstanceKrwBalance() *account.Account {
 	return krwAccount
 }
 
+//go:inline
 func InstanceCoinBalances() []*account.Account {
 	return coinAccounts
 }

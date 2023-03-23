@@ -7,6 +7,7 @@ type ItemCollectionForSocket struct {
 	DeletedItemId   *string              `josn:"deleteItemId"`
 }
 
+//go:inline
 func ItemCollectionForSocketNew() *ItemCollectionForSocket {
 	return &ItemCollectionForSocket{KrwBalanceItem: &KrwBalance{}, CoinBalanceItem: &CoinBalances{}, BuyStartegyItem: &BuyStrategyItemInfo{}, DeletedItemId: new(string)}
 }

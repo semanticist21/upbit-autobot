@@ -492,6 +492,7 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 	}
 }
 
+//go:inline
 func SendKrwAndCoinBalance(client *upbit.Upbit) {
 	singleton.RefreshAccount(client)
 	coinbalances := model.CoinBalances{Balances: []*model.CoinBalance{}}
@@ -506,6 +507,7 @@ func SendKrwAndCoinBalance(client *upbit.Upbit) {
 	singleton.InstanceItemsCollectionCh() <- data
 }
 
+//go:inline
 func SendAllBalanceAndItem(client *upbit.Upbit, item *model.BuyStrategyItemInfo) {
 	singleton.RefreshAccount(client)
 	coinbalances := model.CoinBalances{Balances: []*model.CoinBalance{}}
