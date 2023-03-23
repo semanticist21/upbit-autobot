@@ -76,7 +76,7 @@ class _BuyItemState extends State<BuyItem> {
                                   style: TextStyle(fontSize: 12),
                                 ),
                                 Text(
-                                    '${Converter.currencyFormat4digit(double.parse(widget.coinBalance.avgBuyPrice))} 원'),
+                                    '${Converter.currencyFormatDouble(double.parse(widget.coinBalance.avgBuyPrice))} 원'),
                                 const Divider(),
                                 const Text('수량',
                                     style: TextStyle(fontSize: 12)),

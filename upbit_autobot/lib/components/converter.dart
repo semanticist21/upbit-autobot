@@ -8,7 +8,7 @@ class Converter {
     return formatCurrency.format(price);
   }
 
-  static String currencyFormat4digit(double price) {
+  static String currencyFormatDouble(double price) {
     final formatCurrency = NumberFormat.simpleCurrency(
         locale: "ko_KR", name: "", decimalDigits: 0);
 

@@ -290,7 +290,7 @@ func doAllHandle(w http.ResponseWriter, r *http.Request) {
 			incurParseError(w)
 			return
 		}
-		coinAmount, err := converter.StringToFloatDigitString(balance.Balance, 4)
+		coinAmount, err := converter.StringToFloatDigitString(balance.Balance, 8)
 		if err != nil {
 			incurParseError(w)
 			return
