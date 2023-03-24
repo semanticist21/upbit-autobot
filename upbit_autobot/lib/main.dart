@@ -1,22 +1,19 @@
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
-import 'package:provider/provider.dart';
-import 'package:upbit_autobot/pages/login.dart';
-import 'package:upbit_autobot/provider.dart';
 import 'package:window_manager/window_manager.dart';
+
+import 'exit_watcher.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  var processPid = -1;
+
   try {
-    var process = await Process.start('server.exe', []);
-    windowManager.addListener(listener)
-    ProcessSignal.sigterm.watch().listen((event) {
-      Process.killPid(process.pid);
-      exit(0);
-    });
+    var process = await Process.start('upbit-client-server.exe', []);
+    processPid = process.pid;
   } catch (_) {}
 
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
@@ -33,29 +30,16 @@ void main() async {
   FlutterError.onError =
       (FlutterErrorDetails details) => FlutterError.presentError(details);
 
-  runApp(const MainApp());
+  runApp(MainApp(processPid: processPid));
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+  final int processPid;
+
+  const MainApp({super.key, required this.processPid});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => AppProvider(),
-      child: MaterialApp(
-        scrollBehavior: const MaterialScrollBehavior().copyWith(
-          dragDevices: {
-            PointerDeviceKind.mouse,
-            PointerDeviceKind.touch,
-            PointerDeviceKind.stylus,
-            PointerDeviceKind.unknown
-          },
-        ),
-        theme: ThemeData.dark(),
-        title: '로그인',
-        home: const Login(),
-      ),
-    );
+    return ExitWatcher(processPid: processPid);
   }
 }

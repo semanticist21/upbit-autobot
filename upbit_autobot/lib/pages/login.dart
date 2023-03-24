@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:upbit_autobot/client/client.dart';
 import 'package:upbit_autobot/model/account.dart';
+import 'package:window_manager/window_manager.dart';
 
 import 'home.dart';
 
