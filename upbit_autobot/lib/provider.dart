@@ -54,11 +54,7 @@ class AppProvider extends ChangeNotifier {
         boughtItems.add(coinBalance);
       }
 
-      boughtItems.sort((a, b) {
-        var aValue = double.parse(a.avgBuyPrice) * double.parse(a.balance);
-        var bValue = double.parse(b.avgBuyPrice) * double.parse(b.balance);
-        return bValue.compareTo(aValue);
-      });
+      boughtItems.sort((a, b) => _checkorder(b, a));
       notifyListeners();
     }
   }
@@ -132,6 +128,7 @@ class AppProvider extends ChangeNotifier {
         for (var element in items) {
           var coinBalance = CoinBalance.fromJson(element);
           boughtItems.add(coinBalance);
+          boughtItems.sort((a, b) => _checkorder(b, a));
 
           notifyListeners();
         }
@@ -160,6 +157,12 @@ class AppProvider extends ChangeNotifier {
 
       notifyListeners();
     });
+  }
+
+  static int _checkorder(CoinBalance a, CoinBalance b) {
+    var aValue = double.parse(a.avgBuyPrice) * double.parse(a.balance);
+    var bValue = double.parse(b.avgBuyPrice) * double.parse(b.balance);
+    return aValue.compareTo(bValue);
   }
 
 // no more use
@@ -197,22 +200,22 @@ class AppProvider extends ChangeNotifier {
       receivePort.close();
     });
   }
-}
 
-Future<void> _updateLogger(SendPort sendPort) async {
-  var response = await RestApiClient().requestGet('logs');
-  var data = RestApiClient.parseWordData(response);
-  if (data.isNotEmpty) {
-    sendPort.send(data);
+  static Future<void> _updateLogger(SendPort sendPort) async {
+    var response = await RestApiClient().requestGet('logs');
+    var data = RestApiClient.parseWordData(response);
+    if (data.isNotEmpty) {
+      sendPort.send(data);
+    }
+
+    Timer.periodic(const Duration(seconds: 2), (timer) async {
+      try {
+        var response = await RestApiClient().requestGet('logs');
+        var data = RestApiClient.parseWordData(response);
+        if (data.isNotEmpty) {
+          sendPort.send(data);
+        }
+      } catch (_) {}
+    });
   }
-
-  Timer.periodic(const Duration(seconds: 2), (timer) async {
-    try {
-      var response = await RestApiClient().requestGet('logs');
-      var data = RestApiClient.parseWordData(response);
-      if (data.isNotEmpty) {
-        sendPort.send(data);
-      }
-    } catch (_) {}
-  });
 }
