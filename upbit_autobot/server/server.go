@@ -90,6 +90,12 @@ func doGetHandleLogin(w http.ResponseWriter, r *http.Request) {
 
 	json.Unmarshal(bytes, &key)
 
+	// 빈 값인 경우
+	if key.PublicKey == "" && key.SecretKey == "" {
+		incurBadRequestError(w)
+		return
+	}
+
 	decryptedPublicStr, err := converter.DecryptString(key.PublicKey)
 	if err != nil {
 		incurBadRequest(w, err.Error())
