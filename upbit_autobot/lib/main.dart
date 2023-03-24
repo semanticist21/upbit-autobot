@@ -12,6 +12,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
     var process = await Process.start('server.exe', []);
+    windowManager.addListener(listener)
     ProcessSignal.sigterm.watch().listen((event) {
       Process.killPid(process.pid);
       exit(0);
