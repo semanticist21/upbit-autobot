@@ -43,7 +43,11 @@ func startServer() {
 	router.HandleFunc("/socket/logs", handleSocketLog)
 	router.HandleFunc("/socket/items", handleSocketItems)
 	http.Handle("/", router)
-	http.ListenAndServe(":8080", nil)
+
+	if err := http.ListenAndServe("localhost:8080", nil); err != nil {
+		singleton.InstanceLogger().Errs <- err
+	}
+
 }
 
 func originCheckingMiddleware(next http.HandlerFunc) http.HandlerFunc {
@@ -384,16 +388,43 @@ func doPostHandleItems(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	item := model.BuyStrategyItemInfos{}
-
-	marshalErr := json.Unmarshal(data, &item)
+	items := model.BuyStrategyItemInfos{}
+	marshalErr := json.Unmarshal(data, &items)
 
 	if marshalErr != nil {
 		singleton.InstanceLogger().Errs <- marshalErr
 		return
 	}
 
-	singleton.SetBuyTargetItemsInstance(&item)
+	newItemsDic := make(map[string]bool)
+	for _, item := range items.Items {
+		newItemsDic[item.ItemId] = true
+	}
+
+	existingItemsDic := make(map[string]bool)
+	for _, item := range singleton.InstanceBuyTargetItems().Items {
+		newItemsDic[item.ItemId] = true
+	}
+
+	//delete if on selltarget item
+	for i := 0; i < len(singleton.InstanceSellTargetItems().BoughtItems); i++ {
+		sellTargetItem := singleton.InstanceSellTargetItems().BoughtItems[i]
+		if sellTargetItem == nil {
+			continue
+		}
+
+		// if items exists for current items, but not for new item.
+		// means this item is deleted.
+		if _, ok := existingItemsDic[sellTargetItem.ItemId]; ok {
+			if _, ok := newItemsDic[sellTargetItem.ItemId]; !ok {
+				singleton.InstanceSellTargetItems().BoughtItems = append(singleton.InstanceSellTargetItems().BoughtItems[:i], singleton.InstanceSellTargetItems().BoughtItems[i+1:]...)
+				singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 삭제된 저장 전략 아이템 매도 감시 목록에서 제거되었습니다.", sellTargetItem.CoinMarketName)
+				continue
+			}
+		}
+	}
+
+	singleton.SetBuyTargetItemsInstance(&items)
 	singleton.InstanceLogger().Msgs <- "전략 아이템 저장되었습니다."
 	w.WriteHeader(http.StatusOK)
 }

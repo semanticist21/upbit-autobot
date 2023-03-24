@@ -1,7 +1,7 @@
 name: upbit_autobot
-description: A new Flutter project.
+description: upbit autobot with bollinger lower buying strategy.
 publish_to: 'none'
-version: 0.1.0
+version: 0.1.1
 
 environment:
   sdk: '>=3.0.0-312.0.dev <4.0.0'
