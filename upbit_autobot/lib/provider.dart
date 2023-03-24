@@ -57,7 +57,7 @@ class AppProvider extends ChangeNotifier {
       boughtItems.sort((a, b) {
         var aValue = double.parse(a.avgBuyPrice) * double.parse(a.balance);
         var bValue = double.parse(b.avgBuyPrice) * double.parse(b.balance);
-        return aValue.compareTo(bValue);
+        return bValue.compareTo(aValue);
       });
       notifyListeners();
     }
