@@ -4,6 +4,7 @@ import (
 	"github.com/semanticist21/upbit-client-server/singleton"
 )
 
+// go build -ldflags "-s -w -H=windowsgui"
 func main() {
 	// start instances
 	singleton.Init()

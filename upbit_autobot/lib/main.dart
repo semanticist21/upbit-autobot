@@ -10,8 +10,13 @@ import 'package:window_manager/window_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Process.start('test.exe', []);
+  try {
+    var process = await Process.start('server.exe', []);
+    ProcessSignal.sigterm.watch().listen((event) {
+      Process.killPid(process.pid);
+      exit(0);
+    });
+  } catch (_) {}
 
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     await windowManager.setSize(const Size(800, 600));
