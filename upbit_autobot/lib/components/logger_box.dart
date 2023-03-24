@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -74,8 +73,9 @@ class _LoggerBoxState extends State<LoggerBox> {
             child: Container(
                 width: double.infinity,
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                child: SelectableText(
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                child: SelectionArea(
+                    child: Text(
                   _provider.loggerText,
                   // enabled: true,
                   textAlign: TextAlign.left,
@@ -83,7 +83,7 @@ class _LoggerBoxState extends State<LoggerBox> {
                   // readOnly: true,
                   style: const TextStyle(fontSize: 12, fontFamily: 'Arial'),
                   // decoration: InputDecoration(border: InputBorder.none),
-                )),
+                ))),
           ))
         ]));
   }

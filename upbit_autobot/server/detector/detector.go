@@ -169,6 +169,12 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 
 			// if profit line and lossline 0, pass inserting sell detector bot
 			if item.ProfitLinePercent == 0. && item.LossLinePercent == 0. {
+				if item.PurchaseCount == 0 {
+					singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 코인은 매수/매도 감시 미실행 대상으로 아이템을 삭제합니다.", item.CoinMarketName)
+					data := model.ItemCollectionForSocketNew()
+					data.DeletedItemId = &item.ItemId
+					singleton.InstanceItemsCollectionCh() <- data
+				}
 				continue
 			}
 
@@ -215,12 +221,12 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 
 				// if item has same id
 				if item.ItemId == existingSellTargetItem.ItemId && item.CoinMarketName == existingSellTargetItem.CoinMarketName {
-					currentExecutedVolume, _ := converter.StringToFloatWithDigit(orderedResult.ExecutedVolume, 4)
+					currentExecutedVolume, _ := converter.StringToFloatWithDigit(orderedResult.ExecutedVolume, 8)
 					var currentExecutedPrice float64 = 0.
 
 					for _, trade := range orderedResult.Trades {
 						if item.CoinMarketName == trade.Market {
-							currentExecutedPrice, _ = converter.StringToFloatWithDigit(trade.Price, 2)
+							currentExecutedPrice, _ = converter.StringToFloatWithDigit(trade.Price, 4)
 						}
 					}
 
@@ -280,7 +286,7 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 
 			for _, trade := range orderedResult.Trades {
 				if item.CoinMarketName == trade.Market {
-					currentExecutedPrice, _ = converter.StringToFloatWithDigit(trade.Price, 2)
+					currentExecutedPrice, _ = converter.StringToFloatWithDigit(trade.Price, 4)
 				}
 			}
 
