@@ -7,8 +7,13 @@ import 'package:window_manager/window_manager.dart';
 import 'exit_watcher.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  var result = Process.runSync('tasklist', []);
+  var str = result.stdout.toString().replaceFirst('upbit_autobot', '');
+  if (str.contains('upbit_autobot')) {
+    exit(0);
+  }
 
+  WidgetsFlutterBinding.ensureInitialized();
   var processPid = -1;
 
   try {
