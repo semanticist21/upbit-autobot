@@ -13,17 +13,14 @@ var buyTargetitems *model.BuyStrategyItemInfos
 var sellTargetitems *model.SellTargetStrategyItemInfos
 var mutex sync.Mutex
 
-//go:inline
 func InstanceBuyTargetItems() *model.BuyStrategyItemInfos {
 	return buyTargetitems
 }
 
-//go:inline
 func InstanceSellTargetItems() *model.SellTargetStrategyItemInfos {
 	return sellTargetitems
 }
 
-//go:inline
 func SetBuyTargetItemsInstance(newItems *model.BuyStrategyItemInfos) {
 	dic := make(map[string]int)
 
@@ -48,7 +45,6 @@ func SetBuyTargetItemsInstance(newItems *model.BuyStrategyItemInfos) {
 var buyFileName = "items.json"
 var sellFileName = "boughtItems.json"
 
-//go:inline
 func InitStrategyItems() {
 	file, err := os.OpenFile(buyFileName, os.O_RDWR|os.O_CREATE, 0644)
 
@@ -81,7 +77,6 @@ func InitStrategyItems() {
 	buyTargetitems = saveditems
 }
 
-//go:inline
 func InitSellStrategyItems() {
 	file, err := os.OpenFile(sellFileName, os.O_RDWR|os.O_CREATE, 0644)
 
@@ -114,21 +109,18 @@ func InitSellStrategyItems() {
 	sellTargetitems = savedItems
 }
 
-//go:inline
 func SaveStrategyBuyTargetItems() {
 	mutex.Lock()
 	saveInJson(buyTargetitems, buyFileName)
 	mutex.Unlock()
 }
 
-//go:inline
 func SaveSellTargetStrategyItems() {
 	mutex.Lock()
 	saveInJson(sellTargetitems, sellFileName)
 	mutex.Unlock()
 }
 
-//go:inline
 func saveInJson(items interface{}, fileName string) {
 	data, _ := json.Marshal(items)
 	err := os.WriteFile(fileName, data, 0644)

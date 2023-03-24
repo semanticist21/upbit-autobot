@@ -2,7 +2,6 @@ package bollinger
 
 import "math"
 
-//go:inline
 func GetBollinger(multiplier int, candles *[]float64) (float64, float64, float64) {
 	sma := getSMA(candles)
 	sd := getSD(candles)
@@ -14,7 +13,6 @@ func GetBollinger(multiplier int, candles *[]float64) (float64, float64, float64
 	return upper, middle, lower
 }
 
-//go:inline
 func getSMA(candles *[]float64) float64 {
 	sum := 0.
 
@@ -25,7 +23,6 @@ func getSMA(candles *[]float64) float64 {
 	return sum / float64(len(*candles))
 }
 
-//go:inline
 func getSD(candles *[]float64) float64 {
 	arr := []float64{}
 	sum := 0.

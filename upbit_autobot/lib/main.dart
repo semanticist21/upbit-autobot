@@ -11,6 +11,8 @@ import 'package:window_manager/window_manager.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Process.start('test.exe', []);
+
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
     await windowManager.setSize(const Size(800, 600));
     windowManager.setMinimumSize(const Size(800, 600));

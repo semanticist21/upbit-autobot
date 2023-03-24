@@ -12,12 +12,10 @@ import (
 
 var logger *model.Logger
 
-//go:inline
 func InstanceLogger() *model.Logger {
 	return logger
 }
 
-//go:inline
 func InitLogger() {
 	logger = &model.Logger{
 		Msgs:      make(chan string),

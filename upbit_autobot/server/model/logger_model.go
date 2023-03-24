@@ -16,7 +16,6 @@ type Logger struct {
 	LoggerWriter *zap.Logger
 }
 
-//go:inline
 func (logger *Logger) RunLogger() {
 	if logger.IsRunning {
 		return
@@ -35,17 +34,14 @@ func (logger *Logger) RunLogger() {
 	}()
 }
 
-//go:inline
 func (logger *Logger) writeLog(msg string) {
 	logger.LoggerWriter.Info(msg)
 }
 
-//go:inline
 func (logger *Logger) writeErr(err error) {
 	logger.LoggerWriter.Error(err.Error())
 }
 
-//go:inline
 func (logger *Logger) WriteLogReponse(conn *websocket.Conn) {
 	if logger.MsgQueue.Len() == 0 {
 		return

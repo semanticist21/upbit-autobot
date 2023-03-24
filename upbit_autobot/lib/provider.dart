@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:isolate';
 
 import 'package:flutter/widgets.dart';
+import 'package:upbit_autobot/components/converter.dart';
 
 import 'client/client.dart';
 import 'model/balance.dart';
@@ -52,6 +53,12 @@ class AppProvider extends ChangeNotifier {
         var coinBalance = CoinBalance.fromJson(element);
         boughtItems.add(coinBalance);
       }
+
+      boughtItems.sort((a, b) {
+        var aValue = double.parse(a.avgBuyPrice) * double.parse(a.balance);
+        var bValue = double.parse(b.avgBuyPrice) * double.parse(b.balance);
+        return aValue.compareTo(bValue);
+      });
       notifyListeners();
     }
   }

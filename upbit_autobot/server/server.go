@@ -34,7 +34,6 @@ const (
 	passwordKey string = "ca788859970da3ad18b0d2ceabdaf6d10e5a91edb10e2e7dc79268aefa54141f"
 )
 
-//go:inline
 func startServer() {
 	router := mux.NewRouter()
 	router.HandleFunc("/login", originCheckingMiddleware(handleLogin))
@@ -47,7 +46,6 @@ func startServer() {
 	http.ListenAndServe(":8080", nil)
 }
 
-//go:inline
 func originCheckingMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		password := r.Header.Get("password")
@@ -59,7 +57,6 @@ func originCheckingMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-//go:inline
 func handleLogin(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -190,7 +187,6 @@ func getAccountFile() (*os.File, error) {
 	return file, nil
 }
 
-//go:inline
 func checkLogin(w *http.ResponseWriter, r *http.Request) (bool, *model.Key) {
 	body, err := io.ReadAll(r.Body)
 
@@ -211,7 +207,6 @@ func checkLogin(w *http.ResponseWriter, r *http.Request) (bool, *model.Key) {
 	return isLogin, &keyObj
 }
 
-//go:inline
 func IsValidClientKey(publicKey string, secretKey string) bool {
 	client := upbit.NewUpbit(publicKey, secretKey)
 	_, _, err := client.GetAccounts()
@@ -223,7 +218,6 @@ func IsValidClientKey(publicKey string, secretKey string) bool {
 	}
 }
 
-//go:inline
 func handleBalance(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		w.WriteHeader(http.StatusBadRequest)
@@ -241,7 +235,6 @@ func handleBalance(w http.ResponseWriter, r *http.Request) {
 
 }
 
-//go:inline
 func doKrwHandle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		incurBadRequestError(w)
@@ -272,7 +265,6 @@ func doKrwHandle(w http.ResponseWriter, r *http.Request) {
 	singleton.InstanceLogger().Msgs <- "원화 잔고내역 전송되었습니다."
 }
 
-//go:inline
 func doAllHandle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		incurBadRequestError(w)
@@ -300,6 +292,13 @@ func doAllHandle(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
+		buyPriceFloat, _ := converter.StringToFloatWithDigit(avgBuyPrice, 4)
+		coinAmountFloat, _ := converter.StringToFloatWithDigit(coinAmount, 8)
+
+		if buyPriceFloat*coinAmountFloat < 1000 {
+			continue
+		}
+
 		coinbalance := model.CoinBalance{CoinName: balance.Currency, AvgBuyPrice: avgBuyPrice, Balance: coinAmount}
 		coinBalances.Balances = append(coinBalances.Balances, &coinbalance)
 	}
@@ -316,7 +315,6 @@ func doAllHandle(w http.ResponseWriter, r *http.Request) {
 	singleton.InstanceLogger().Msgs <- "코인 구매내역 전송되었습니다."
 }
 
-//go:inline
 func handleLogs(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -348,7 +346,6 @@ func handleLogs(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//go:inline
 func handleItems(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -359,7 +356,6 @@ func handleItems(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//go:inline
 func doGetHandleItems(w http.ResponseWriter) {
 	// items update
 	w.Header().Set("Content-Type", "application/json")
@@ -375,7 +371,6 @@ func doGetHandleItems(w http.ResponseWriter) {
 	singleton.InstanceLogger().Msgs <- "전략 아이템 전송되었습니다."
 }
 
-//go:inline
 func doPostHandleItems(w http.ResponseWriter, r *http.Request) {
 	if r.Body == nil {
 		incurBadRequestError(w)
@@ -403,7 +398,6 @@ func doPostHandleItems(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-//go:inline
 func handleSocketLog(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -419,7 +413,6 @@ func handleSocketLog(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//go:inline
 func handleSocketItems(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -438,23 +431,19 @@ func handleSocketItems(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//go:inline
 func incurBadRequest(w http.ResponseWriter, msg string) {
 	http.Error(w, msg, http.StatusBadRequest)
 	singleton.InstanceLogger().Errs <- fmt.Errorf(msg)
 }
 
-//go:inline
 func incurBadRequestError(w http.ResponseWriter) {
 	incurBadRequest(w, "the request is bad")
 }
 
-//go:inline
 func incurParseError(w http.ResponseWriter) {
 	incurBadRequest(w, "failed to parse balance string to float64")
 }
 
-//go:inline
 func incurMarshalError(w http.ResponseWriter) {
 	incurBadRequest(w, "failed to marshal data")
 }

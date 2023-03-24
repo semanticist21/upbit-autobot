@@ -13,22 +13,18 @@ import (
 	"time"
 )
 
-//go:inline
 func Float64ToString(num float64, digit int) string {
 	return strconv.FormatFloat(num, 'f', digit, 64)
 }
 
-//go:inline
 func Float32ToString(num float32, digit int) string {
 	return strconv.FormatFloat(float64(num), 'f', digit, 32)
 }
 
-//go:inline
 func BufferTo64EncodeString(buf *bytes.Buffer) string {
 	return base64.StdEncoding.EncodeToString(buf.Bytes())
 }
 
-//go:inline
 func StringToFloatDigitString(str string, decimal int) (string, error) {
 	num, err := strconv.ParseFloat(str, 64)
 	if err != nil {
@@ -42,7 +38,6 @@ func StringToFloatDigitString(str string, decimal int) (string, error) {
 	}
 }
 
-//go:inline
 func StringToFloatWithDigit(str string, decimal int) (float64, error) {
 	num, err := strconv.ParseFloat(str, 64)
 	if err != nil {
@@ -56,7 +51,6 @@ func StringToFloatWithDigit(str string, decimal int) (float64, error) {
 	}
 }
 
-//go:inline
 func FloatToFloatwithDigit(num float64, decimal int) float64 {
 	if decimal == 0 {
 		return math.Round(num)
@@ -67,7 +61,6 @@ func FloatToFloatwithDigit(num float64, decimal int) float64 {
 
 var encyrptionToken []byte = []byte("+MbQeThWmZq4t7w!")
 
-//go:inline
 func EncryptString(str string) (string, error) {
 	block, err := aes.NewCipher(encyrptionToken)
 
@@ -86,7 +79,6 @@ func EncryptString(str string) (string, error) {
 	return base64.StdEncoding.EncodeToString(cipherText), nil
 }
 
-//go:inline
 func DecryptString(str string) (string, error) {
 	cipherText, err := base64.StdEncoding.DecodeString(str)
 	if err != nil {
@@ -119,7 +111,6 @@ func GetLayoutStrting() string {
 	return "2006-01-02T15:04:05.000Z"
 }
 
-//go:inline
 func NowToISO8601() string {
 	now := time.Now()
 	layout := GetLayoutStrting() // ISO8601 format layout string

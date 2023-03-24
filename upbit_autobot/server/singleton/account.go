@@ -11,23 +11,19 @@ var krwAccount *account.Account
 var coinAccounts []*account.Account
 var mutexAcc sync.Mutex
 
-//go:inline
 func InstanceKrwBalance() *account.Account {
 	return krwAccount
 }
 
-//go:inline
 func InstanceCoinBalances() []*account.Account {
 	return coinAccounts
 }
 
-//go:inline
 func InitAccount(client *upbit.Upbit) {
 	coinAccounts = []*account.Account{}
 	RefreshAccount(client)
 }
 
-//go:inline
 func RefreshAccount(client *upbit.Upbit) {
 	mutexAcc.Lock()
 	logger := InstanceLogger()

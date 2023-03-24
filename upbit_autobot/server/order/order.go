@@ -23,7 +23,6 @@ const (
 	TwoForty Minutes = 240
 )
 
-//go:inline
 func IntToMinutesType(val int) (Minutes, error) {
 	switch val {
 	case 1, 3, 5, 15, 30, 60, 240:
@@ -33,7 +32,6 @@ func IntToMinutesType(val int) (Minutes, error) {
 	}
 }
 
-//go:inline
 func GetCandles(client *upbit.Upbit, marketName string, length int, minute Minutes) ([]float64, error) {
 	candles, _, err := client.GetMinuteCandles(marketName, "", strconv.Itoa(length), strconv.Itoa(int(minute)))
 
@@ -49,7 +47,6 @@ func GetCandles(client *upbit.Upbit, marketName string, length int, minute Minut
 	return prices, nil
 }
 
-//go:inline
 func GetAllCoinMarketNames(client *upbit.Upbit) (map[string]string, error) {
 	market, _, err := client.GetMarkets()
 	coinInfos := make(map[string]string)
@@ -65,7 +62,6 @@ func GetAllCoinMarketNames(client *upbit.Upbit) (map[string]string, error) {
 	return coinInfos, nil
 }
 
-//go:inline
 func BuyOrder(client *upbit.Upbit, orderInfo *model.BuyOrderInfo) (*order.Order, error) {
 	order, _, err := client.PurchaseOrder(orderInfo.MarketName, "", converter.Float64ToString(orderInfo.BuyAmountInKrw, 2), exchange.ORDER_TYPE_PRICE, "")
 
@@ -76,7 +72,6 @@ func BuyOrder(client *upbit.Upbit, orderInfo *model.BuyOrderInfo) (*order.Order,
 	return order, nil
 }
 
-//go:inline
 func SellOrder(client *upbit.Upbit, orderInfo *model.SellOrderInfo) (*order.Order, error) {
 	order, _, err := client.SellOrder(orderInfo.MarketName, converter.Float64ToString(orderInfo.Volume, 8), "", exchange.ORDER_TYPE_MARKET, "")
 
@@ -87,7 +82,6 @@ func SellOrder(client *upbit.Upbit, orderInfo *model.SellOrderInfo) (*order.Orde
 	return order, nil
 }
 
-//go:inline
 func GetCurrentPrice(client *upbit.Upbit, coinId string) (float64, error) {
 	tickers, _, err := client.GetTickers([]string{coinId})
 
