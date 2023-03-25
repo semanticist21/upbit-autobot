@@ -273,6 +273,7 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 					singleton.SaveSellTargetStrategyItems()
 					hasExistingItem = true
 					singleton.InstanceLogger().Msgs <- fmt.Sprintf("판매 감시 리스트 기존 아이템 수정 완료 %+v", existingSellTargetItem)
+					SendKrwAndCoinBalance(client)
 					break
 				}
 			}

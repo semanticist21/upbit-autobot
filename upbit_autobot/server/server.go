@@ -92,7 +92,7 @@ func doGetHandleLogin(w http.ResponseWriter, r *http.Request) {
 
 	// 빈 값인 경우
 	if key.PublicKey == "" && key.SecretKey == "" {
-		incurBadRequestError(w)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
