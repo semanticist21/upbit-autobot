@@ -24,8 +24,10 @@ func StartDetectorCycle(client *upbit.Upbit) {
 	go StartBuyDetectorBot(client)
 	go StartSellDetectorBot(client)
 	go func() {
-		time.Sleep(time.Second * 30)
-		sendKrwAndCoinBalance(client)
+		for {
+			time.Sleep(time.Second * 30)
+			sendKrwAndCoinBalance(client)
+		}
 	}()
 }
 
