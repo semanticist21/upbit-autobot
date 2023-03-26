@@ -25,7 +25,7 @@ func StartDetectorCycle(client *upbit.Upbit) {
 	go StartSellDetectorBot(client)
 	go func() {
 		time.Sleep(time.Second * 30)
-		SendKrwAndCoinBalance(client)
+		sendKrwAndCoinBalance(client)
 	}()
 }
 
@@ -39,6 +39,7 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 		if len(singleton.InstanceBuyTargetItems().Items) == 0 {
 			continue
 		}
+
 		markets, _, err := client.GetMarkets()
 		marketMap := make(map[string]bool)
 
@@ -133,7 +134,8 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 
 			// price requirements
 			// before entering into action
-			if price > lower {
+			// + 0.001% because market buy
+			if (price * 1.001) > lower {
 				continue
 			}
 
@@ -163,7 +165,7 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 			singleton.SaveStrategyBuyTargetItems()
 
 			// apply krw, coin changes
-			SendAllBalanceAndItem(client, item)
+			sendAllBalanceAndItem(client, item)
 
 			if item.PurchaseCount == 0 {
 				singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 코인 구매회수 소진되었습니다.", item.CoinMarketName)
@@ -280,7 +282,7 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 					singleton.SaveSellTargetStrategyItems()
 					hasExistingItem = true
 					singleton.InstanceLogger().Msgs <- fmt.Sprintf("판매 감시 리스트 기존 아이템 수정 완료 %+v", existingSellTargetItem)
-					SendKrwAndCoinBalance(client)
+					sendKrwAndCoinBalance(client)
 					break
 				}
 			}
@@ -435,7 +437,7 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 					singleton.InstanceSellTargetItems().BoughtItems = append(singleton.InstanceSellTargetItems().BoughtItems[:i], singleton.InstanceSellTargetItems().BoughtItems[i+1:]...)
 					singleton.SaveSellTargetStrategyItems()
 					singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 익절 완료, 매도 양: %.8f, 매도 가격: %s", sellTargetItem.CoinMarketName, sellTargetItem.ExecutedVolume, orderResult.Price)
-					SendKrwAndCoinBalance(client)
+					sendKrwAndCoinBalance(client)
 
 					// buy strategy item loop
 					for j := 0; j < len(singleton.InstanceBuyTargetItems().Items); j++ {
@@ -453,7 +455,7 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 								data := model.ItemCollectionForSocketNew()
 								data.DeletedItemId = &sellTargetItem.ItemId
 								singleton.InstanceItemsCollectionCh() <- data
-								SendKrwAndCoinBalance(client)
+								sendKrwAndCoinBalance(client)
 
 								singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 전략 매수, 매도 모두 완료되어 목록에서 삭제합니다. 실행된 볼륨 : %.8f, 가격 : %s 익절 실행가 : %.8f", sellTargetItem.CoinMarketName, sellTargetItem.ExecutedVolume, orderResult.Price, sellTargetItem.ProfitTargetPrice)
 
@@ -487,7 +489,7 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 					singleton.InstanceSellTargetItems().BoughtItems = append(singleton.InstanceSellTargetItems().BoughtItems[:i], singleton.InstanceSellTargetItems().BoughtItems[i+1:]...)
 					singleton.SaveSellTargetStrategyItems()
 					singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 손절 완료, 매도 양: %.8f, 매도 가격: %s", sellTargetItem.CoinMarketName, sellTargetItem.ExecutedVolume, orderResult.Price)
-					SendKrwAndCoinBalance(client)
+					sendKrwAndCoinBalance(client)
 
 					for j := 0; j < len(singleton.InstanceBuyTargetItems().Items); j++ {
 						if singleton.InstanceBuyTargetItems().Items[j] == nil {
@@ -504,7 +506,7 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 								data := model.ItemCollectionForSocketNew()
 								data.DeletedItemId = &sellTargetItem.ItemId
 								singleton.InstanceItemsCollectionCh() <- data
-								SendKrwAndCoinBalance(client)
+								sendKrwAndCoinBalance(client)
 								singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 전략 매수, 매도 모두 완료되어 목록에서 삭제합니다. 실행된 볼륨 : %.8f, 가격 : %s 손절 실행가 : %.8f", sellTargetItem.CoinMarketName, sellTargetItem.ExecutedVolume, orderResult.Price, sellTargetItem.LossTargetPrice)
 
 								break
@@ -522,7 +524,7 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 	}
 }
 
-func SendKrwAndCoinBalance(client *upbit.Upbit) {
+func sendKrwAndCoinBalance(client *upbit.Upbit) {
 	singleton.RefreshAccount(client)
 	coinbalances := model.CoinBalances{Balances: []*model.CoinBalance{}}
 	for _, balance := range singleton.InstanceCoinBalances() {
@@ -541,7 +543,7 @@ func SendKrwAndCoinBalance(client *upbit.Upbit) {
 	singleton.InstanceItemsCollectionCh() <- data
 }
 
-func SendAllBalanceAndItem(client *upbit.Upbit, item *model.BuyStrategyItemInfo) {
+func sendAllBalanceAndItem(client *upbit.Upbit, item *model.BuyStrategyItemInfo) {
 	singleton.RefreshAccount(client)
 	coinbalances := model.CoinBalances{Balances: []*model.CoinBalance{}}
 	for _, balance := range singleton.InstanceCoinBalances() {
