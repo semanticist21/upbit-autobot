@@ -1,4 +1,4 @@
-# upbit_autobot v 1.01
+# upbit_autobot v 1.03
 
 ## 설명
 
