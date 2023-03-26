@@ -34,17 +34,22 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 	for {
 		// 전체 사이클 회수(최대 10개니 대략 5~6초 소요)
 		// whole cycle wait(without it, maximum it takes 5-6seconds)
-		time.Sleep(time.Millisecond * 5000)
+		time.Sleep(time.Millisecond * 30000)
 
 		if len(singleton.InstanceBuyTargetItems().Items) == 0 {
 			continue
 		}
-		markets, _, _ := client.GetMarkets()
+		markets, _, err := client.GetMarkets()
 		marketMap := make(map[string]bool)
 
-		for _, market := range markets {
-			marketMap[market.Market] = true
+		if err != nil {
+			singleton.InstanceLogger().Errs <- fmt.Errorf("마켓 정보 조회 중 오류 발생 %s", err.Error())
+		} else {
+			for _, market := range markets {
+				marketMap[market.Market] = true
+			}
 		}
+
 		// check whether market exists.
 		for i := 0; i < len(singleton.InstanceBuyTargetItems().Items); i++ {
 			item := singleton.InstanceBuyTargetItems().Items[i]
@@ -55,18 +60,20 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 				continue
 			}
 
-			if _, ok := marketMap[item.CoinMarketName]; !ok {
-				singleton.InstanceLogger().Errs <- fmt.Errorf("%s 해당 마켓이 업비트에 존재하지 않아 구매 감시 대상에서 제외합니다", item.CoinMarketName)
-				singleton.InstanceBuyTargetItems().Items = append(singleton.InstanceBuyTargetItems().Items[:i], singleton.InstanceBuyTargetItems().Items[i+1:]...)
-				singleton.SaveStrategyBuyTargetItems()
+			if len(marketMap) != 0 {
+				if _, ok := marketMap[item.CoinMarketName]; !ok {
+					singleton.InstanceLogger().Errs <- fmt.Errorf("%s 해당 마켓이 업비트에 존재하지 않아 구매 감시 대상에서 제외합니다", item.CoinMarketName)
+					singleton.InstanceBuyTargetItems().Items = append(singleton.InstanceBuyTargetItems().Items[:i], singleton.InstanceBuyTargetItems().Items[i+1:]...)
+					singleton.SaveStrategyBuyTargetItems()
 
-				// queue in deletion
-				data := model.ItemCollectionForSocketNew()
-				data.DeletedItemId = &item.ItemId
-				singleton.InstanceItemsCollectionCh() <- data
+					// queue in deletion
+					data := model.ItemCollectionForSocketNew()
+					data.DeletedItemId = &item.ItemId
+					singleton.InstanceItemsCollectionCh() <- data
 
-				i -= 1
-				continue
+					i -= 1
+					continue
+				}
 			}
 
 			// pass when count zero
@@ -347,7 +354,7 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 	singleton.InstanceLogger().Msgs <- "판매 감시 봇 작동 시작."
 	for {
 		// whole cycle wait
-		time.Sleep(time.Millisecond * 5000)
+		time.Sleep(time.Millisecond * 10000)
 
 		if len(singleton.InstanceSellTargetItems().BoughtItems) == 0 {
 			continue
