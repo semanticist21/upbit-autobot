@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:isolate';
 
 import 'package:flutter/widgets.dart';
-import 'package:upbit_autobot/components/converter.dart';
 
 import 'client/client.dart';
 import 'model/balance.dart';

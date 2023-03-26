@@ -121,7 +121,7 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
                             actions: [
                               MaterialButton(
                                 onPressed: () => Navigator.of(context).pop(),
-                                child: Text('닫기'),
+                                child: const Text('닫기'),
                               ),
                             ],
                           ));

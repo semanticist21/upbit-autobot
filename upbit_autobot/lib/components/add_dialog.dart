@@ -239,7 +239,7 @@ class _AddDialogState extends State<AddDialog> {
                                                                       _doSaveAction(
                                                                           context),
                                                                   child: Text(
-                                                                      '저장',
+                                                                      '확인',
                                                                       style: TextStyle(
                                                                           color: Colors.grey[
                                                                               600],
