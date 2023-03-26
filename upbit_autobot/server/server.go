@@ -92,7 +92,7 @@ func doGetHandleLogin(w http.ResponseWriter, r *http.Request) {
 
 	// 빈 값인 경우
 	if key.PublicKey == "" && key.SecretKey == "" {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusOK)
 		return
 	}
 
@@ -180,6 +180,8 @@ func doHandlePostLogin(w http.ResponseWriter, r *http.Request) {
 				singleton.InstanceLogger().Errs <- err
 				return
 			}
+
+			defer file.Close()
 
 			file.Truncate(0)
 		}
