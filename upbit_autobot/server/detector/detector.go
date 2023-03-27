@@ -386,12 +386,14 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 
 			// in the case the item doesn't exist any more in the buy monitor list
 			// remove sell target item
-			if _, ok := dic[sellTargetItem.ItemId]; !ok {
-				singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 해당 코인이 목록에 전략에 존재하지 않아 판매 감시 대상에서 제외합니다.", sellTargetItem.CoinMarketName)
-				singleton.InstanceSellTargetItems().BoughtItems = append(singleton.InstanceSellTargetItems().BoughtItems[:i], singleton.InstanceSellTargetItems().BoughtItems[i+1:]...)
-				singleton.SaveSellTargetStrategyItems()
-				i -= 1
-				continue
+			if len(dic) != 0 {
+				if _, ok := dic[sellTargetItem.ItemId]; !ok {
+					singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 해당 코인이 목록에 전략에 존재하지 않아 판매 감시 대상에서 제외합니다.", sellTargetItem.CoinMarketName)
+					singleton.InstanceSellTargetItems().BoughtItems = append(singleton.InstanceSellTargetItems().BoughtItems[:i], singleton.InstanceSellTargetItems().BoughtItems[i+1:]...)
+					singleton.SaveSellTargetStrategyItems()
+					i -= 1
+					continue
+				}
 			}
 
 			// take info whether sell target volume is smaller than the balance in the account
