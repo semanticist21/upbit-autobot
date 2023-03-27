@@ -95,3 +95,31 @@ func GetCurrentPrice(client *upbit.Upbit, coinId string) (float64, error) {
 
 	return -1, fmt.Errorf("취득된 가격정보가 없습니다")
 }
+
+func GetLowestSellOrderBook(clinet *upbit.Upbit, marketName string) (float64, error) {
+	orderbook, _, err := clinet.GetOrderbooks([]string{marketName})
+
+	if err != nil {
+		return -1, err
+	}
+
+	if len(orderbook) == 0 {
+		return -1, fmt.Errorf("값이 비어있음")
+	}
+
+	return orderbook[0].OrderbookUnits[0].AskPrice, nil
+}
+
+func GetHighestBuyOrderBook(clinet *upbit.Upbit, marketName string) (float64, error) {
+	orderbook, _, err := clinet.GetOrderbooks([]string{marketName})
+
+	if err != nil {
+		return -1, err
+	}
+
+	if len(orderbook) == 0 {
+		return -1, fmt.Errorf("값이 비어있음")
+	}
+
+	return orderbook[0].OrderbookUnits[0].BidPrice, nil
+}

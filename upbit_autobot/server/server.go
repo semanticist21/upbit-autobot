@@ -35,6 +35,8 @@ const (
 	passwordKey string = "ca788859970da3ad18b0d2ceabdaf6d10e5a91edb10e2e7dc79268aefa54141f"
 )
 
+var isItemWriting = false
+
 func startServer() {
 	router := mux.NewRouter()
 	router.HandleFunc("/login", originCheckingMiddleware(handleLogin))
@@ -253,6 +255,11 @@ func doKrwHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if singleton.InstanceKrwBalance() == nil {
+		incurBadRequestError(w)
+		return
+	}
+
 	num, err := strconv.ParseFloat(singleton.InstanceKrwBalance().Balance, 64)
 	singleton.RefreshAccount(singleton.InstanceClient())
 
@@ -284,6 +291,10 @@ func doAllHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	balances := singleton.InstanceCoinBalances()
+	if balances == nil {
+		incurBadRequestError(w)
+		return
+	}
 	singleton.RefreshAccount(singleton.InstanceClient())
 
 	coinBalances := &model.CoinBalances{}
@@ -384,6 +395,13 @@ func doGetHandleItems(w http.ResponseWriter) {
 }
 
 func doPostHandleItems(w http.ResponseWriter, r *http.Request) {
+	if isItemWriting {
+		singleton.InstanceLogger().Msgs <- "잠시 후 저장 다시 시도해주세요."
+	}
+
+	isItemWriting = true
+	defer func() { isItemWriting = false }()
+
 	if r.Body == nil {
 		incurBadRequestError(w)
 		return
@@ -412,6 +430,13 @@ func doPostHandleItems(w http.ResponseWriter, r *http.Request) {
 	existingItemsDic := make(map[string]bool)
 	for _, item := range singleton.InstanceBuyTargetItems().Items {
 		newItemsDic[item.ItemId] = true
+	}
+
+	for detector.TheBuyCycleOngoing && detector.TheSellCycleOngoing {
+		time.Sleep(time.Microsecond * 500)
+		if !detector.TheBuyCycleOngoing && !detector.TheSellCycleOngoing {
+			break
+		}
 	}
 
 	//delete if on selltarget item

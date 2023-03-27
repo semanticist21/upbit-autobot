@@ -13,6 +13,9 @@ import (
 	"github.com/semanticist21/upbit-client-server/singleton"
 )
 
+var TheBuyCycleOngoing = false
+var TheSellCycleOngoing = false
+
 type CycleStarter struct {
 }
 
@@ -36,7 +39,9 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 	for {
 		// 전체 사이클 회수(최대 10개니 대략 5~6초 소요)
 		// whole cycle wait(without it, maximum it takes 5-6seconds)
+		TheBuyCycleOngoing = false
 		time.Sleep(time.Millisecond * 5000)
+		TheBuyCycleOngoing = true
 
 		if len(singleton.InstanceBuyTargetItems().Items) == 0 {
 			continue
@@ -127,7 +132,7 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 			}
 
 			_, _, lower := bollinger.GetBollinger(item.BollingerMultiplier, &candles)
-			price, err := order.GetCurrentPrice(client, item.CoinMarketName)
+			price, err := order.GetLowestSellOrderBook(client, item.CoinMarketName)
 
 			if err != nil {
 				singleton.InstanceLogger().Errs <- err
@@ -136,8 +141,7 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 
 			// price requirements
 			// before entering into action
-			// + 0.0005% because market buy
-			if (price * 1.0005) > lower {
+			if price > lower {
 				continue
 			}
 
@@ -358,7 +362,9 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 	singleton.InstanceLogger().Msgs <- "판매 감시 봇 작동 시작."
 	for {
 		// whole cycle wait
+		TheSellCycleOngoing = false
 		time.Sleep(time.Millisecond * 5000)
+		TheSellCycleOngoing = true
 
 		if len(singleton.InstanceSellTargetItems().BoughtItems) == 0 {
 			continue
@@ -420,7 +426,7 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 
 			// start profit detect!!
 			if sellTargetItem.ProfitTargetPrice != 0. {
-				price, err := order.GetCurrentPrice(client, sellTargetItem.CoinMarketName)
+				price, err := order.GetHighestBuyOrderBook(client, sellTargetItem.CoinMarketName)
 				if err != nil {
 					singleton.InstanceLogger().Errs <- err
 					continue
@@ -472,7 +478,7 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 
 			// start sell detect!!
 			if sellTargetItem.LossTargetPrice != 0. {
-				price, err := order.GetCurrentPrice(client, sellTargetItem.CoinMarketName)
+				price, err := order.GetHighestBuyOrderBook(client, sellTargetItem.CoinMarketName)
 				if err != nil {
 					singleton.InstanceLogger().Errs <- err
 					continue
