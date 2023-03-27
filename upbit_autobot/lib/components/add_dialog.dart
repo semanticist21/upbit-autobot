@@ -234,7 +234,7 @@ class _AddDialogState extends State<AddDialog> {
                                                                               'balance/$coinMarketName');
 
                                                                   var dataMap =
-                                                                      RestApiClient
+                                                                      await RestApiClient
                                                                           .parseResponseData(
                                                                               response);
 

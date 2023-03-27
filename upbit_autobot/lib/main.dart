@@ -2,22 +2,25 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
+import 'package:upbit_autobot/client/client.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'exit_watcher.dart';
 
 void main() async {
-  var result = Process.runSync('tasklist', []);
+  var result = await Process.run('tasklist', []);
   var str = result.stdout.toString().replaceFirst('upbit_autobot', '');
   if (str.contains('upbit_autobot')) {
     exit(0);
   }
 
   WidgetsFlutterBinding.ensureInitialized();
+  RestApiClient().initclient();
   var processPid = -1;
 
   try {
-    var process = await Process.start('upbit-client-server.exe', []);
+    var process = await Process.start('upbit-client-server.exe', [],
+        mode: ProcessStartMode.detached);
     processPid = process.pid;
   } catch (_) {}
 

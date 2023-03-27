@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart' as http;
 import 'package:upbit_autobot/client/password.dart';
 
 import '../model/log.dart';
@@ -13,56 +12,85 @@ class RestApiClient {
 
   final String _baseUri = 'http://localhost:8080';
   final String _baseSocketUri = 'ws://localhost:8080';
-  final http.Client _client = http.Client();
+  final _client = HttpClient();
 
-  Future<http.Response?> requestPost(String pageUrl, String dataBody) async {
+  void initclient() {
+    _client.maxConnectionsPerHost = 100;
+    _client.connectionTimeout = const Duration(seconds: 3);
+  }
+
+  Future<HttpClientResponse?> requestPost(
+      String pageUrl, String dataBody) async {
     var resultUrl = getUri(pageUrl);
-    http.Response? response;
+    HttpClientResponse? response;
 
     try {
-      response = await _client.post(resultUrl,
-          headers: passwordJsonMap, body: dataBody);
-    } catch (_) {
-      response = null;
-      return response;
+      var request = await _client.postUrl(resultUrl);
+      request.headers.set('content-Type', 'application/json');
+      request.headers.add(passwordMap.keys.first, passwordMap.values.first);
+      request.add(utf8.encode(dataBody));
+      response = await request.close();
+    } catch (err) {
+      if (err.runtimeType == SocketException) {
+        doLoggerPostRequest('연결 시간이 초과되었습니다.');
+      }
     }
 
     return response;
   }
 
-  Future<http.Response?> requestPostWithParamas(
+  Future<HttpClientResponse?> requestPostWithParamas(
       String pageUrl, String dataBody, Map<String, String> params) async {
     var resultUrl = getUri(pageUrl);
     resultUrl = resultUrl.replace(queryParameters: params);
-    http.Response? response;
+    HttpClientResponse? response;
 
     try {
-      response = await _client.post(resultUrl,
-          headers: passwordJsonMap, body: dataBody);
-    } catch (_) {
-      response = null;
-      return response;
+      var request = await _client.postUrl(resultUrl);
+      request.headers.set('content-Type', 'application/json');
+      request.headers.add(passwordMap.keys.first, passwordMap.values.first);
+      request.add(utf8.encode(dataBody));
+      response = await request.close();
+    } catch (err) {
+      if (err.runtimeType == SocketException) {
+        doLoggerPostRequest('연결 시간이 초과되었습니다.');
+      }
     }
 
     return response;
   }
 
-  Future<http.Response> requestGet(String pageUrl) async {
-    var response = await _client.get(getUri(pageUrl), headers: passwordMap);
+  Future<HttpClientResponse?> requestGet(String pageUrl) async {
+    HttpClientResponse? response;
+
+    try {
+      var request = await _client.getUrl(getUri(pageUrl));
+      request.headers.add(passwordMap.keys.first, passwordMap.values.first);
+      response = await request.close();
+    } catch (err) {
+      if (err.runtimeType == SocketException) {
+        doLoggerPostRequest('연결 시간이 초과되었습니다.');
+      }
+    }
 
     return response;
   }
 
-  Future<http.Response> requestGetWithParams(
+  Future<HttpClientResponse?> requestGetWithParams(
       String pageUrl, Map<String, String> params) async {
-    var resulturl = getUri(pageUrl);
-    resulturl = resulturl.replace(queryParameters: params);
+    HttpClientResponse? response;
 
-    var response = await _client.get(
-      resulturl,
-      headers: passwordMap,
-    );
-
+    try {
+      var resulturl = getUri(pageUrl);
+      resulturl = resulturl.replace(queryParameters: params);
+      var request = await _client.getUrl(getUri(pageUrl));
+      request.headers.add(passwordMap.keys.first, passwordMap.values.first);
+      response = await request.close();
+    } catch (err) {
+      if (err.runtimeType == SocketException) {
+        doLoggerPostRequest('연결 시간이 초과되었습니다.');
+      }
+    }
     return response;
   }
 
@@ -74,10 +102,17 @@ class RestApiClient {
 
   Uri getUri(String pageUrl) => Uri.parse('$_baseUri/$pageUrl');
 
-  static Map<String, dynamic> parseResponseData(http.Response response) {
+  static Future<Map<String, dynamic>> parseResponseData(
+      HttpClientResponse? response) async {
+    if (response == null) {
+      return Future.value({});
+    }
+
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      if (response.body.isNotEmpty) {
-        return jsonDecode(response.body);
+      final responseBody = await response.transform(utf8.decoder).join();
+
+      if (responseBody.isNotEmpty) {
+        return jsonDecode(responseBody);
       } else {
         return {};
       }
@@ -87,10 +122,16 @@ class RestApiClient {
     }
   }
 
-  static String parseWordData(http.Response response) {
+  static Future<String> parseWordData(HttpClientResponse? response) async {
+    if (response == null) {
+      return Future.value('');
+    }
+
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      if (response.body.isNotEmpty) {
-        return utf8.decode(response.bodyBytes);
+      final responseBody = await response.transform(utf8.decoder).join();
+
+      if (responseBody.isNotEmpty) {
+        return responseBody;
       } else {
         return '';
       }

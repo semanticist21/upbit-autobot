@@ -29,7 +29,8 @@ class AppProvider extends ChangeNotifier {
   Future<void> doKrwBalanceRequest() async {
     var result = await RestApiClient().requestGet("balance/krw");
 
-    Map<String, dynamic> parsedResult = RestApiClient.parseResponseData(result);
+    Map<String, dynamic> parsedResult =
+        await RestApiClient.parseResponseData(result);
 
     var key = 'balance';
     if (parsedResult.containsKey(key)) {
@@ -41,7 +42,7 @@ class AppProvider extends ChangeNotifier {
 
   Future<void> doCoinBalanceGetRequest(List<CoinBalance> boughtItems) async {
     var response = await RestApiClient().requestGet("balance/all");
-    var parsedResult = RestApiClient.parseResponseData(response);
+    var parsedResult = await RestApiClient.parseResponseData(response);
 
     var key = 'balances';
     if (parsedResult.containsKey(key)) {
@@ -65,13 +66,17 @@ class AppProvider extends ChangeNotifier {
 
   Future<void> doBuyItemsRequest() async {
     var response = await RestApiClient().requestGet('items');
+    var bodyStr = 'null';
+    if (response != null) {
+      bodyStr = await response.transform(utf8.decoder).join();
+    }
 
     // data empty case
-    if (response.body == 'null') {
+    if (bodyStr == 'null') {
       return;
     }
 
-    Map<String, dynamic> data = jsonDecode(response.body);
+    Map<String, dynamic> data = jsonDecode(bodyStr);
     if (data['items'] == null) {
       return;
     }
@@ -202,7 +207,7 @@ class AppProvider extends ChangeNotifier {
 
   static Future<void> _updateLogger(SendPort sendPort) async {
     var response = await RestApiClient().requestGet('logs');
-    var data = RestApiClient.parseWordData(response);
+    var data = await RestApiClient.parseWordData(response);
     if (data.isNotEmpty) {
       sendPort.send(data);
     }
@@ -210,7 +215,7 @@ class AppProvider extends ChangeNotifier {
     Timer.periodic(const Duration(seconds: 2), (timer) async {
       try {
         var response = await RestApiClient().requestGet('logs');
-        var data = RestApiClient.parseWordData(response);
+        var data = await RestApiClient.parseWordData(response);
         if (data.isNotEmpty) {
           sendPort.send(data);
         }

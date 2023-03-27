@@ -37,8 +37,11 @@ const (
 )
 
 var isItemWriting = false
+var reqChannel chan *model.ClientRequest
 
 func startServer() {
+	go goWithRequest()
+
 	router := mux.NewRouter()
 	router.HandleFunc("/login", originCheckingMiddleware(handleLogin))
 	router.HandleFunc("/balance/{name}", originCheckingMiddleware(handleBalance))
@@ -51,16 +54,34 @@ func startServer() {
 	if err := http.ListenAndServe("localhost:8080", nil); err != nil {
 		singleton.InstanceLogger().Errs <- err
 	}
+
 }
 
 func originCheckingMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		password := r.Header.Get("password")
-		if password == passwordKey {
-			next(w, r)
-		} else {
+		if password != passwordKey {
 			http.Error(w, "Forbidden", http.StatusForbidden)
+			return
 		}
+
+		// when passed request verification
+		var req = model.ClientRequest{}
+		req.W = w
+		req.R = r
+		req.Done = make(chan struct{})
+		req.Function = next
+		reqChannel <- &req
+		<-req.Done
+	}
+}
+
+func goWithRequest() {
+	reqChannel = make(chan *model.ClientRequest)
+
+	for req := range reqChannel {
+		req.Function(req.W, req.R)
+		close(req.Done)
 	}
 }
 
@@ -142,6 +163,7 @@ func doHandlePostLogin(w http.ResponseWriter, r *http.Request) {
 		singleton.InitClient(keys.PublicKey, keys.SecretKey)
 		singleton.InitWithClient(singleton.InstanceClient(), &detector.CycleStarter{})
 		w.WriteHeader(http.StatusOK)
+		singleton.InstanceLogger().Msgs <- "로그인 완료 !!"
 
 		file, err := getAccountFile()
 
@@ -517,7 +539,7 @@ func handleSocketLog(w http.ResponseWriter, r *http.Request) {
 	defer conn.Close()
 
 	for {
-		time.Sleep(time.Millisecond * 500)
+		time.Sleep(time.Millisecond * 200)
 		singleton.InstanceLogger().WriteLogReponse(conn)
 	}
 }

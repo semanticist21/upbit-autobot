@@ -366,7 +366,7 @@ class _LoginState extends State<Login> {
   Future<void> _getSavedloginData() async {
     var response = await RestApiClient().requestGet('login');
 
-    var keyMap = RestApiClient.parseResponseData(response);
+    var keyMap = await RestApiClient.parseResponseData(response);
     var publicKey = 'publicKey';
     var secretKey = 'secretKey';
 
