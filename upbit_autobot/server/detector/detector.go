@@ -398,9 +398,13 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 
 			// take info whether sell target volume is smaller than the balance in the account
 			accounts, _, err := client.GetAccounts()
+			var hasCoinInAcc = true
 			if err == nil {
+				hasMatched := false
 				for _, account := range accounts {
 					if account.GetMarketID() == sellTargetItem.CoinMarketName {
+						hasMatched = true
+
 						accBalance, err := converter.StringToFloatWithDigit(account.Balance, 8)
 						if err != nil {
 							singleton.InstanceLogger().Errs <- fmt.Errorf("%s, #에러 발생 코인 이름: %s", err.Error(), sellTargetItem.CoinMarketName)
@@ -415,6 +419,18 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 						break
 					}
 				}
+
+				if !hasMatched {
+					hasCoinInAcc = false
+				}
+			}
+
+			if !hasCoinInAcc {
+				singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 해당 코인의 계좌 잔고가 존재하지 않아 판매 감시 대상에서 삭제합니다.", sellTargetItem.CoinMarketName)
+				singleton.InstanceSellTargetItems().BoughtItems = append(singleton.InstanceSellTargetItems().BoughtItems[:i], singleton.InstanceSellTargetItems().BoughtItems[i+1:]...)
+				singleton.SaveSellTargetStrategyItems()
+				i -= 1
+				continue
 			}
 
 			// if volume to sell is 0 then delete and continue
