@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
+import 'package:upbit_autobot/client/client.dart';
+import 'package:upbit_autobot/components/converter.dart';
 import 'package:upbit_autobot/model/strategy_item_info.dart';
 import 'package:upbit_autobot/provider.dart';
 
@@ -28,6 +31,8 @@ class _AddDialogState extends State<AddDialog> {
 
   late AppProvider _provider;
   final List<String> candles = ['1', '3', '5', '15', '30', '60', '240'];
+
+  var _coinPriceCalcuationResult = '';
 
   @override
   void initState() {
@@ -61,8 +66,8 @@ class _AddDialogState extends State<AddDialog> {
         elevation: 1,
         child: Container(
             padding: const EdgeInsets.all(1),
-            width: 330,
-            height: 350,
+            width: 380,
+            height: 370,
             child: Column(children: [
               Expanded(
                   flex: 1,
@@ -159,7 +164,7 @@ class _AddDialogState extends State<AddDialog> {
                                   horizontal: 10, vertical: 10),
                               child: IntrinsicHeight(
                                   child: SizedBox(
-                                      height: 260,
+                                      height: 270,
                                       child: Row(
                                         children: [
                                           Expanded(
@@ -197,12 +202,92 @@ class _AddDialogState extends State<AddDialog> {
                                                             .spaceBetween,
                                                     children: [
                                                       _getOptionWithSuffixForm(
-                                                          _profitLine, "익절 기준"),
+                                                          _profitLine, '익절 기준'),
                                                       _getOptionWithSuffixForm(
-                                                          _lossLine, "손절 기준"),
+                                                          _lossLine, '손절 기준'),
                                                       _getOptionWithSuffixFormUptoFourDigit(
                                                           _desiredBuyAmount,
-                                                          "구매 수량(최소 0.0001 개)"),
+                                                          '구매 수량(최소 0.0001 개)'),
+                                                      Row(children: [
+                                                        Tooltip(
+                                                            excludeFromSemantics:
+                                                                true,
+                                                            message:
+                                                                '구매 값 원화 계산(추정)',
+                                                            child: IconButton(
+                                                                onPressed:
+                                                                    () async {
+                                                                  if (!_coinMarketName
+                                                                      .text
+                                                                      .contains(
+                                                                          'KRW-')) {
+                                                                    return;
+                                                                  }
+
+                                                                  var coinMarketName =
+                                                                      _coinMarketName
+                                                                          .text;
+
+                                                                  var response =
+                                                                      await RestApiClient()
+                                                                          .requestGet(
+                                                                              'balance/$coinMarketName');
+
+                                                                  var dataMap =
+                                                                      RestApiClient
+                                                                          .parseResponseData(
+                                                                              response);
+
+                                                                  if (dataMap
+                                                                      .containsKey(
+                                                                          'avgBuyPrice')) {
+                                                                    var price =
+                                                                        dataMap[
+                                                                            'avgBuyPrice'];
+                                                                    var priceParsed =
+                                                                        double.tryParse(
+                                                                            price);
+
+                                                                    if (priceParsed !=
+                                                                        null) {
+                                                                      var desiredBuyAmountParsed =
+                                                                          double.tryParse(
+                                                                              _desiredBuyAmount.text);
+                                                                      if (desiredBuyAmountParsed !=
+                                                                          null) {
+                                                                        var result =
+                                                                            priceParsed *
+                                                                                desiredBuyAmountParsed;
+
+                                                                        _coinPriceCalcuationResult =
+                                                                            Converter.currencyFormat(result.toInt());
+                                                                        setState(
+                                                                            () {});
+                                                                      }
+                                                                    }
+                                                                  }
+                                                                },
+                                                                icon:
+                                                                    const Icon(
+                                                                  Icons
+                                                                      .calculate,
+                                                                  size: 30,
+                                                                ))),
+                                                        SizedBox(
+                                                            width: 130,
+                                                            height: 30,
+                                                            child: FittedBox(
+                                                                fit: BoxFit
+                                                                    .contain,
+                                                                child: Text(
+                                                                    _coinPriceCalcuationResult !=
+                                                                            ''
+                                                                        ? '$_coinPriceCalcuationResult 원'
+                                                                        : '',
+                                                                    style: const TextStyle(
+                                                                        fontSize:
+                                                                            8))))
+                                                      ]),
                                                       const SizedBox(
                                                           height: 10),
                                                       Row(

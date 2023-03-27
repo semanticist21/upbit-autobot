@@ -1,7 +1,7 @@
 name: upbit_autobot
 description: upbit autobot with bollinger lower buying strategy.
 publish_to: 'none'
-version: 1.0.3
+version: 1.0.4
 
 environment:
   sdk: '>=3.0.0-312.0.dev <4.0.0'

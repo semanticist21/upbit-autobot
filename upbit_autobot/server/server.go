@@ -16,6 +16,7 @@ import (
 	"github.com/semanticist21/upbit-client-server/converter"
 	"github.com/semanticist21/upbit-client-server/detector"
 	"github.com/semanticist21/upbit-client-server/model"
+	"github.com/semanticist21/upbit-client-server/order"
 	"github.com/semanticist21/upbit-client-server/singleton"
 )
 
@@ -245,6 +246,12 @@ func handleBalance(w http.ResponseWriter, r *http.Request) {
 		doKrwHandle(w, r)
 	case "all":
 		doAllHandle(w, r)
+	default:
+		if vars != "" {
+			doIndividualCoinHandle(w, r, vars)
+		} else {
+			w.WriteHeader(http.StatusBadRequest)
+		}
 	}
 
 }
@@ -336,6 +343,43 @@ func doAllHandle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(bytes)
 	singleton.InstanceLogger().Msgs <- "코인 구매내역 전송되었습니다."
+}
+
+func doIndividualCoinHandle(w http.ResponseWriter, r *http.Request, coinMarketname string) {
+	markets, _, err := singleton.InstanceClient().GetMarkets()
+	marketMap := make(map[string]bool)
+
+	if err != nil {
+		singleton.InstanceLogger().Errs <- fmt.Errorf("마켓 정보 조회 중 오류 발생 %s", err.Error())
+	} else {
+		for _, market := range markets {
+			marketMap[market.Market] = true
+		}
+	}
+
+	if len(marketMap) != 0 {
+		if _, ok := marketMap[coinMarketname]; !ok {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+	}
+
+	price, err := order.GetCurrentPrice(singleton.InstanceClient(), coinMarketname)
+	if err != nil {
+		singleton.InstanceLogger().Errs <- err
+		return
+	}
+
+	coinbalance := model.CoinBalance{CoinName: coinMarketname, AvgBuyPrice: converter.Float64ToString(price, 4), Balance: strconv.Itoa(0)}
+	bytes, err := json.Marshal(coinbalance)
+
+	if err != nil {
+		incurMarshalError(w)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(bytes)
 }
 
 func handleLogs(w http.ResponseWriter, r *http.Request) {
