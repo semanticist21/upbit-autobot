@@ -36,7 +36,7 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 	for {
 		// 전체 사이클 회수(최대 10개니 대략 5~6초 소요)
 		// whole cycle wait(without it, maximum it takes 5-6seconds)
-		time.Sleep(time.Millisecond * 30000)
+		time.Sleep(time.Millisecond * 5000)
 
 		if len(singleton.InstanceBuyTargetItems().Items) == 0 {
 			continue
@@ -136,8 +136,8 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 
 			// price requirements
 			// before entering into action
-			// + 0.001% because market buy
-			if (price * 1.001) > lower {
+			// + 0.0005% because market buy
+			if (price * 1.0005) > lower {
 				continue
 			}
 
@@ -358,7 +358,7 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 	singleton.InstanceLogger().Msgs <- "판매 감시 봇 작동 시작."
 	for {
 		// whole cycle wait
-		time.Sleep(time.Millisecond * 10000)
+		time.Sleep(time.Millisecond * 5000)
 
 		if len(singleton.InstanceSellTargetItems().BoughtItems) == 0 {
 			continue
