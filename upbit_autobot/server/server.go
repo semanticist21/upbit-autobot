@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
@@ -47,7 +48,6 @@ func startServer() {
 	if err := http.ListenAndServe("localhost:8080", nil); err != nil {
 		singleton.InstanceLogger().Errs <- err
 	}
-
 }
 
 func originCheckingMiddleware(next http.HandlerFunc) http.HandlerFunc {
@@ -448,6 +448,7 @@ func handleSocketLog(w http.ResponseWriter, r *http.Request) {
 	defer conn.Close()
 
 	for {
+		time.Sleep(time.Millisecond * 500)
 		singleton.InstanceLogger().WriteLogReponse(conn)
 	}
 }
