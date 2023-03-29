@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/sangx2/upbit"
-	"github.com/semanticist21/upbit-client-server/bollinger"
 	"github.com/semanticist21/upbit-client-server/converter"
+	"github.com/semanticist21/upbit-client-server/indicator"
 	"github.com/semanticist21/upbit-client-server/model"
 	"github.com/semanticist21/upbit-client-server/order"
 	"github.com/semanticist21/upbit-client-server/singleton"
@@ -131,7 +131,7 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 				continue
 			}
 
-			_, _, lower := bollinger.GetBollinger(item.BollingerMultiplier, &candles)
+			_, _, lower := indicator.GetBollinger(item.BollingerMultiplier, &candles)
 			price, err := order.GetLowestSellOrderBook(client, item.CoinMarketName)
 
 			if err != nil {
