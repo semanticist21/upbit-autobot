@@ -46,3 +46,8 @@ app.*.map.json
 boughtItems.json
 itmes.json
 account.json
+
+/server/boughtItems.json
+/server/itmes.json
+/server/account.json
+/server/history.log
