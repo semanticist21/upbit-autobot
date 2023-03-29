@@ -431,12 +431,13 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 
 				index := -1
 				for i := 0; i < len(singleton.InstanceBuyTargetItems().Items); i++ {
-					if sellTargetItem.ItemId == singleton.InstanceBuyTargetItems().Items[i].ItemId {
+					if sellTargetItem.ItemId == singleton.InstanceBuyTargetItems().Items[i].ItemId && singleton.InstanceBuyTargetItems().Items[i].PurchaseCount == 0 {
 						index = i
 						break
 					}
 				}
 				if index != -1 {
+					singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 구매 회수가 0이라 해당 구매 코인 리스트에서도 삭제됐습니다.", sellTargetItem.CoinMarketName)
 					singleton.InstanceBuyTargetItems().Items = append(singleton.InstanceBuyTargetItems().Items[:index], singleton.InstanceBuyTargetItems().Items[index+1:]...)
 				}
 
