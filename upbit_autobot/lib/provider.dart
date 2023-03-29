@@ -144,6 +144,7 @@ class AppProvider extends ChangeNotifier {
           for (var i = 0; i < items.length; i++) {
             if (items[i].itemId == sentItem.itemId) {
               items[i] = sentItem;
+              notifyListeners();
               break;
             }
           }

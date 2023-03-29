@@ -462,7 +462,7 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 					// delete from sell target coin
 					singleton.InstanceSellTargetItems().BoughtItems = append(singleton.InstanceSellTargetItems().BoughtItems[:i], singleton.InstanceSellTargetItems().BoughtItems[i+1:]...)
 					singleton.SaveSellTargetStrategyItems()
-					singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 익절 완료, 매도 양: %.8f, 매도 가격: %s", sellTargetItem.CoinMarketName, sellTargetItem.ExecutedVolume, orderResult.Price)
+					singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 익절 완료, 매도 양: %.8f, 매도 가격 : %s", sellTargetItem.CoinMarketName, sellTargetItem.ExecutedVolume, orderResult.Price)
 					sendKrwAndCoinBalance(client)
 
 					// buy strategy item loop
