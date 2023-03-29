@@ -428,7 +428,21 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 			if !hasCoinInAcc {
 				singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 해당 코인의 계좌 잔고가 존재하지 않아 판매 감시 대상에서 삭제합니다.", sellTargetItem.CoinMarketName)
 				singleton.InstanceSellTargetItems().BoughtItems = append(singleton.InstanceSellTargetItems().BoughtItems[:i], singleton.InstanceSellTargetItems().BoughtItems[i+1:]...)
+
+				index := -1
+				for i := 0; i < len(singleton.InstanceBuyTargetItems().Items); i++ {
+					if sellTargetItem.ItemId == singleton.InstanceBuyTargetItems().Items[i].ItemId {
+						index = i
+						break
+					}
+				}
+				if index != -1 {
+					singleton.InstanceBuyTargetItems().Items = append(singleton.InstanceBuyTargetItems().Items[:index], singleton.InstanceBuyTargetItems().Items[index+1:]...)
+				}
+
 				singleton.SaveSellTargetStrategyItems()
+				singleton.SaveStrategyBuyTargetItems()
+
 				i -= 1
 				continue
 			}

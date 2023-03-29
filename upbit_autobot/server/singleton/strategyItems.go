@@ -68,13 +68,23 @@ func SetBuyTargetItemsIchimokuInstance(newItems *model.BuyStrategyIchimokuItemIn
 	SaveStrategyBuyTargetIchimokuItems()
 }
 
-var buyFileName = "items.json"
+var buyFileName = "saves/items.json"
 var buyIchimokuFileName = "saves/items_ichimoku.json"
-var sellFileName = "boughtItems.json"
+var sellFileName = "saves/boughtItems.json"
 
 func InitStrategyItemsAll() {
+	MakeFolder()
 	InitStrategyIchimokuItems()
 	InitStrategyItems()
+}
+
+func MakeFolder() {
+	dir := "saves"
+
+	err := os.MkdirAll(dir, 0755)
+	if err != nil {
+		InstanceLogger().Errs <- err
+	}
 }
 
 func InitStrategyIchimokuItems() {
