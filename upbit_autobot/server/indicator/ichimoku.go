@@ -6,7 +6,7 @@ import (
 	"github.com/sangx2/upbit/model/quotation"
 )
 
-func GetIchimokuConversionLIne(candles []*quotation.Candle) float64 {
+func GetIchimokuConversionLine(candles []*quotation.Candle) float64 {
 	highest := 0.
 	lowest := math.MaxFloat64
 
