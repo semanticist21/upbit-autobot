@@ -9,22 +9,27 @@ import (
 	"github.com/semanticist21/upbit-client-server/model"
 )
 
-var buyTargetitems *model.BuyStrategyItemInfos
-var sellTargetitems *model.SellTargetStrategyItemInfos
+var buyTargetItems *model.BuyStrategyItemInfos
+var buyTargetIchimokuItems *model.BuyStrategyIchimokuItemInfos
+var sellTargetItems *model.SellTargetStrategyItemInfos
 var mutex sync.Mutex
 
 func InstanceBuyTargetItems() *model.BuyStrategyItemInfos {
-	return buyTargetitems
+	return buyTargetItems
 }
 
 func InstanceSellTargetItems() *model.SellTargetStrategyItemInfos {
-	return sellTargetitems
+	return sellTargetItems
+}
+
+func InstanceBuyTargetIchimokuItems() *model.SellTargetStrategyItemInfos {
+	return sellTargetItems
 }
 
 func SetBuyTargetItemsInstance(newItems *model.BuyStrategyItemInfos) {
 	dic := make(map[string]int)
 
-	for idx, item := range buyTargetitems.Items {
+	for idx, item := range buyTargetItems.Items {
 		dic[item.ItemId] = idx
 	}
 
@@ -34,16 +39,75 @@ func SetBuyTargetItemsInstance(newItems *model.BuyStrategyItemInfos) {
 		// items from client, if there are items which are in server too,
 		// then replace with it.
 		if _, ok := dic[newItem.ItemId]; ok {
-			newItems.Items[i] = buyTargetitems.Items[dic[newItem.ItemId]]
+			newItems.Items[i] = buyTargetItems.Items[dic[newItem.ItemId]]
 		}
 	}
 
-	buyTargetitems = newItems
+	buyTargetItems = newItems
 	SaveStrategyBuyTargetItems()
 }
 
+func SetBuyTargetItemsIchimokuInstance(newItems *model.BuyStrategyIchimokuItemInfos) {
+	dic := make(map[string]int)
+
+	for idx, item := range buyTargetIchimokuItems.Items {
+		dic[item.ItemId] = idx
+	}
+
+	for i := 0; i < len(newItems.Items); i++ {
+		newItem := newItems.Items[i]
+
+		// items from client, if there are items which are in server too,
+		// then replace with it.
+		if _, ok := dic[newItem.ItemId]; ok {
+			newItems.Items[i] = buyTargetIchimokuItems.Items[dic[newItem.ItemId]]
+		}
+	}
+
+	buyTargetIchimokuItems = newItems
+	SaveStrategyBuyTargetIchimokuItems()
+}
+
 var buyFileName = "items.json"
+var buyIchimokuFileName = "saves/items_ichimoku.json"
 var sellFileName = "boughtItems.json"
+
+func InitStrategyItemsAll() {
+	InitStrategyIchimokuItems()
+	InitStrategyItems()
+}
+
+func InitStrategyIchimokuItems() {
+	file, err := os.OpenFile(buyIchimokuFileName, os.O_RDWR|os.O_CREATE, 0644)
+
+	if err != nil {
+		InstanceLogger().Errs <- err
+		return
+	}
+
+	defer file.Close()
+	bytes, err := io.ReadAll(file)
+
+	if err != nil {
+		InstanceLogger().Errs <- err
+		return
+	}
+
+	if len(bytes) == 0 {
+		buyTargetIchimokuItems = &model.BuyStrategyIchimokuItemInfos{Items: []*model.BuyStrategyIchimokuItemInfo{}}
+		return
+	}
+
+	var saveditems *model.BuyStrategyIchimokuItemInfos
+
+	marshalErr := json.Unmarshal(bytes, &saveditems)
+
+	if marshalErr != nil {
+		InstanceLogger().Errs <- err
+	}
+
+	buyTargetIchimokuItems = saveditems
+}
 
 func InitStrategyItems() {
 	file, err := os.OpenFile(buyFileName, os.O_RDWR|os.O_CREATE, 0644)
@@ -62,7 +126,7 @@ func InitStrategyItems() {
 	}
 
 	if len(bytes) == 0 {
-		buyTargetitems = &model.BuyStrategyItemInfos{Items: []*model.BuyStrategyItemInfo{}}
+		buyTargetItems = &model.BuyStrategyItemInfos{Items: []*model.BuyStrategyItemInfo{}}
 		return
 	}
 
@@ -74,7 +138,8 @@ func InitStrategyItems() {
 		InstanceLogger().Errs <- err
 	}
 
-	buyTargetitems = saveditems
+	buyTargetItems = saveditems
+
 }
 
 func InitSellStrategyItems() {
@@ -94,7 +159,7 @@ func InitSellStrategyItems() {
 	}
 
 	if len(bytes) == 0 {
-		sellTargetitems = &model.SellTargetStrategyItemInfos{BoughtItems: []*model.SellTargetStrategyItemInfo{}}
+		sellTargetItems = &model.SellTargetStrategyItemInfos{BoughtItems: []*model.SellTargetStrategyItemInfo{}}
 		return
 	}
 	var savedItems *model.SellTargetStrategyItemInfos
@@ -106,18 +171,24 @@ func InitSellStrategyItems() {
 		panic("can't initialize sell items")
 	}
 
-	sellTargetitems = savedItems
+	sellTargetItems = savedItems
 }
 
 func SaveStrategyBuyTargetItems() {
 	mutex.Lock()
-	saveInJson(buyTargetitems, buyFileName)
+	saveInJson(buyTargetItems, buyFileName)
 	mutex.Unlock()
 }
 
 func SaveSellTargetStrategyItems() {
 	mutex.Lock()
-	saveInJson(sellTargetitems, sellFileName)
+	saveInJson(sellTargetItems, sellFileName)
+	mutex.Unlock()
+}
+
+func SaveStrategyBuyTargetIchimokuItems() {
+	mutex.Lock()
+	saveInJson(buyTargetIchimokuItems, buyIchimokuFileName)
 	mutex.Unlock()
 }
 

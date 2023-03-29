@@ -214,7 +214,7 @@ func doHandlePostLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func getAccountFile() (*os.File, error) {
-	fileName := "account.json"
+	fileName := "saves/account.json"
 
 	file, err := os.OpenFile(fileName, os.O_CREATE|os.O_RDWR, 0644)
 	if err != nil {

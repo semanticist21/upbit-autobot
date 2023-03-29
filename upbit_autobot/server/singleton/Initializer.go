@@ -11,7 +11,7 @@ func Init() {
 	logger.RunLogger()
 
 	// get saved items
-	InitStrategyItems()
+	InitStrategyItemsAll()
 	InitSellStrategyItems()
 	InitItemsCh()
 }
