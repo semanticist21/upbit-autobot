@@ -1,10 +1,10 @@
 package model
 
 type Ichimoku struct {
-	ConversionLinePeriod int
-	BaseLinePeriod       int
-	LaggingSpan2Period   int
-	Displacement         int
+	ConversionLinePeriod int `json:"conversionLinePeriod"`
+	BaseLinePeriod       int `json:"baseLinePeriod"`
+	LaggingSpan2Period   int `json:"laggingSpan2Period"`
+	Displacement         int `json:"displacement"`
 }
 
 func NewIchimoku() Ichimoku {
