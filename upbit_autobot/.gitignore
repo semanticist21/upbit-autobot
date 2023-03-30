@@ -47,10 +47,10 @@ boughtItems.json
 itmes.json
 account.json
 
-/server/boughtItems.json
-/server/itmes.json
-/server/account.json
-/server/history.log
+server/boughtItems.json
+server/itmes.json
+server/account.json
+server/history.log
 
-/server/saves
-/server/_debug_bin.exe
+server/saves/
+server/_debug_bin.exe
