@@ -43,7 +43,7 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 		time.Sleep(time.Millisecond * 5000)
 		TheBuyCycleOngoing = true
 
-		if len(singleton.InstanceBuyTargetItems().Items) == 0 {
+		if len(singleton.InstanceBuyTargetItems().BollingerItems) == 0 {
 			continue
 		}
 
@@ -59,8 +59,8 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 		}
 
 		// check whether market exists.
-		for i := 0; i < len(singleton.InstanceBuyTargetItems().Items); i++ {
-			item := singleton.InstanceBuyTargetItems().Items[i]
+		for i := 0; i < len(singleton.InstanceBuyTargetItems().BollingerItems); i++ {
+			item := singleton.InstanceBuyTargetItems().BollingerItems[i]
 
 			// prevent from indexing non-existant item
 			// for case when item deleted during iteration.
@@ -71,7 +71,7 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 			if len(marketMap) != 0 {
 				if _, ok := marketMap[item.CoinMarketName]; !ok {
 					singleton.InstanceLogger().Errs <- fmt.Errorf("%s 해당 마켓이 업비트에 존재하지 않아 구매 감시 대상에서 제외합니다", item.CoinMarketName)
-					singleton.InstanceBuyTargetItems().Items = append(singleton.InstanceBuyTargetItems().Items[:i], singleton.InstanceBuyTargetItems().Items[i+1:]...)
+					singleton.InstanceBuyTargetItems().BollingerItems = append(singleton.InstanceBuyTargetItems().BollingerItems[:i], singleton.InstanceBuyTargetItems().BollingerItems[i+1:]...)
 					singleton.SaveStrategyBuyTargetItems()
 
 					// queue in deletion
@@ -108,7 +108,7 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 			if err != nil {
 				singleton.InstanceLogger().Errs <- err
 				singleton.InstanceLogger().Errs <- fmt.Errorf("%s 분봉이 잘못된 전략을 삭제합니다. 다시 생성해 주세요", item.CoinMarketName)
-				singleton.InstanceBuyTargetItems().Items = append(singleton.InstanceBuyTargetItems().Items[:i], singleton.InstanceBuyTargetItems().Items[i+1:]...)
+				singleton.InstanceBuyTargetItems().BollingerItems = append(singleton.InstanceBuyTargetItems().BollingerItems[:i], singleton.InstanceBuyTargetItems().BollingerItems[i+1:]...)
 				singleton.SaveStrategyBuyTargetItems()
 
 				// queue in deletion
@@ -221,7 +221,7 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 					// case - there is no sell target item, and also consumed all purchased count.
 					if !hasSellTargetItem {
 						singleton.InstanceLogger().Errs <- fmt.Errorf("%s 볼륨 취득 실패 및 구매 횟수 소진으로 인해 아이템을 삭제합니다", item.CoinMarketName)
-						singleton.InstanceBuyTargetItems().Items = append(singleton.InstanceBuyTargetItems().Items[:i], singleton.InstanceBuyTargetItems().Items[i+1:]...)
+						singleton.InstanceBuyTargetItems().BollingerItems = append(singleton.InstanceBuyTargetItems().BollingerItems[:i], singleton.InstanceBuyTargetItems().BollingerItems[i+1:]...)
 						singleton.SaveStrategyBuyTargetItems()
 					}
 				}
@@ -371,7 +371,7 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 		}
 
 		dic := make(map[string]bool)
-		for _, item := range singleton.InstanceBuyTargetItems().Items {
+		for _, item := range singleton.InstanceBuyTargetItems().BollingerItems {
 			dic[item.ItemId] = true
 		}
 
@@ -430,15 +430,15 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 				singleton.InstanceSellTargetItems().BoughtItems = append(singleton.InstanceSellTargetItems().BoughtItems[:i], singleton.InstanceSellTargetItems().BoughtItems[i+1:]...)
 
 				index := -1
-				for i := 0; i < len(singleton.InstanceBuyTargetItems().Items); i++ {
-					if sellTargetItem.ItemId == singleton.InstanceBuyTargetItems().Items[i].ItemId && singleton.InstanceBuyTargetItems().Items[i].PurchaseCount == 0 {
+				for i := 0; i < len(singleton.InstanceBuyTargetItems().BollingerItems); i++ {
+					if sellTargetItem.ItemId == singleton.InstanceBuyTargetItems().BollingerItems[i].ItemId && singleton.InstanceBuyTargetItems().BollingerItems[i].PurchaseCount == 0 {
 						index = i
 						break
 					}
 				}
 				if index != -1 {
 					singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 구매 회수가 0이라 해당 구매 코인 리스트에서도 삭제됐습니다.", sellTargetItem.CoinMarketName)
-					singleton.InstanceBuyTargetItems().Items = append(singleton.InstanceBuyTargetItems().Items[:index], singleton.InstanceBuyTargetItems().Items[index+1:]...)
+					singleton.InstanceBuyTargetItems().BollingerItems = append(singleton.InstanceBuyTargetItems().BollingerItems[:index], singleton.InstanceBuyTargetItems().BollingerItems[index+1:]...)
 				}
 
 				singleton.SaveSellTargetStrategyItems()
@@ -481,15 +481,15 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 					sendKrwAndCoinBalance(client)
 
 					// buy strategy item loop
-					for j := 0; j < len(singleton.InstanceBuyTargetItems().Items); j++ {
-						if singleton.InstanceBuyTargetItems().Items[j] == nil {
+					for j := 0; j < len(singleton.InstanceBuyTargetItems().BollingerItems); j++ {
+						if singleton.InstanceBuyTargetItems().BollingerItems[j] == nil {
 							continue
 						}
 
 						// delete if count == 0
-						if singleton.InstanceBuyTargetItems().Items[j].ItemId == sellTargetItem.ItemId {
-							if singleton.InstanceBuyTargetItems().Items[j].PurchaseCount == 0 {
-								singleton.InstanceBuyTargetItems().Items = append(singleton.InstanceBuyTargetItems().Items[:j], singleton.InstanceBuyTargetItems().Items[j+1:]...)
+						if singleton.InstanceBuyTargetItems().BollingerItems[j].ItemId == sellTargetItem.ItemId {
+							if singleton.InstanceBuyTargetItems().BollingerItems[j].PurchaseCount == 0 {
+								singleton.InstanceBuyTargetItems().BollingerItems = append(singleton.InstanceBuyTargetItems().BollingerItems[:j], singleton.InstanceBuyTargetItems().BollingerItems[j+1:]...)
 								singleton.SaveStrategyBuyTargetItems()
 
 								// queue in delete
@@ -532,15 +532,15 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 					singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 손절 완료, 매도 양: %.8f, 매도 가격: %s", sellTargetItem.CoinMarketName, sellTargetItem.ExecutedVolume, orderResult.Price)
 					sendKrwAndCoinBalance(client)
 
-					for j := 0; j < len(singleton.InstanceBuyTargetItems().Items); j++ {
-						if singleton.InstanceBuyTargetItems().Items[j] == nil {
+					for j := 0; j < len(singleton.InstanceBuyTargetItems().BollingerItems); j++ {
+						if singleton.InstanceBuyTargetItems().BollingerItems[j] == nil {
 							continue
 						}
 
 						// delete if count == 0
-						if singleton.InstanceBuyTargetItems().Items[j].ItemId == sellTargetItem.ItemId {
-							if singleton.InstanceBuyTargetItems().Items[j].PurchaseCount == 0 {
-								singleton.InstanceBuyTargetItems().Items = append(singleton.InstanceBuyTargetItems().Items[:j], singleton.InstanceBuyTargetItems().Items[j+1:]...)
+						if singleton.InstanceBuyTargetItems().BollingerItems[j].ItemId == sellTargetItem.ItemId {
+							if singleton.InstanceBuyTargetItems().BollingerItems[j].PurchaseCount == 0 {
+								singleton.InstanceBuyTargetItems().BollingerItems = append(singleton.InstanceBuyTargetItems().BollingerItems[:j], singleton.InstanceBuyTargetItems().BollingerItems[j+1:]...)
 								singleton.SaveStrategyBuyTargetItems()
 
 								// queue in delete

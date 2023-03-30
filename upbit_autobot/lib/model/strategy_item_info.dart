@@ -36,7 +36,7 @@ class StrategyItemInfo {
         candleBaseMinute: minuteCandle);
 
     model.color = ColorInfo(color: ColorInfo.generateRandomColor());
-    model.itemId = generateRandomString();
+    model.itemId = _generateRandomString();
     model.lastBoughtTimeStamp = '';
 
     return model;
@@ -102,7 +102,7 @@ class StrategyItemInfo {
       required this.desiredBuyAmount,
       required this.candleBaseMinute});
 
-  static String generateRandomString() {
+  static String _generateRandomString() {
     var random = Random();
     var randomBytes = List.generate(32, (index) => random.nextInt(256));
     var digest = sha256.convert(randomBytes);

@@ -1,7 +1,7 @@
 package model
 
 type BuyStrategyItemInfos struct {
-	Items []*BuyStrategyItemInfo `json:"items"`
+	BollingerItems []*BuyStrategyItemInfo `json:"items"`
 }
 
 // Buy startegy Item info.

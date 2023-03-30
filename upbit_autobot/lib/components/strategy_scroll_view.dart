@@ -202,7 +202,11 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
 
     var items = provider.items;
     var data = items.map((element) => element.toJson()).toList();
-    var result = RestApiClient.encodeData({'items': data});
+    var bollingerItemDic = {'items': data};
+    var ichimokuItemDic = {'items': List.empty()};
+
+    var result = RestApiClient.encodeData(
+        {'bollingerItems': bollingerItemDic, 'ichimokuItems': ichimokuItemDic});
 
     await RestApiClient().requestPost('items', result);
     await provider.doBuyItemsRequest();

@@ -22,24 +22,24 @@ func InstanceSellTargetItems() *model.SellTargetStrategyItemInfos {
 	return sellTargetItems
 }
 
-func InstanceBuyTargetIchimokuItems() *model.SellTargetStrategyItemInfos {
-	return sellTargetItems
+func InstanceBuyTargetIchimokuItems() *model.BuyStrategyIchimokuItemInfos {
+	return buyTargetIchimokuItems
 }
 
 func SetBuyTargetItemsInstance(newItems *model.BuyStrategyItemInfos) {
 	dic := make(map[string]int)
 
-	for idx, item := range buyTargetItems.Items {
+	for idx, item := range buyTargetItems.BollingerItems {
 		dic[item.ItemId] = idx
 	}
 
-	for i := 0; i < len(newItems.Items); i++ {
-		newItem := newItems.Items[i]
+	for i := 0; i < len(newItems.BollingerItems); i++ {
+		newItem := newItems.BollingerItems[i]
 
 		// items from client, if there are items which are in server too,
 		// then replace with it.
 		if _, ok := dic[newItem.ItemId]; ok {
-			newItems.Items[i] = buyTargetItems.Items[dic[newItem.ItemId]]
+			newItems.BollingerItems[i] = buyTargetItems.BollingerItems[dic[newItem.ItemId]]
 		}
 	}
 
@@ -114,6 +114,8 @@ func InitStrategyIchimokuItems() {
 
 	if marshalErr != nil {
 		InstanceLogger().Errs <- err
+		saveditems = &model.BuyStrategyIchimokuItemInfos{}
+		return
 	}
 
 	buyTargetIchimokuItems = saveditems
@@ -136,7 +138,7 @@ func InitStrategyItems() {
 	}
 
 	if len(bytes) == 0 {
-		buyTargetItems = &model.BuyStrategyItemInfos{Items: []*model.BuyStrategyItemInfo{}}
+		buyTargetItems = &model.BuyStrategyItemInfos{BollingerItems: []*model.BuyStrategyItemInfo{}}
 		return
 	}
 
@@ -146,6 +148,8 @@ func InitStrategyItems() {
 
 	if marshalErr != nil {
 		InstanceLogger().Errs <- err
+		saveditems = &model.BuyStrategyItemInfos{}
+		return
 	}
 
 	buyTargetItems = saveditems

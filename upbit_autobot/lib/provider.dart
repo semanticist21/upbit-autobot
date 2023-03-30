@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:isolate';
 
 import 'package:flutter/widgets.dart';
+import 'package:upbit_autobot/model/strategy_item_info_ichimoku.dart';
 
 import 'client/client.dart';
 import 'model/balance.dart';
@@ -18,6 +19,7 @@ class AppProvider extends ChangeNotifier {
 
   List<CoinBalance> boughtItems = List.empty(growable: true);
   List<StrategyItemInfo> items = List.empty(growable: true);
+  List<StrategyIchimokuItemInfo> ichimokuItems = List.empty(growable: true);
 
   AppProvider._init();
   static final AppProvider _instance = AppProvider._init();
@@ -77,16 +79,25 @@ class AppProvider extends ChangeNotifier {
     }
 
     Map<String, dynamic> data = jsonDecode(bodyStr);
-    if (data['items'] == null) {
-      return;
+    if (data['bollingerItems']['items'] != null) {
+      List<dynamic> sentItems = data['bollingerItems']['items'];
+      items.clear();
+
+      for (var el in sentItems) {
+        items.add(StrategyItemInfo.fromJson(el));
+      }
     }
 
-    List<dynamic> sentItems = data['items'];
-    items.clear();
+    if (data['ichimokuItems']['items'] != null) {
+      List<dynamic> sentItems = data['ichimokuItems']['items'];
+      ichimokuItems.clear();
 
-    for (var el in sentItems) {
-      items.add(StrategyItemInfo.fromJson(el));
+      for (var el in sentItems) {
+        ichimokuItems.add(StrategyIchimokuItemInfo.fromJson(el));
+      }
     }
+
+    // ichimoku get
     notifyListeners();
   }
 
@@ -133,8 +144,6 @@ class AppProvider extends ChangeNotifier {
           var coinBalance = CoinBalance.fromJson(element);
           boughtItems.add(coinBalance);
           boughtItems.sort((a, b) => _checkorder(b, a));
-
-          notifyListeners();
         }
       }
 
@@ -144,7 +153,18 @@ class AppProvider extends ChangeNotifier {
           for (var i = 0; i < items.length; i++) {
             if (items[i].itemId == sentItem.itemId) {
               items[i] = sentItem;
-              notifyListeners();
+              break;
+            }
+          }
+        }
+      }
+
+      if (data.containsKey('Ichimokuitems')) {
+        var sentItem = StrategyIchimokuItemInfo.fromJson(data['ichimokuItem']);
+        if (sentItem.itemId != '') {
+          for (var i = 0; i < items.length; i++) {
+            if (ichimokuItems[i].itemId == sentItem.itemId) {
+              ichimokuItems[i] = sentItem;
               break;
             }
           }
@@ -155,6 +175,13 @@ class AppProvider extends ChangeNotifier {
         for (var i = 0; i < items.length; i++) {
           if (items[i].itemId == data['DeletedItemId']) {
             items.removeAt(i);
+            break;
+          }
+        }
+
+        for (var i = 0; i < ichimokuItems.length; i++) {
+          if (ichimokuItems[i].itemId == data['DeletedItemId']) {
+            ichimokuItems.removeAt(i);
             break;
           }
         }

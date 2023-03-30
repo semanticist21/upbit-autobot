@@ -448,7 +448,7 @@ func handleItems(w http.ResponseWriter, r *http.Request) {
 func doGetHandleItems(w http.ResponseWriter) {
 	// items update
 	w.Header().Set("Content-Type", "application/json")
-	data, err := json.Marshal(singleton.InstanceBuyTargetItems())
+	data, err := json.Marshal(model.NewStrategyItemContainer(singleton.InstanceBuyTargetItems(), singleton.InstanceBuyTargetIchimokuItems()))
 
 	if err != nil {
 		singleton.InstanceLogger().Errs <- err
@@ -480,7 +480,7 @@ func doPostHandleItems(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	items := model.BuyStrategyItemInfos{}
+	items := model.StrategyItemContainer{}
 	marshalErr := json.Unmarshal(data, &items)
 
 	if marshalErr != nil {
@@ -489,17 +489,23 @@ func doPostHandleItems(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newItemsDic := make(map[string]bool)
-	for _, item := range items.Items {
+	for _, item := range items.BollingerItems.BollingerItems {
+		newItemsDic[item.ItemId] = true
+	}
+	for _, item := range items.IchimokuItems.Items {
 		newItemsDic[item.ItemId] = true
 	}
 
 	existingItemsDic := make(map[string]bool)
-	for _, item := range singleton.InstanceBuyTargetItems().Items {
-		newItemsDic[item.ItemId] = true
+	for _, item := range singleton.InstanceBuyTargetItems().BollingerItems {
+		existingItemsDic[item.ItemId] = true
+	}
+	for _, item := range singleton.InstanceBuyTargetIchimokuItems().Items {
+		existingItemsDic[item.ItemId] = true
 	}
 
 	for detector.TheBuyCycleOngoing && detector.TheSellCycleOngoing {
-		time.Sleep(time.Microsecond * 500)
+		time.Sleep(time.Millisecond * 500)
 		if !detector.TheBuyCycleOngoing && !detector.TheSellCycleOngoing {
 			break
 		}
@@ -523,7 +529,8 @@ func doPostHandleItems(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	singleton.SetBuyTargetItemsInstance(&items)
+	singleton.SetBuyTargetItemsInstance(items.BollingerItems)
+	singleton.SetBuyTargetItemsIchimokuInstance(items.IchimokuItems)
 	singleton.InstanceLogger().Msgs <- "전략 아이템 저장되었습니다."
 	w.WriteHeader(http.StatusOK)
 }
