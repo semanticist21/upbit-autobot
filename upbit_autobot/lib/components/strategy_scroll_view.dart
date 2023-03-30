@@ -1,3 +1,6 @@
+import 'dart:ui';
+
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -7,6 +10,7 @@ import 'package:upbit_autobot/model/strategy_item_info.dart';
 import '../client/client.dart';
 import '../provider.dart';
 import 'add_dialog.dart';
+import 'add_dialog_new.dart';
 
 class StrategyScrollView extends StatefulWidget {
   const StrategyScrollView({super.key});
@@ -94,7 +98,7 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
                                               style: TextStyle(fontSize: 15)),
                                           SizedBox(height: 10),
                                           Text(
-                                              '3. 추가된 아이템은 바로 매도/매수 감시에 들어가며 지정된 동작을 합니다.\n\t\t\t\t마지막 거래가 기준 설정된 볼린저밴드의 하단에 닿으면 매수합니다. \n\n\t\t\t\t구매 지정 회수 소진 및 손절/익절이 끝나면 리스트에서 자동 삭제됩니다.\n\t\t\t\t구매 중단 및 손절/익절 감지를 끝내려면 아이템 오른쪽 클릭 후 삭제하세요.',
+                                              '3. 추가된 아이템은 바로 매도/매수 감시에 들어가며 지정된 동작을 합니다.\n\t\t\t\t마지막 거래가 기준 설정된 볼린저밴드의 하단(혹은 일목선)에 닿으면\n\t\t\t\t매수합니다. \n\n\t\t\t\t구매 지정 회수 소진 및 손절/익절이 끝나면 리스트에서 자동 삭제됩니다.\n\t\t\t\t구매 중단 및 손절/익절 감지를 끝내려면 아이템 오른쪽 클릭 후 삭제하세요.',
                                               style: TextStyle(fontSize: 15)),
                                           SizedBox(height: 20),
                                           Divider(),
@@ -115,7 +119,7 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
                                           ]),
                                           SizedBox(height: 10),
                                           Text(
-                                              '- 볼린저 길이/곱 : 지표 기준 계산용\n\n- 카운트 : 구매 할 회수. 간격은 기준 분봉의 길이를 따름\n\t\t\t1분 봉의 경우 오차가 있을 수 있음.\n\t\t\t(?분 마다 볼밴 하단에 매수)\n\n- 기준 분봉 : 계산에 필요한 분봉기준, 1, 3, 5, 15, 30, 60, 240 택1\n\n- 손절/익절 기준 : 평균 매수가로부터 실현할 가격 입력. 0 입력 시 실행 안함.\n\t\t(가령, 손절 5%, 익절 0% 설정 시, -5%가 되지 않는 이상 계속 들고 있습니다.)\n\n- 수량 : 코인 수량. 매수 진행은 원화 기준이므로 실제 실행 물량과 다를 수 있음.\n\n- 진행 여부 : 구매 시 체크되며, 구매 회수 0 및 익절/손절 완료시 아이템 삭제됨.\n\t\t(익절/손절 감시 진행시에는 구매 회수 0에도 삭제되지 않음)\n\n\n 문의 : semanticist0@gmail.com',
+                                              '- 볼린저 길이/곱 : 지표 기준 계산용, 하단선 계산에 사용됩니다.\n\n- 컨버젼 길이(일목) : 일목 지표에서 컨버젼/ 베이스 지표에서 사용되는\n\t\t\t(길이 내 최고점 + 길이 내 최저점) / 2 계산에 사용됩니다.\n\n- 카운트 : 구매 할 회수. 간격은 기준 분봉의 길이를 따름\n\t\t\t1분 봉의 경우 오차가 있을 수 있음.\n\t\t\t(?분 마다 볼밴 하단에 매수)\n\n- 기준 분봉 : 계산에 필요한 분봉기준, 1, 3, 5, 15, 30, 60, 240 택1\n\n- 손절/익절 기준 : 평균 매수가로부터 실현할 가격 입력. 0 입력 시 실행 안함.\n\t\t(가령, 손절 5%, 익절 0% 설정 시, -5%가 되지 않는 이상 계속 들고 있습니다.)\n\n- 수량 : 코인 수량. 매수 진행은 원화 기준이므로 실제 실행 물량과 다를 수 있음.\n\n- 진행 여부 : 구매 시 체크되며, 구매 회수 0 및 익절/손절 완료시 아이템 삭제됨.\n\t\t(익절/손절 감시 진행시에는 구매 회수 0에도 삭제되지 않음)\n\n\n 문의 : semanticist0@gmail.com',
                                               style: TextStyle(fontSize: 15)),
                                         ]))),
                             actions: [
@@ -136,21 +140,81 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
                 padding: EdgeInsets.zero,
                 splashRadius: 15,
               ),
-              IconButton(
-                onPressed: () {
-                  showDialog(
-                      context: context,
-                      builder: (context) {
-                        return Builder(builder: (context) {
-                          return const AddDialog();
-                        });
-                      }).then((value) => _addnewList(_provider, value));
-                },
-                icon: const Icon(FontAwesomeIcons.plus),
-                iconSize: 20,
-                padding: EdgeInsets.zero,
-                splashRadius: 15,
-              ),
+              Listener(
+                  onPointerDown: (event) {
+                    if (event.kind == PointerDeviceKind.mouse &&
+                        event.buttons == kPrimaryMouseButton) {
+                      showMenu(
+                          context: context,
+                          position: RelativeRect.fromLTRB(
+                            event.position.dx,
+                            event.position.dy,
+                            MediaQuery.of(context).size.width -
+                                event.position.dx,
+                            MediaQuery.of(context).size.height -
+                                event.position.dy,
+                          ),
+                          items: [
+                            PopupMenuItem(
+                              child: const Center(
+                                  child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                    SizedBox(width: 10),
+                                    Icon(Icons.bar_chart_sharp),
+                                    SizedBox(width: 20),
+                                    Text('볼린저밴드 아이템 추가')
+                                  ])),
+                              onTap: () async {
+                                await Future.delayed(
+                                    Duration(milliseconds: 100));
+                                showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return Builder(builder: (context) {
+                                            return const AddDialogNew();
+                                          });
+                                        })
+                                    .then((value) =>
+                                        _addnewList(_provider, value));
+                              },
+                            ),
+                            PopupMenuItem(
+                              child: const Center(
+                                  child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                    SizedBox(width: 10),
+                                    Icon(Icons.cloud_circle_sharp),
+                                    SizedBox(width: 20),
+                                    Text('일목 구름대 아이템 추가')
+                                  ])),
+                              onTap: () async {
+                                await Future.delayed(
+                                    Duration(milliseconds: 100));
+                                showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return Builder(builder: (context) {
+                                            return const AddDialog();
+                                          });
+                                        })
+                                    .then((value) =>
+                                        _addnewList(_provider, value));
+                              },
+                            )
+                          ]);
+                    }
+                  },
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: const Icon(FontAwesomeIcons.plus),
+                    iconSize: 20,
+                    padding: EdgeInsets.zero,
+                    splashRadius: 15,
+                  )),
               IconButton(
                 onPressed: () => _saveItems(_provider),
                 icon: const Icon(

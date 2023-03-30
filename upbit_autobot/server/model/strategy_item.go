@@ -17,4 +17,5 @@ type BuyStrategyItemInfo struct {
 	LastBoughtTimestamp string  `json:"lastBoughtTimeStamp"`
 	DesiredBuyAmount    float64 `json:"desiredBuyAmount"`
 	CandleBaseMinute    int     `json:"candleBaseMinute"`
+	Index               int     `json:"index"`
 }

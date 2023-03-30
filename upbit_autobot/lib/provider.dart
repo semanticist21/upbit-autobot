@@ -20,6 +20,7 @@ class AppProvider extends ChangeNotifier {
   List<CoinBalance> boughtItems = List.empty(growable: true);
   List<StrategyItemInfo> items = List.empty(growable: true);
   List<StrategyIchimokuItemInfo> ichimokuItems = List.empty(growable: true);
+  List<dynamic> itemsCollection = List.empty(growable: true);
 
   AppProvider._init();
   static final AppProvider _instance = AppProvider._init();
@@ -79,7 +80,8 @@ class AppProvider extends ChangeNotifier {
     }
 
     Map<String, dynamic> data = jsonDecode(bodyStr);
-    if (data['bollingerItems']['items'] != null) {
+    if (data['bollingerItems'] != null &&
+        data['bollingerItems']['items'] != null) {
       List<dynamic> sentItems = data['bollingerItems']['items'];
       items.clear();
 
@@ -88,7 +90,8 @@ class AppProvider extends ChangeNotifier {
       }
     }
 
-    if (data['ichimokuItems']['items'] != null) {
+    if (data['ichimokuItems'] != null &&
+        data['ichimokuItems']['items'] != null) {
       List<dynamic> sentItems = data['ichimokuItems']['items'];
       ichimokuItems.clear();
 
