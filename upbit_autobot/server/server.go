@@ -557,8 +557,8 @@ func doPostHandleItems(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	items := model.StrategyItemContainer{}
-	marshalErr := json.Unmarshal(data, &items)
+	sentItems := model.StrategyItemContainer{}
+	marshalErr := json.Unmarshal(data, &sentItems)
 
 	if marshalErr != nil {
 		singleton.InstanceLogger().Errs <- marshalErr
@@ -566,10 +566,10 @@ func doPostHandleItems(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newItemsDic := make(map[string]bool)
-	for _, item := range items.BollingerItems.Items {
+	for _, item := range sentItems.BollingerItems.Items {
 		newItemsDic[item.ItemId] = true
 	}
-	for _, item := range items.IchimokuItems.Items {
+	for _, item := range sentItems.IchimokuItems.Items {
 		newItemsDic[item.ItemId] = true
 	}
 
@@ -606,8 +606,8 @@ func doPostHandleItems(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	singleton.SetBuyTargetItemsInstance(items.BollingerItems)
-	singleton.SetBuyTargetItemsIchimokuInstance(items.IchimokuItems)
+	singleton.SetBuyTargetItemsInstance(sentItems.BollingerItems)
+	singleton.SetBuyTargetItemsIchimokuInstance(sentItems.IchimokuItems)
 	singleton.InstanceLogger().Msgs <- "전략 아이템 저장되었습니다."
 	w.WriteHeader(http.StatusOK)
 }

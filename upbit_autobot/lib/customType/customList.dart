@@ -1,7 +1,8 @@
 import 'dart:collection';
 
 class MyCustomList<T> with ListMixin<T> {
-  final List<T> l = List.empty(growable: true);
+  MyCustomList(this.l);
+  final List<T> l;
   late List<void Function()> addListeners = List.empty(growable: true);
   late List<void Function()> changeListeners = List.empty(growable: true);
   late List<void Function(int)> removeListener = List.empty(growable: true);
@@ -34,6 +35,11 @@ class MyCustomList<T> with ListMixin<T> {
   void clear() {
     super.clear();
     notifyListeners(cleanListeners);
+  }
+
+  @override
+  void addAll(Iterable<T> iterable) {
+    iterable.forEach((element) => l.add(element));
   }
 
   void addInsertListener(void Function() function) =>

@@ -83,6 +83,7 @@ class StrategyIchimokuItemInfo {
         : ColorInfo.fromHex(map['color']);
     model.itemId = map['itemId'];
     model.lastBoughtTimeStamp = map['lastBoughtTimeStamp'];
+    model.Index = map['index'];
 
     return model;
   }
@@ -116,6 +117,7 @@ class StrategyIchimokuItemInfo {
       'lastBoughtTimeStamp': lastBoughtTimeStamp,
       'desiredBuyAmount': desiredBuyAmount,
       'candleBaseMinute': candleBaseMinute,
+      'index': Index,
     };
   }
 }

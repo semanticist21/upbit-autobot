@@ -314,6 +314,8 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
         if (value!.isEmpty) {
           return '값을 입력하세요.';
         }
+
+        value = value.toUpperCase();
         if (!value.contains('KRW-')) {
           return 'KRW-를 입력하세요.';
         }

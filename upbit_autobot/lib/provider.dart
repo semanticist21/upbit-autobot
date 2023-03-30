@@ -20,8 +20,10 @@ class AppProvider extends ChangeNotifier {
 
   List<CoinBalance> boughtItems = List.empty(growable: true);
 
-  MyCustomList<StrategyBollingerItemInfo> bollingerItems = MyCustomList();
-  MyCustomList<StrategyIchimokuItemInfo> ichimokuItems = MyCustomList();
+  MyCustomList<StrategyBollingerItemInfo> bollingerItems =
+      MyCustomList(List.empty(growable: true));
+  MyCustomList<StrategyIchimokuItemInfo> ichimokuItems =
+      MyCustomList(List.empty(growable: true));
   // items for listview
   List<Object> itemsCollection = List.empty(growable: true);
 
@@ -204,28 +206,114 @@ class AppProvider extends ChangeNotifier {
     }
 
     Map<String, dynamic> data = jsonDecode(bodyStr);
+    var dicWithSort = Map<int, Object>();
+    var MaxKeyValue = 0;
+
     if (data['bollingerItems'] != null &&
         data['bollingerItems']['items'] != null) {
       List<dynamic> sentItems = data['bollingerItems']['items'];
+      MaxKeyValue += sentItems.length;
+
+      var bollingerList = List<StrategyBollingerItemInfo>.empty(growable: true);
       bollingerItems.clear();
 
-      for (var el in sentItems) {
-        bollingerItems.add(StrategyBollingerItemInfo.fromJson(el));
+      for (var i = 0; i < sentItems.length; i++) {
+        var data = StrategyBollingerItemInfo.fromJson(sentItems[i]);
+        bollingerList.add(data);
+
+        if (data.Index != -1 && !dicWithSort.containsKey(data.Index)) {
+          dicWithSort[data.Index] = data;
+          if (MaxKeyValue < data.Index) {
+            MaxKeyValue = data.Index;
+          }
+        } else {
+          while (dicWithSort.containsKey(data.Index) || data.Index == -1) {
+            if (data.Index == -1) {
+              data.Index = MaxKeyValue;
+            } else {
+              data.Index++;
+            }
+
+            if (!dicWithSort.containsKey(data.Index)) {
+              dicWithSort[data.Index] = data;
+              if (MaxKeyValue < data.Index) {
+                MaxKeyValue = data.Index;
+              }
+              break;
+            }
+          }
+        }
       }
+
+      bollingerItems.addAll(bollingerList);
     }
 
     if (data['ichimokuItems'] != null &&
         data['ichimokuItems']['items'] != null) {
       List<dynamic> sentItems = data['ichimokuItems']['items'];
+      MaxKeyValue += sentItems.length;
+
+      var ichimokuList = List<StrategyIchimokuItemInfo>.empty(growable: true);
       ichimokuItems.clear();
 
-      for (var el in sentItems) {
-        ichimokuItems.add(StrategyIchimokuItemInfo.fromJson(el));
+      for (var i = 0; i < sentItems.length; i++) {
+        var data = StrategyIchimokuItemInfo.fromJson(sentItems[i]);
+        ichimokuList.add(data);
+        if (data.Index != -1 && !dicWithSort.containsKey(data.Index)) {
+          dicWithSort[data.Index] = data;
+          if (MaxKeyValue < data.Index) {
+            MaxKeyValue = data.Index;
+          }
+        } else {
+          while (dicWithSort.containsKey(data.Index) || data.Index == -1) {
+            if (data.Index == -1) {
+              data.Index = MaxKeyValue;
+            } else {
+              data.Index++;
+            }
+
+            if (!dicWithSort.containsKey(data.Index)) {
+              dicWithSort[data.Index] = data;
+              if (MaxKeyValue < data.Index) {
+                MaxKeyValue = data.Index;
+              }
+              break;
+            }
+          }
+        }
       }
+
+      ichimokuItems.addAll(ichimokuList);
+    }
+
+    var keyDic = List<int>.empty(growable: true);
+
+    for (var key in dicWithSort.keys) {
+      keyDic.add(key);
+    }
+
+    keyDic.sort((a, b) => a.compareTo(b));
+
+    for (var key in keyDic) {
+      itemsCollection.add(dicWithSort[key]!);
     }
 
     _reorderItemCollection();
+    doSaveItemRequest();
     notifyListeners();
+  }
+
+  Future<void> doSaveItemRequest() async {
+    var data = bollingerItems.map((element) => element.toJson()).toList();
+    var dataIchimoku =
+        ichimokuItems.map((element) => element.toJson()).toList();
+    var bollingerItemDic = {'items': data};
+    var ichimokuItemDic = {'items': dataIchimoku};
+
+    var result = RestApiClient.encodeData(
+        {'bollingerItems': bollingerItemDic, 'ichimokuItems': ichimokuItemDic});
+
+    await RestApiClient().requestPost('items', result);
   }
 
   Future<void> startLoggerGetByWebSocket() async {

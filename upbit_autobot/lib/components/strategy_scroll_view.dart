@@ -151,13 +151,15 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
                 icon: const Icon(Icons.question_mark_outlined, size: 23),
                 splashRadius: 15,
               ),
-              IconButton(
-                onPressed: () => _doItemRequest(_provider),
-                icon: const Icon(FontAwesomeIcons.arrowsRotate),
-                iconSize: 20,
-                padding: EdgeInsets.zero,
-                splashRadius: 15,
-              ),
+              Tooltip(
+                  message: '서버 아이템 정보로 받아오기',
+                  child: IconButton(
+                    onPressed: () => _doItemRequest(_provider),
+                    icon: const Icon(FontAwesomeIcons.arrowsRotate),
+                    iconSize: 20,
+                    padding: EdgeInsets.zero,
+                    splashRadius: 15,
+                  )),
               Listener(
                   onPointerDown: (event) {
                     if (event.kind == PointerDeviceKind.mouse &&
@@ -313,17 +315,7 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
   Future<void> _saveItems(AppProvider provider) async {
     setState(() => _visible = true);
 
-    var data =
-        provider.bollingerItems.map((element) => element.toJson()).toList();
-    var dataIchimoku =
-        provider.ichimokuItems.map((element) => element.toJson()).toList();
-    var bollingerItemDic = {'items': data};
-    var ichimokuItemDic = {'items': dataIchimoku};
-
-    var result = RestApiClient.encodeData(
-        {'bollingerItems': bollingerItemDic, 'ichimokuItems': ichimokuItemDic});
-
-    await RestApiClient().requestPost('items', result);
+    await _provider.doSaveItemRequest();
     await provider.doBuyItemsRequest();
 
     setState(() => _visible = false);

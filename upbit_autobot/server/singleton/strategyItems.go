@@ -39,7 +39,9 @@ func SetBuyTargetItemsInstance(newItems *model.BuyStrategyItemInfos) {
 		// items from client, if there are items which are in server too,
 		// then replace with it.
 		if _, ok := dic[newItem.ItemId]; ok {
+			savedIndex := newItems.Items[i].Index
 			newItems.Items[i] = buyTargetItems.Items[dic[newItem.ItemId]]
+			newItems.Items[i].Index = savedIndex
 		}
 	}
 
@@ -60,7 +62,9 @@ func SetBuyTargetItemsIchimokuInstance(newItems *model.BuyStrategyIchimokuItemIn
 		// items from client, if there are items which are in server too,
 		// then replace with it.
 		if _, ok := dic[newItem.ItemId]; ok {
+			savedIndex := newItems.Items[i].Index
 			newItems.Items[i] = buyTargetIchimokuItems.Items[dic[newItem.ItemId]]
+			newItems.Items[i].Index = savedIndex
 		}
 	}
 

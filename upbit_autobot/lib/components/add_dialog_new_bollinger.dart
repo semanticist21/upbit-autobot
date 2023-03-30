@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -326,6 +325,8 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
         if (value!.isEmpty) {
           return '값을 입력하세요.';
         }
+
+        value = value.toUpperCase();
         if (!value.contains('KRW-')) {
           return 'KRW-를 입력하세요.';
         }
