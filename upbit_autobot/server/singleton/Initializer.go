@@ -9,11 +9,12 @@ import (
 )
 
 func Init() {
-	MakeTemplateFile()
 
 	// start logger
 	InitLogger()
 	logger.RunLogger()
+
+	MakeTemplateFile()
 
 	// get saved items
 	InitStrategyItemsAll()
@@ -31,14 +32,9 @@ func CloseWithDefer() {
 }
 
 func MakeTemplateFile() {
-	_, err := os.Stat(model.FileName)
+	_, err := os.Stat(model.FileFolderName)
 
 	if os.IsNotExist(err) {
-		file, err := os.Create(model.FileName)
-		if err != nil {
-			InstanceLogger().Errs <- err
-		}
-
-		file.Close()
+		os.Mkdir(model.FileFolderName, 0755)
 	}
 }

@@ -11,6 +11,7 @@ type Template struct {
 	IchimokuTemplate  *BuyStrategyIchimokuItemInfo `json:"ichimokuTemplate"`
 }
 
+var FileFolderName string = "saves"
 var FileName string = "saves/template.json"
 
 func SaveTemplate(bollingerItem *BuyStrategyItemInfo, ichimokuItem *BuyStrategyIchimokuItemInfo) error {
@@ -29,13 +30,17 @@ func SaveTemplate(bollingerItem *BuyStrategyItemInfo, ichimokuItem *BuyStrategyI
 
 func GetTemplate() (*Template, error) {
 	var template *Template
-	file, err := os.OpenFile(FileName, os.O_RDWR, 0644)
+	file, err := os.OpenFile(FileName, os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
 		return &Template{}, err
 	}
 
 	bytes, err := io.ReadAll(file)
 	if err != nil {
+		return &Template{}, err
+	}
+
+	if len(bytes) == 0 {
 		return &Template{}, err
 	}
 
@@ -48,7 +53,7 @@ func GetTemplate() (*Template, error) {
 }
 
 func GetTemplateBytes() ([]byte, error) {
-	file, err := os.OpenFile(FileName, os.O_RDWR, 0644)
+	file, err := os.OpenFile(FileName, os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
 		return []byte{}, err
 	}

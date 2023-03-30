@@ -476,6 +476,7 @@ func doPostHandleTemplate(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		singleton.InstanceLogger().Errs <- err
+		incurBadRequestError(w)
 		return
 	}
 
@@ -483,6 +484,7 @@ func doPostHandleTemplate(w http.ResponseWriter, r *http.Request) {
 
 	if marshalErr != nil {
 		singleton.InstanceLogger().Errs <- marshalErr
+		incurBadRequestError(w)
 		return
 	}
 

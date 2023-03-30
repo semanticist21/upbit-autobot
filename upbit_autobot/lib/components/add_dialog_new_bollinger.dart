@@ -215,35 +215,48 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
                                                   SizedBox(width: 10),
                                                   Expanded(
                                                       child: SizedBox(
-                                                    width: double.infinity,
-                                                    child: Column(children: [
-                                                      _getIconWithText(
-                                                          Icons.watch_later,
-                                                          '기준 분봉(최대 240분)'),
-                                                      _getOptionFormForMinuteCandle(
-                                                          _minuteCandle),
-                                                      SizedBox(height: 15),
-                                                      _getIconWithText(
-                                                          Icons
-                                                              .emoji_emotions_outlined,
-                                                          '익절 기준 (%)'),
-                                                      _getOptionWithSuffixForm(
-                                                          _profitLine),
-                                                      SizedBox(height: 15),
-                                                      _getIconWithText(
-                                                          Icons.mood_bad,
-                                                          '손절 기준 (%)'),
-                                                      _getOptionWithSuffixForm(
-                                                          _lossLine),
-                                                      SizedBox(height: 15),
-                                                      _getIconWithText(
-                                                          FontAwesomeIcons
-                                                              .bagShopping,
-                                                          '구매 수량 (KRW)'),
-                                                      _getOptionWithSuffixFormWithKrw(
-                                                          _desiredBuyAmount)
-                                                    ]),
-                                                  )),
+                                                          width:
+                                                              double.infinity,
+                                                          child: Form(
+                                                            key:
+                                                                _withSuffixFormKey,
+                                                            child: Column(
+                                                                children: [
+                                                                  _getIconWithText(
+                                                                      Icons
+                                                                          .watch_later,
+                                                                      '기준 분봉(최대 240분)'),
+                                                                  _getOptionFormForMinuteCandle(
+                                                                      _minuteCandle),
+                                                                  SizedBox(
+                                                                      height:
+                                                                          15),
+                                                                  _getIconWithText(
+                                                                      Icons
+                                                                          .emoji_emotions_outlined,
+                                                                      '익절 기준 (%)'),
+                                                                  _getOptionWithSuffixForm(
+                                                                      _profitLine),
+                                                                  SizedBox(
+                                                                      height:
+                                                                          15),
+                                                                  _getIconWithText(
+                                                                      Icons
+                                                                          .mood_bad,
+                                                                      '손절 기준 (%)'),
+                                                                  _getOptionWithSuffixForm(
+                                                                      _lossLine),
+                                                                  SizedBox(
+                                                                      height:
+                                                                          15),
+                                                                  _getIconWithText(
+                                                                      FontAwesomeIcons
+                                                                          .bagShopping,
+                                                                      '구매 수량 (KRW)'),
+                                                                  _getOptionWithSuffixFormWithKrw(
+                                                                      _desiredBuyAmount)
+                                                                ]),
+                                                          ))),
                                                 ])))))),
                             Expanded(
                                 flex: 1,
@@ -332,6 +345,12 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
         var isDuplicate = false;
 
         for (var element in _provider.bollingerItems) {
+          if (element.coinMarKetName == value) {
+            isDuplicate = true;
+          }
+        }
+
+        for (var element in _provider.ichimokuItems) {
           if (element.coinMarKetName == value) {
             isDuplicate = true;
           }
@@ -629,6 +648,10 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
     var response = await RestApiClient().requestGet('template');
 
     var data = await RestApiClient.parseResponseData(response);
+
+    if (data.isEmpty) {
+      return;
+    }
 
     var template = TemplateModel.fromJson(data);
 

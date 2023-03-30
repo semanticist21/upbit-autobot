@@ -53,3 +53,4 @@ account.json
 /server/history.log
 
 /server/saves
+/server/_debug_bin.exe
