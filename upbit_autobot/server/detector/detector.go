@@ -34,6 +34,7 @@ func StartDetectorCycle(client *upbit.Upbit) {
 	}()
 }
 
+// important : amount changed from coin amoun to krw
 func StartBuyDetectorBot(client *upbit.Upbit) {
 	singleton.InstanceLogger().Msgs <- "구매 감시 봇 작동 시작."
 	for {
@@ -146,10 +147,10 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 			}
 
 			// all requirements are satisfied. proceed with order
-			buyAmountInKrw := price * item.DesiredBuyAmount
+			buyAmountInKrw := item.DesiredBuyAmount
 			buyAmountInKrw = math.Round(buyAmountInKrw)
 
-			singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s를 %.4f가격에 %.8f(한화 : %f) 만큼 매수를 시도합니다.", item.CoinMarketName, price, item.DesiredBuyAmount, buyAmountInKrw)
+			singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s를 %.4f가격에 %.8f(추정, 한화 : %f) 만큼 매수를 시도합니다.", item.CoinMarketName, price, item.DesiredBuyAmount/price, buyAmountInKrw)
 			orderInfo := model.BuyOrderInfo{MarketName: item.CoinMarketName, BuyAmountInKrw: buyAmountInKrw}
 
 			orderResult, err := order.BuyOrder(client, &orderInfo)
