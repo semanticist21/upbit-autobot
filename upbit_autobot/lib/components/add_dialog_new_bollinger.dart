@@ -181,7 +181,7 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
                                                                           15),
                                                                   _getIconWithText(
                                                                       Icons
-                                                                          .run_circle,
+                                                                          .line_axis,
                                                                       '볼린저 길이 (최대 100)'),
                                                                   _getOptionForm(
                                                                     _bollingerLength,
@@ -191,7 +191,7 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
                                                                           15),
                                                                   _getIconWithText(
                                                                       Icons
-                                                                          .calculate,
+                                                                          .calculate_rounded,
                                                                       '볼린저 곱 (최대 100)'),
                                                                   _getOptionForm(
                                                                       _bollingerMultiplier),
@@ -320,6 +320,10 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
           return 'KRW-를 입력하세요.';
         }
 
+        if (value.length <= 4) {
+          return '값이 너무 짧습니다.';
+        }
+
         if (value.length >= 10) {
           return '값이 너무 깁니다.';
         }
@@ -334,10 +338,6 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
 
         if (isDuplicate) {
           return '동일 마켓이 존재합니다.';
-        }
-
-        if (_provider.items.length >= 10) {
-          return '최대 전략 개수 10개';
         }
 
         return null;
@@ -495,7 +495,7 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
   }
 
   void _doSaveAction(BuildContext context) {
-    var newModel = _verifyText();
+    var newModel = _verifyText(false);
     if (newModel == null) {
       return;
     }
@@ -549,7 +549,7 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
   }
 
   Future<void> SaveTemplate() async {
-    var newModel = _verifyText();
+    var newModel = _verifyText(true);
     if (newModel == null) {
       showDialog(
           context: context,
@@ -576,7 +576,7 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
     }
   }
 
-  StrategyItemInfo? _verifyText() {
+  StrategyItemInfo? _verifyText(bool isTemplateSaving) {
     var isPass = true;
 
     if (_optionFormKey.currentState != null &&
@@ -590,6 +590,13 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
     }
 
     if (!isPass) {
+      return null;
+    }
+
+    if (!isTemplateSaving && _provider.items.length >= 10) {
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialogCustom(text: '최대 전략 개수는 10개 입니다.'));
       return null;
     }
 
@@ -632,8 +639,7 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
         template.bollingerTemplate!.bollingerLength.toString();
     _bollingerMultiplier.text =
         template.bollingerTemplate!.bollingerMultiplier.toString();
-    _purchaseCount.text =
-        template.bollingerTemplate!.bollingerLength.toString();
+    _purchaseCount.text = template.bollingerTemplate!.purchaseCount.toString();
     _profitLine.text = template.bollingerTemplate!.profitLinePercent.toString();
     _lossLine.text = template.bollingerTemplate!.lossLinePercent.toString();
     _desiredBuyAmount.text =

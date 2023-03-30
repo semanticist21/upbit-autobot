@@ -15,6 +15,7 @@ class StrategyItemInfo {
   int candleBaseMinute;
   // ISO8601
   late String lastBoughtTimeStamp;
+  int Index = -1;
 
   factory StrategyItemInfo(
       String coinMarKetName,

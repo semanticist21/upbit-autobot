@@ -174,16 +174,16 @@ class AppProvider extends ChangeNotifier {
         }
       }
 
-      if (data.containsKey('DeletedItemId') && data['DeletedItemId'] != '') {
+      if (data.containsKey('deleteItemId') && data['deleteItemId'] != '') {
         for (var i = 0; i < items.length; i++) {
-          if (items[i].itemId == data['DeletedItemId']) {
+          if (items[i].itemId == data['deleteItemId']) {
             items.removeAt(i);
             break;
           }
         }
 
         for (var i = 0; i < ichimokuItems.length; i++) {
-          if (ichimokuItems[i].itemId == data['DeletedItemId']) {
+          if (ichimokuItems[i].itemId == data['deleteItemId']) {
             ichimokuItems.removeAt(i);
             break;
           }

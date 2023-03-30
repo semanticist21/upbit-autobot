@@ -6,11 +6,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:upbit_autobot/components/strategy_item.dart';
 import 'package:upbit_autobot/model/strategy_item_info.dart';
+import 'package:upbit_autobot/model/strategy_item_info_ichimoku.dart';
 
 import '../client/client.dart';
 import '../provider.dart';
-import 'add_dialog.dart';
 import 'add_dialog_new_bollinger.dart';
+import 'add_dialog_new_ichimoku.dart';
 
 class StrategyScrollView extends StatefulWidget {
   const StrategyScrollView({super.key});
@@ -89,6 +90,9 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
                                                         FontWeight.w700))
                                           ]),
                                           SizedBox(height: 20),
+                                          Text('해당 프로그램은 모든 기능이 무료로 제공됩니다.',
+                                              style: TextStyle(fontSize: 15)),
+                                          SizedBox(height: 10),
                                           Text(
                                               '1. 왼쪽 화면에서 잔고, 구매 코인 목록 등을 확인할 수 있습니다.\n\t\t\t\t코인 구매, 매도 및 30초마다 갱신되며 버튼을 눌러 수동 갱신도 가능합니다.',
                                               style: TextStyle(fontSize: 15)),
@@ -177,7 +181,7 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
                                           });
                                         })
                                     .then((value) =>
-                                        _addnewList(_provider, value));
+                                        _addNewList(_provider, value));
                               },
                             ),
                             PopupMenuItem(
@@ -198,11 +202,11 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
                                         context: context,
                                         builder: (context) {
                                           return Builder(builder: (context) {
-                                            return const AddDialog();
+                                            return const AddDialogNewIchimoku();
                                           });
                                         })
                                     .then((value) =>
-                                        _addnewList(_provider, value));
+                                        _addNewListIchimoku(_provider, value));
                               },
                             )
                           ]);
@@ -246,12 +250,27 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
         ]);
   }
 
-  void _addnewList(AppProvider provider, value) {
+  void _addNewList(AppProvider provider, value) {
     if (value.runtimeType != StrategyItemInfo) {
       return;
     }
 
     provider.items.add(value as StrategyItemInfo);
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) =>
+        _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut));
+
+    setState(() {});
+  }
+
+  void _addNewListIchimoku(AppProvider provider, value) {
+    if (value.runtimeType != StrategyIchimokuItemInfo) {
+      return;
+    }
+
+    provider.ichimokuItems.add(value as StrategyIchimokuItemInfo);
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) =>
         _scrollController.animateTo(_scrollController.position.maxScrollExtent,

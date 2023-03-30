@@ -10,10 +10,11 @@ class StrategyIchimokuItemInfo {
   int purchaseCount;
   double profitLinePercent;
   double lossLinePercent;
-  double desiredBuyAmount;
+  int desiredBuyAmount;
   int candleBaseMinute;
   // ISO8601
   late String lastBoughtTimeStamp;
+  int Index = -1;
 
   factory StrategyIchimokuItemInfo(
       String coinMarKetName,
@@ -21,7 +22,7 @@ class StrategyIchimokuItemInfo {
       int purchaseCount,
       double profitLinePercent,
       double lossLinePercent,
-      double desiredAmount,
+      int desiredAmount,
       int minuteCandle) {
     var model = StrategyIchimokuItemInfo.base(
         coinMarKetName: coinMarKetName,
@@ -48,7 +49,7 @@ class StrategyIchimokuItemInfo {
       double profitLinePercent,
       double lossLinePercent,
       String lastBoughtTimeStamp,
-      double desiredAmount,
+      int desiredAmount,
       int minuteCandle) {
     var model = StrategyIchimokuItemInfo.base(
         coinMarKetName: coinMarKetName,
@@ -74,7 +75,7 @@ class StrategyIchimokuItemInfo {
         profitLinePercent:
             double.tryParse(map['profitLinePercent'].toString())!,
         lossLinePercent: double.tryParse(map['lossLinePercent'].toString())!,
-        desiredBuyAmount: double.tryParse(map['desiredBuyAmount'].toString())!,
+        desiredBuyAmount: int.tryParse(map['desiredBuyAmount'].toString())!,
         candleBaseMinute: map['candleBaseMinute']);
 
     model.color = map['color'] == ''

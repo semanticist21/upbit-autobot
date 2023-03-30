@@ -42,7 +42,14 @@ class _StrategyItemState extends State<StrategyItem> {
                     ),
                     items: [
                       PopupMenuItem(
-                          child: const Center(child: Text('삭제')),
+                          child: const Center(
+                              child: Row(
+                            children: [
+                              Icon(Icons.delete),
+                              SizedBox(width: 10),
+                              Text('삭제')
+                            ],
+                          )),
                           onTap: () {
                             var hashId = widget.item.itemId;
                             for (var i = 0; i < _provider.items.length; i++) {
@@ -75,6 +82,8 @@ class _StrategyItemState extends State<StrategyItem> {
                   Column(mainAxisAlignment: MainAxisAlignment.start, children: [
                 const SizedBox(height: 5),
                 Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Tooltip(message: '볼린저 밴드 아이템', child: Icon(Icons.bar_chart)),
+                  SizedBox(width: 5),
                   const Text('마켓 ID : '),
                   Text(widget.item.coinMarKetName),
                 ]),
@@ -164,10 +173,10 @@ class _StrategyItemState extends State<StrategyItem> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceEvenly,
                                         children: [
-                                          const Text('수량 : '),
+                                          const Text('금액 : '),
                                           Text(widget.item.desiredBuyAmount
                                               .toString()),
-                                          const Text(' 개')
+                                          const Text(' 원')
                                         ])),
                                 FittedBox(
                                     fit: BoxFit.contain,
