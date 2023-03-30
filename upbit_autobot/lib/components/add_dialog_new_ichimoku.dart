@@ -130,7 +130,7 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
                                                 builder: (context) =>
                                                     AlertDialogCustom(
                                                         text:
-                                                            '- 컨버젼(베이스) 라인 매수 전략을 가진 일목균형표 아이템을 추가합니다.\n\n- 오더북 기준으로 가격이 라인에 걸칠 시\n\t\t\t마켓 매수가 실행됩니다.\n(마켓 매수이므로 오차가 발생할 수 있습니다.)\n\n- 템플릿 저장버튼을 누르면 코인 마켓 이름을\n\t\t\t제외한 전략 정보가 저장됩니다.\n\n- Ctrl+마우스로 줌 확대 및 이동이 가능합니다.')),
+                                                            '- 컨버젼(베이스) 라인 매수 전략을 가진 일목균형표 아이템을 추가합니다.\n\n- 오더북 기준으로 가격이 라인에 걸칠 시\n\t\t\t마켓 매수가 실행됩니다.\n(마켓 매수이므로 오차가 발생할 수 있습니다.)\n\n- 볼린저 밴드와 다르게 자주 조건이 만족되는\n\t\t\t경우가 많아 직접 차트를 보고 설정하길\n\t\t\t권합니다.\n\n- 템플릿 저장버튼을 누르면 코인 마켓 이름을\n\t\t\t제외한 전략 정보가 저장됩니다.\n\n- Ctrl+마우스로 줌 확대 및 이동이 가능합니다.')),
                                             icon: Icon(Icons.question_mark),
                                             splashRadius: 15),
                                         IconButton(
