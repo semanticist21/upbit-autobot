@@ -47,6 +47,7 @@ func startServer() {
 	router.HandleFunc("/balance/{name}", originCheckingMiddleware(handleBalance))
 	router.HandleFunc("/logs", originCheckingMiddleware(handleLogs))
 	router.HandleFunc("/items", originCheckingMiddleware(handleItems))
+	router.HandleFunc("/template", originCheckingMiddleware(handleTemplate))
 	router.HandleFunc("/socket/logs", handleSocketLog)
 	router.HandleFunc("/socket/items", handleSocketItems)
 	http.Handle("/", router)
@@ -433,6 +434,53 @@ func handleLogs(w http.ResponseWriter, r *http.Request) {
 			singleton.InstanceLogger().Errs <- fmt.Errorf(log.ErrorMsg)
 		}
 	}
+}
+
+func handleTemplate(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		// items update
+		doGetHandleTemplate(w)
+	case http.MethodPost:
+		doPostHandleTemplate(w, r)
+	}
+}
+
+func doPostHandleTemplate(w http.ResponseWriter, r *http.Request) {
+	if r.Body == nil {
+		incurBadRequestError(w)
+		return
+	}
+
+	data, err := io.ReadAll(r.Body)
+
+	if err != nil {
+		singleton.InstanceLogger().Errs <- err
+		incurBadRequestError(w)
+		return
+	}
+	template := model.Template{}
+	marshalErr := json.Unmarshal(data, &template)
+
+	if marshalErr != nil {
+		singleton.InstanceLogger().Errs <- marshalErr
+		return
+	}
+
+	model.SaveTemplate(template.BollingerTemplate, template.IchimokuTemplate)
+}
+
+func doGetHandleTemplate(w http.ResponseWriter) {
+	bytes, err := model.GetTemplateBytes()
+	if err != nil {
+		if err != nil {
+			singleton.InstanceLogger().Errs <- err
+			incurBadRequestError(w)
+			return
+		}
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(bytes)
 }
 
 func handleItems(w http.ResponseWriter, r *http.Request) {

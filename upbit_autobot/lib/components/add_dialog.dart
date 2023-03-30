@@ -204,9 +204,9 @@ class _AddDialogState extends State<AddDialog> {
                                                           _profitLine, '익절 기준'),
                                                       _getOptionWithSuffixForm(
                                                           _lossLine, '손절 기준'),
-                                                      _getOptionWithSuffixFormUptoFourDigit(
+                                                      _getOptionWithSuffixFormWithKrw(
                                                           _desiredBuyAmount,
-                                                          '구매 수량(최소 0.0001 개)'),
+                                                          '구매 수량(원화 기준)'),
                                                       Row(children: [
                                                         Tooltip(
                                                             excludeFromSemantics:
@@ -419,7 +419,7 @@ class _AddDialogState extends State<AddDialog> {
         ]);
   }
 
-  TextFormField _getOptionWithSuffixFormUptoFourDigit(
+  TextFormField _getOptionWithSuffixFormWithKrw(
       TextEditingController controller, String labelText) {
     return TextFormField(
         controller: controller,
@@ -441,12 +441,12 @@ class _AddDialogState extends State<AddDialog> {
             errorStyle: _errorTextStyle(),
             labelText: labelText,
             labelStyle: const TextStyle(fontSize: 12),
-            suffixText: '개',
+            suffixText: '원',
             suffixStyle: const TextStyle(fontSize: 15)),
         keyboardType:
             const TextInputType.numberWithOptions(signed: false, decimal: true),
         inputFormatters: [
-          FilteringTextInputFormatter.allow(RegExp(r'^(\d+)?(\.)?(\d{0,4})?$'))
+          FilteringTextInputFormatter.allow(RegExp(r'^(\d+)?(\.)?(\d{0})?$'))
         ]);
   }
 
