@@ -10,7 +10,7 @@ import 'package:upbit_autobot/model/strategy_item_info.dart';
 import '../client/client.dart';
 import '../provider.dart';
 import 'add_dialog.dart';
-import 'add_dialog_new.dart';
+import 'add_dialog_new_bollinger.dart';
 
 class StrategyScrollView extends StatefulWidget {
   const StrategyScrollView({super.key});
@@ -173,7 +173,7 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
                                         context: context,
                                         builder: (context) {
                                           return Builder(builder: (context) {
-                                            return const AddDialogNew();
+                                            return const AddDialogNewBollinger();
                                           });
                                         })
                                     .then((value) =>

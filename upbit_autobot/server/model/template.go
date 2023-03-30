@@ -14,9 +14,7 @@ type Template struct {
 var FileName string = "saves/template.json"
 
 func SaveTemplate(bollingerItem *BuyStrategyItemInfo, ichimokuItem *BuyStrategyIchimokuItemInfo) error {
-	bollingerItem.CoinMarketName = ""
 	bollingerItem.LastBoughtTimestamp = ""
-	ichimokuItem.CoinMarketName = ""
 	ichimokuItem.LastBoughtTimestamp = ""
 
 	template := Template{BollingerTemplate: bollingerItem, IchimokuTemplate: ichimokuItem}

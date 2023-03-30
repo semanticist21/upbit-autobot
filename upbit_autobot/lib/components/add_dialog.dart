@@ -493,7 +493,7 @@ class _AddDialogState extends State<AddDialog> {
         count!,
         double.parse(_profitLine.text),
         double.parse(_lossLine.text),
-        double.parse(_desiredBuyAmount.text),
+        int.parse(_desiredBuyAmount.text),
         int.parse(_minuteCandle.text));
 
     Navigator.pop(context, newModel);

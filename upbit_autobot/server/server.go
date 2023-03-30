@@ -449,11 +449,9 @@ func handleTemplate(w http.ResponseWriter, r *http.Request) {
 func doGetHandleTemplate(w http.ResponseWriter) {
 	bytes, err := model.GetTemplateBytes()
 	if err != nil {
-		if err != nil {
-			singleton.InstanceLogger().Errs <- err
-			incurBadRequestError(w)
-			return
-		}
+		singleton.InstanceLogger().Errs <- err
+		incurBadRequestError(w)
+		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(bytes)
@@ -472,23 +470,44 @@ func doPostHandleTemplate(w http.ResponseWriter, r *http.Request) {
 		incurBadRequestError(w)
 		return
 	}
-	template := model.Template{}
-	marshalErr := json.Unmarshal(data, &template)
+
+	template, err := model.GetTemplate()
+	newTemplate := model.Template{}
+
+	if err != nil {
+		singleton.InstanceLogger().Errs <- err
+		return
+	}
+
+	marshalErr := json.Unmarshal(data, &newTemplate)
 
 	if marshalErr != nil {
 		singleton.InstanceLogger().Errs <- marshalErr
 		return
 	}
 
-	if template.BollingerTemplate == nil {
-		template.BollingerTemplate = &model.BuyStrategyItemInfo{}
+	if newTemplate.BollingerTemplate != nil && newTemplate.BollingerTemplate.CoinMarketName == "save" {
+		template.BollingerTemplate = newTemplate.BollingerTemplate
+	}
+
+	if newTemplate.IchimokuTemplate != nil && newTemplate.IchimokuTemplate.CoinMarketName == "save" {
+		template.IchimokuTemplate = newTemplate.IchimokuTemplate
 	}
 
 	if template.BollingerTemplate == nil {
+		template.BollingerTemplate = &model.BuyStrategyItemInfo{}
+		template.BollingerTemplate.CoinMarketName = ""
+		template.BollingerTemplate.LastBoughtTimestamp = ""
+	}
+
+	if template.IchimokuTemplate == nil {
 		template.IchimokuTemplate = &model.BuyStrategyIchimokuItemInfo{}
+		template.IchimokuTemplate.CoinMarketName = ""
+		template.IchimokuTemplate.LastBoughtTimestamp = ""
 	}
 
 	model.SaveTemplate(template.BollingerTemplate, template.IchimokuTemplate)
+	singleton.InstanceLogger().Msgs <- "템플릿 저장되었습니다."
 }
 
 func handleItems(w http.ResponseWriter, r *http.Request) {

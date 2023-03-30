@@ -11,7 +11,7 @@ class StrategyItemInfo {
   int purchaseCount;
   double profitLinePercent;
   double lossLinePercent;
-  double desiredBuyAmount;
+  int desiredBuyAmount;
   int candleBaseMinute;
   // ISO8601
   late String lastBoughtTimeStamp;
@@ -23,7 +23,7 @@ class StrategyItemInfo {
       int purchaseCount,
       double profitLinePercent,
       double lossLinePercent,
-      double desiredAmount,
+      int desiredAmount,
       int minuteCandle) {
     var model = StrategyItemInfo.base(
         coinMarKetName: coinMarKetName,
@@ -52,7 +52,7 @@ class StrategyItemInfo {
       double profitLinePercent,
       double lossLinePercent,
       String lastBoughtTimeStamp,
-      double desiredAmount,
+      int desiredAmount,
       int minuteCandle) {
     var model = StrategyItemInfo.base(
         coinMarKetName: coinMarKetName,
@@ -80,7 +80,7 @@ class StrategyItemInfo {
         profitLinePercent:
             double.tryParse(map['profitLinePercent'].toString())!,
         lossLinePercent: double.tryParse(map['lossLinePercent'].toString())!,
-        desiredBuyAmount: double.tryParse(map['desiredBuyAmount'].toString())!,
+        desiredBuyAmount: int.tryParse(map['desiredBuyAmount'].toString())!,
         candleBaseMinute: map['candleBaseMinute']);
 
     model.color = map['color'] == ''
