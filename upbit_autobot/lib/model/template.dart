@@ -2,7 +2,7 @@ import 'package:upbit_autobot/model/strategy_item_info.dart';
 import 'package:upbit_autobot/model/strategy_item_info_ichimoku.dart';
 
 class TemplateModel {
-  StrategyItemInfo? bollingerTemplate;
+  StrategyBollingerItemInfo? bollingerTemplate;
   StrategyIchimokuItemInfo? ichimokuTemplate;
 
   TemplateModel(
@@ -10,7 +10,8 @@ class TemplateModel {
 
   factory TemplateModel.fromJson(Map<String, dynamic> map) {
     return TemplateModel(
-        bollingerTemplate: StrategyItemInfo.fromJson(map['bollingerTemplate']),
+        bollingerTemplate:
+            StrategyBollingerItemInfo.fromJson(map['bollingerTemplate']),
         ichimokuTemplate:
             StrategyIchimokuItemInfo.fromJson(map['ichimokuTemplate']));
   }

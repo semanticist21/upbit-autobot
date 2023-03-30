@@ -330,7 +330,7 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
 
         var isDuplicate = false;
 
-        for (var element in _provider.items) {
+        for (var element in _provider.bollingerItems) {
           if (element.coinMarKetName == value) {
             isDuplicate = true;
           }
@@ -576,7 +576,7 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
     }
   }
 
-  StrategyItemInfo? _verifyText(bool isTemplateSaving) {
+  StrategyBollingerItemInfo? _verifyText(bool isTemplateSaving) {
     var isPass = true;
 
     if (_optionFormKey.currentState != null &&
@@ -593,7 +593,7 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
       return null;
     }
 
-    if (!isTemplateSaving && _provider.items.length >= 10) {
+    if (!isTemplateSaving && _provider.itemsCollection.length >= 10) {
       showDialog(
           context: context,
           builder: (context) => AlertDialogCustom(text: '최대 전략 개수는 10개 입니다.'));
@@ -613,7 +613,7 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
     if (multiplier != null && multiplier > 100) {
       multiplier = 100;
     }
-    return StrategyItemInfo(
+    return StrategyBollingerItemInfo(
         _coinMarketName.text.toUpperCase(),
         length!,
         multiplier!,

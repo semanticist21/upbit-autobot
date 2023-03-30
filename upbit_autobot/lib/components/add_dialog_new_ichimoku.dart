@@ -582,9 +582,7 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
       return null;
     }
 
-//TODO
-// 통합아이템으로 수정해야함
-    if (!isTemplateSaving && _provider.ichimokuItems.length >= 10) {
+    if (!isTemplateSaving && _provider.itemsCollection.length >= 10) {
       showDialog(
           context: context,
           builder: (context) => AlertDialogCustom(text: '최대 전략 개수는 10개 입니다.'));

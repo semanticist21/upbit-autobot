@@ -101,7 +101,7 @@ class _LoginState extends State<Login> {
                               builder: (context) => AlertDialog(
                                     title: const Text('API 키 취득 방법'),
                                     content: const Text(
-                                        '1. 업비트 API 검색\n2. Open API 사용하기 클릭 \n3.자산조회, 주문조회, 주문하기 항목을 선택합니다.\n4. 네이버에서 "아이피 주소"를 검색 후 입력합니다.\n5. API 생성 후 퍼블릭 키, 프라이빗 키를 통해 로그인하세요.\n\n # ID, PW 저장 시 실행 폴더의 account.json에 해당 키가 암호화되어 저장됩니다.\n\n문의 : semanticist0@gmail.com',
+                                        '1. 업비트 API 검색\n2. Open API 사용하기 클릭 \n3.자산조회, 주문조회, 주문하기 항목을 선택합니다.\n4. 네이버에서 "아이피 주소"를 검색 후 입력합니다.\n5. API 생성 후 퍼블릭 키, 시크릿 키를 통해 로그인하세요.\n\n # ID, PW 저장 시 실행 폴더의 account.json에 해당 키가 암호화되어 저장됩니다.\n\t\t\t\t자동 매매 간 로컬 통신을 이용함에 유의하세요.\n\n문의 : semanticist0@gmail.com',
                                         style: TextStyle(fontSize: 15)),
                                     actions: [
                                       MaterialButton(

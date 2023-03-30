@@ -109,7 +109,8 @@ class _AddDialogState extends State<AddDialog> {
 
                                           var isDuplicate = false;
 
-                                          for (var element in _provider.items) {
+                                          for (var element
+                                              in _provider.bollingerItems) {
                                             if (element.coinMarKetName ==
                                                 value) {
                                               isDuplicate = true;
@@ -120,7 +121,8 @@ class _AddDialogState extends State<AddDialog> {
                                             return '동일 마켓이 존재합니다.';
                                           }
 
-                                          if (_provider.items.length >= 10) {
+                                          if (_provider.bollingerItems.length >=
+                                              10) {
                                             return '최대 전략 개수 10개';
                                           }
 
@@ -486,7 +488,7 @@ class _AddDialogState extends State<AddDialog> {
       multiplier = 100;
     }
 
-    var newModel = StrategyItemInfo(
+    var newModel = StrategyBollingerItemInfo(
         _coinMarketName.text.toUpperCase(),
         length!,
         multiplier!,

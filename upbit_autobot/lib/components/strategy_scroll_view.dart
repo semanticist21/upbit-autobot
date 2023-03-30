@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:upbit_autobot/components/strategy_item.dart';
+import 'package:upbit_autobot/components/strategy_item_ichimoku.dart';
 import 'package:upbit_autobot/model/strategy_item_info.dart';
 import 'package:upbit_autobot/model/strategy_item_info_ichimoku.dart';
 
@@ -54,6 +55,19 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
             automaticallyImplyLeading: false,
             backgroundColor: const Color.fromRGBO(66, 66, 66, 0.9),
             actions: [
+              SizedBox(width: 10),
+              Tooltip(
+                  message: '랜덤 돌려돌려!',
+                  child: IconButton(
+                      onPressed: () {},
+                      icon: Icon(Icons.casino_rounded),
+                      splashRadius: 15)),
+              Tooltip(
+                message: '판매 감시 아이템 리스트 확인',
+                child: IconButton(
+                    onPressed: () {}, icon: Icon(Icons.list), splashRadius: 15),
+              ),
+              Spacer(),
               Visibility(
                   visible: _visible,
                   child: const Center(
@@ -219,6 +233,7 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
                     padding: EdgeInsets.zero,
                     splashRadius: 15,
                   )),
+              // 아이템 저장 save
               IconButton(
                 onPressed: () => _saveItems(_provider),
                 icon: const Icon(
@@ -234,12 +249,27 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
           SliverPadding(
               padding: const EdgeInsets.all(5),
               sliver: SliverGrid.builder(
-                  itemCount: _provider.items.length,
+                  itemCount: _provider.itemsCollection.length,
                   itemBuilder: (context, index) {
-                    return StrategyItem(
-                      itemKey: ValueKey(index),
-                      item: _provider.items[index],
-                    );
+                    if (_provider.itemsCollection[index].runtimeType ==
+                        StrategyBollingerItemInfo) {
+                      return StrategyItem(
+                        itemKey: ValueKey(index),
+                        item: _provider.itemsCollection[index]
+                            as StrategyBollingerItemInfo,
+                      );
+                    }
+
+                    if (_provider.itemsCollection[index].runtimeType ==
+                        StrategyIchimokuItemInfo) {
+                      return StrategyIchimokuItem(
+                        itemKey: ValueKey(index),
+                        item: _provider.itemsCollection[index]
+                            as StrategyIchimokuItemInfo,
+                      );
+                    }
+
+                    return null;
                   },
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
@@ -251,11 +281,11 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
   }
 
   void _addNewList(AppProvider provider, value) {
-    if (value.runtimeType != StrategyItemInfo) {
+    if (value.runtimeType != StrategyBollingerItemInfo) {
       return;
     }
 
-    provider.items.add(value as StrategyItemInfo);
+    provider.bollingerItems.add(value as StrategyBollingerItemInfo);
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) =>
         _scrollController.animateTo(_scrollController.position.maxScrollExtent,
@@ -283,10 +313,12 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
   Future<void> _saveItems(AppProvider provider) async {
     setState(() => _visible = true);
 
-    var items = provider.items;
-    var data = items.map((element) => element.toJson()).toList();
+    var data =
+        provider.bollingerItems.map((element) => element.toJson()).toList();
+    var dataIchimoku =
+        provider.ichimokuItems.map((element) => element.toJson()).toList();
     var bollingerItemDic = {'items': data};
-    var ichimokuItemDic = {'items': List.empty()};
+    var ichimokuItemDic = {'items': dataIchimoku};
 
     var result = RestApiClient.encodeData(
         {'bollingerItems': bollingerItemDic, 'ichimokuItems': ichimokuItemDic});

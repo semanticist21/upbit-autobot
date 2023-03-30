@@ -8,7 +8,7 @@ import 'package:upbit_autobot/provider.dart';
 class StrategyItem extends StatefulWidget {
   const StrategyItem({super.key, required this.itemKey, required this.item});
   final ValueKey itemKey;
-  final StrategyItemInfo item;
+  final StrategyBollingerItemInfo item;
 
   @override
   State<StrategyItem> createState() => _StrategyItemState();
@@ -52,8 +52,10 @@ class _StrategyItemState extends State<StrategyItem> {
                           )),
                           onTap: () {
                             var hashId = widget.item.itemId;
-                            for (var i = 0; i < _provider.items.length; i++) {
-                              var item = _provider.items[i];
+                            for (var i = 0;
+                                i < _provider.bollingerItems.length;
+                                i++) {
+                              var item = _provider.bollingerItems[i];
                               if (item.itemId == hashId) {
                                 _provider.removeItemFromItems(i);
                                 break;

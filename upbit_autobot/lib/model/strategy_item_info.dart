@@ -2,7 +2,7 @@ import 'dart:math';
 import 'package:upbit_autobot/model/color_info.dart';
 import 'package:crypto/crypto.dart';
 
-class StrategyItemInfo {
+class StrategyBollingerItemInfo {
   late ColorInfo color;
   late String itemId;
   String coinMarKetName;
@@ -17,7 +17,7 @@ class StrategyItemInfo {
   late String lastBoughtTimeStamp;
   int Index = -1;
 
-  factory StrategyItemInfo(
+  factory StrategyBollingerItemInfo(
       String coinMarKetName,
       int bollingerLength,
       int bollingerMultiplier,
@@ -26,7 +26,7 @@ class StrategyItemInfo {
       double lossLinePercent,
       int desiredAmount,
       int minuteCandle) {
-    var model = StrategyItemInfo.base(
+    var model = StrategyBollingerItemInfo.base(
         coinMarKetName: coinMarKetName,
         bollingerLength: bollingerLength,
         bollingerMultiplier: bollingerMultiplier,
@@ -43,7 +43,7 @@ class StrategyItemInfo {
     return model;
   }
 
-  factory StrategyItemInfo.from(
+  factory StrategyBollingerItemInfo.from(
       ColorInfo color,
       String itemId,
       String coinMarKetName,
@@ -55,7 +55,7 @@ class StrategyItemInfo {
       String lastBoughtTimeStamp,
       int desiredAmount,
       int minuteCandle) {
-    var model = StrategyItemInfo.base(
+    var model = StrategyBollingerItemInfo.base(
         coinMarKetName: coinMarKetName,
         bollingerLength: bollingerLength,
         bollingerMultiplier: bollingerMultiplier,
@@ -72,8 +72,8 @@ class StrategyItemInfo {
     return model;
   }
 
-  factory StrategyItemInfo.fromJson(Map<String, dynamic> map) {
-    var model = StrategyItemInfo.base(
+  factory StrategyBollingerItemInfo.fromJson(Map<String, dynamic> map) {
+    var model = StrategyBollingerItemInfo.base(
         coinMarKetName: map['coinMarketName'],
         bollingerLength: map['bollingerLength'],
         bollingerMultiplier: map['bollingerMultiplier'],
@@ -93,7 +93,7 @@ class StrategyItemInfo {
     return model;
   }
 
-  StrategyItemInfo.base(
+  StrategyBollingerItemInfo.base(
       {required this.coinMarKetName,
       required this.bollingerLength,
       required this.bollingerMultiplier,

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:isolate';
 
 import 'package:flutter/widgets.dart';
+import 'package:upbit_autobot/customType/customList.dart';
 import 'package:upbit_autobot/model/strategy_item_info_ichimoku.dart';
 
 import 'client/client.dart';
@@ -18,15 +19,134 @@ class AppProvider extends ChangeNotifier {
   var krwBalance = '0';
 
   List<CoinBalance> boughtItems = List.empty(growable: true);
-  List<StrategyItemInfo> items = List.empty(growable: true);
-  List<StrategyIchimokuItemInfo> ichimokuItems = List.empty(growable: true);
-  List<dynamic> itemsCollection = List.empty(growable: true);
 
-  AppProvider._init();
+  MyCustomList<StrategyBollingerItemInfo> bollingerItems = MyCustomList();
+  MyCustomList<StrategyIchimokuItemInfo> ichimokuItems = MyCustomList();
+  // items for listview
+  List<Object> itemsCollection = List.empty(growable: true);
+
+  AppProvider._init() {
+    bollingerItems.addInsertListener(_insertBollingerItemsToCollection);
+    bollingerItems.addRemoveListener(_removeBollingerItemsToCollection);
+    bollingerItems.addChangeListener(_changeBollingerItemsToCollection);
+    bollingerItems.addCleanListener(_cleanCollection);
+    ichimokuItems.addInsertListener(_insertIchimokuItemsToCollection);
+    ichimokuItems.addRemoveListener(_removeIchimokuItemsToCollection);
+    ichimokuItems.addChangeListener(_changeIchimokuItemsToCollection);
+    ichimokuItems.addCleanListener(_cleanCollection);
+  }
   static final AppProvider _instance = AppProvider._init();
 
   factory AppProvider() {
     return _instance;
+  }
+
+  void _insertBollingerItemsToCollection() {
+    bollingerItems.last.Index = itemsCollection.length + 1;
+    itemsCollection.add(bollingerItems.last);
+    notifyListeners();
+  }
+
+  void _removeBollingerItemsToCollection(int index) {
+    var toBeRemovedId = bollingerItems[index].itemId;
+    for (var i = 0; i < itemsCollection.length; i++) {
+      if (itemsCollection[i].runtimeType == StrategyBollingerItemInfo &&
+          (itemsCollection[i] as StrategyBollingerItemInfo).itemId ==
+              toBeRemovedId) {
+        itemsCollection.removeAt(i);
+        break;
+      }
+    }
+    _reorderItemCollection();
+    notifyListeners();
+  }
+
+  void _changeBollingerItemsToCollection() {
+    var dic = Map<String, int>();
+    for (var i = 0; i < itemsCollection.length; i++) {
+      var item = itemsCollection[i];
+      if (item.runtimeType == StrategyBollingerItemInfo) {
+        dic[(item as StrategyBollingerItemInfo).itemId] = i;
+      }
+    }
+
+    for (var bollingerItem in bollingerItems) {
+      if (dic.containsKey(bollingerItem.itemId)) {
+        bollingerItem.Index = dic[bollingerItem.itemId]!;
+        itemsCollection[dic[bollingerItem.itemId]!] = bollingerItem;
+      }
+    }
+    notifyListeners();
+  }
+
+  void _insertIchimokuItemsToCollection() {
+    ichimokuItems.last.Index = itemsCollection.length + 1;
+    itemsCollection.add(ichimokuItems.last);
+    notifyListeners();
+  }
+
+  void _removeIchimokuItemsToCollection(int index) {
+    var toBeRemovedId = ichimokuItems[index].itemId;
+    for (var i = 0; i < itemsCollection.length; i++) {
+      if (itemsCollection[i].runtimeType == StrategyIchimokuItemInfo &&
+          (itemsCollection[i] as StrategyIchimokuItemInfo).itemId ==
+              toBeRemovedId) {
+        itemsCollection.removeAt(i);
+        break;
+      }
+    }
+    _reorderItemCollection();
+    notifyListeners();
+  }
+
+  void _changeIchimokuItemsToCollection() {
+    var dic = Map<String, int>();
+    for (var i = 0; i < itemsCollection.length; i++) {
+      var item = itemsCollection[i];
+      if (item.runtimeType == StrategyIchimokuItemInfo) {
+        dic[(item as StrategyIchimokuItemInfo).itemId] = i;
+      }
+    }
+
+    for (var ichimokuItem in ichimokuItems) {
+      if (dic.containsKey(ichimokuItem.itemId)) {
+        ichimokuItem.Index = dic[ichimokuItem.itemId]!;
+        itemsCollection[dic[ichimokuItem.itemId]!] = ichimokuItem;
+      }
+    }
+    notifyListeners();
+  }
+
+  void _reorderItemCollection() {
+    for (var i = 0; i < itemsCollection.length; i++) {
+      if (itemsCollection[i].runtimeType == StrategyBollingerItemInfo) {
+        (itemsCollection[i] as StrategyBollingerItemInfo).Index = i;
+      }
+      if (itemsCollection[i].runtimeType == StrategyIchimokuItemInfo) {
+        (itemsCollection[i] as StrategyIchimokuItemInfo).Index = i;
+      }
+    }
+  }
+
+  void _cleanCollection() {
+    if (bollingerItems.length == 0) {
+      for (var i = 0; i < itemsCollection.length; i++) {
+        print(itemsCollection.length);
+        if (itemsCollection[i].runtimeType == StrategyBollingerItemInfo) {
+          itemsCollection.removeAt(i);
+          i--;
+        }
+      }
+    }
+
+    if (ichimokuItems.length == 0) {
+      for (var i = 0; i < itemsCollection.length; i++) {
+        if (itemsCollection[i].runtimeType == StrategyIchimokuItemInfo) {
+          itemsCollection.removeAt(i);
+          i--;
+        }
+      }
+    }
   }
 
   Future<void> doKrwBalanceRequest() async {
@@ -63,7 +183,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   void removeItemFromItems(int index) {
-    items.removeAt(index);
+    bollingerItems.removeAt(index);
     notifyListeners();
   }
 
@@ -83,10 +203,10 @@ class AppProvider extends ChangeNotifier {
     if (data['bollingerItems'] != null &&
         data['bollingerItems']['items'] != null) {
       List<dynamic> sentItems = data['bollingerItems']['items'];
-      items.clear();
+      bollingerItems.clear();
 
       for (var el in sentItems) {
-        items.add(StrategyItemInfo.fromJson(el));
+        bollingerItems.add(StrategyBollingerItemInfo.fromJson(el));
       }
     }
 
@@ -100,7 +220,7 @@ class AppProvider extends ChangeNotifier {
       }
     }
 
-    // ichimoku get
+    _reorderItemCollection();
     notifyListeners();
   }
 
@@ -151,11 +271,11 @@ class AppProvider extends ChangeNotifier {
       }
 
       if (data.containsKey('item')) {
-        var sentItem = StrategyItemInfo.fromJson(data['item']);
+        var sentItem = StrategyBollingerItemInfo.fromJson(data['item']);
         if (sentItem.itemId != '') {
-          for (var i = 0; i < items.length; i++) {
-            if (items[i].itemId == sentItem.itemId) {
-              items[i] = sentItem;
+          for (var i = 0; i < bollingerItems.length; i++) {
+            if (bollingerItems[i].itemId == sentItem.itemId) {
+              bollingerItems[i] = sentItem;
               break;
             }
           }
@@ -165,7 +285,7 @@ class AppProvider extends ChangeNotifier {
       if (data.containsKey('Ichimokuitems')) {
         var sentItem = StrategyIchimokuItemInfo.fromJson(data['ichimokuItem']);
         if (sentItem.itemId != '') {
-          for (var i = 0; i < items.length; i++) {
+          for (var i = 0; i < bollingerItems.length; i++) {
             if (ichimokuItems[i].itemId == sentItem.itemId) {
               ichimokuItems[i] = sentItem;
               break;
@@ -175,9 +295,9 @@ class AppProvider extends ChangeNotifier {
       }
 
       if (data.containsKey('deleteItemId') && data['deleteItemId'] != '') {
-        for (var i = 0; i < items.length; i++) {
-          if (items[i].itemId == data['deleteItemId']) {
-            items.removeAt(i);
+        for (var i = 0; i < bollingerItems.length; i++) {
+          if (bollingerItems[i].itemId == data['deleteItemId']) {
+            bollingerItems.removeAt(i);
             break;
           }
         }
@@ -188,11 +308,9 @@ class AppProvider extends ChangeNotifier {
             break;
           }
         }
-
-        //TODO
-        //add logic to rearrange collection item here
       }
 
+      _reorderItemCollection();
       notifyListeners();
     });
   }

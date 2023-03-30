@@ -635,6 +635,12 @@ func handleSocketItems(w http.ResponseWriter, r *http.Request) {
 	}
 
 	defer conn.Close()
+	//TODO
+	go func() {
+		for {
+			time.Sleep(time.Second * 1000)
+		}
+	}()
 
 	for v := range singleton.InstanceItemsCollectionCh() {
 		err := conn.WriteJSON(v)
