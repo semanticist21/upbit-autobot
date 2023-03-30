@@ -7,6 +7,7 @@ import (
 	"github.com/sangx2/upbit"
 	"github.com/sangx2/upbit/model/exchange"
 	"github.com/sangx2/upbit/model/exchange/order"
+	"github.com/sangx2/upbit/model/quotation"
 	"github.com/semanticist21/upbit-client-server/converter"
 	"github.com/semanticist21/upbit-client-server/model"
 )
@@ -45,6 +46,16 @@ func GetCandles(client *upbit.Upbit, marketName string, length int, minute Minut
 	}
 
 	return prices, nil
+}
+
+func GetNaiveCandles(client *upbit.Upbit, marketName string, length int, minute Minutes) ([]*quotation.Candle, error) {
+	candles, _, err := client.GetMinuteCandles(marketName, "", strconv.Itoa(length), strconv.Itoa(int(minute)))
+
+	if err != nil {
+		return nil, err
+	}
+
+	return candles, nil
 }
 
 func GetAllCoinMarketNames(client *upbit.Upbit) (map[string]string, error) {

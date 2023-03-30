@@ -564,7 +564,7 @@ func doPostHandleItems(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newItemsDic := make(map[string]bool)
-	for _, item := range items.BollingerItems.BollingerItems {
+	for _, item := range items.BollingerItems.Items {
 		newItemsDic[item.ItemId] = true
 	}
 	for _, item := range items.IchimokuItems.Items {
@@ -572,16 +572,16 @@ func doPostHandleItems(w http.ResponseWriter, r *http.Request) {
 	}
 
 	existingItemsDic := make(map[string]bool)
-	for _, item := range singleton.InstanceBuyTargetItems().BollingerItems {
+	for _, item := range singleton.InstanceBuyTargetItems().Items {
 		existingItemsDic[item.ItemId] = true
 	}
 	for _, item := range singleton.InstanceBuyTargetIchimokuItems().Items {
 		existingItemsDic[item.ItemId] = true
 	}
 
-	for detector.TheBuyCycleOngoing && detector.TheSellCycleOngoing {
+	for detector.TheBuyCycleOngoing && detector.TheSellCycleOngoing && detector.TheIchimokuCycleOngoing {
 		time.Sleep(time.Millisecond * 500)
-		if !detector.TheBuyCycleOngoing && !detector.TheSellCycleOngoing {
+		if !detector.TheBuyCycleOngoing && !detector.TheSellCycleOngoing && !detector.TheIchimokuCycleOngoing {
 			break
 		}
 	}
@@ -635,7 +635,7 @@ func handleSocketItems(w http.ResponseWriter, r *http.Request) {
 	}
 
 	defer conn.Close()
-	//TODO
+
 	go func() {
 		for {
 			time.Sleep(time.Second * 1000)

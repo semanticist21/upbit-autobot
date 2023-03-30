@@ -45,7 +45,11 @@ class _StrategyIchimokuItemState extends State<StrategyIchimokuItem> {
                       PopupMenuItem(
                           child: const Center(
                               child: Row(
-                            children: [Icon(Icons.delete), Text('삭제')],
+                            children: [
+                              Icon(Icons.delete),
+                              SizedBox(width: 10),
+                              Text('삭제')
+                            ],
                           )),
                           onTap: () {
                             var hashId = widget.item.itemId;
@@ -54,7 +58,7 @@ class _StrategyIchimokuItemState extends State<StrategyIchimokuItem> {
                                 i++) {
                               var item = _provider.ichimokuItems[i];
                               if (item.itemId == hashId) {
-                                _provider.removeItemFromItems(i);
+                                _provider.removeIchimokuItemFromItems(i);
                                 break;
                               }
                             }

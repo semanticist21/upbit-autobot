@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:upbit_autobot/client/client.dart';
 import 'package:upbit_autobot/model/account.dart';
@@ -26,6 +27,8 @@ class _LoginState extends State<Login> {
   bool _isSave = false;
   final _isSaveKey = 'isSave';
 
+  String _versionInfo = '';
+
   @override
   void initState() {
     super.initState();
@@ -34,6 +37,7 @@ class _LoginState extends State<Login> {
     _publicField.addListener(_checkPublicString);
     _secretField.addListener(_checkSecretString);
     _getSavePreferences();
+    _getVersionInfo();
   }
 
   @override
@@ -75,15 +79,13 @@ class _LoginState extends State<Login> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text(
-                            'ver 1.0.2',
-                            style: TextStyle(fontSize: 10, color: Colors.grey),
-                          ),
-                          SizedBox(width: 10)
-                        ]),
+                    Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                      Text(
+                        'ver $_versionInfo',
+                        style: TextStyle(fontSize: 10, color: Colors.grey),
+                      ),
+                      SizedBox(width: 10)
+                    ]),
                     Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                       const SizedBox(width: 5),
                       const Text(
@@ -381,5 +383,11 @@ class _LoginState extends State<Login> {
     if (keyMap.containsKey(secretKey)) {
       _secretField.text = keyMap[secretKey];
     }
+  }
+
+  Future<void> _getVersionInfo() async {
+    var pacInfo = await PackageInfo.fromPlatform();
+    _versionInfo = pacInfo.version;
+    setState(() {});
   }
 }

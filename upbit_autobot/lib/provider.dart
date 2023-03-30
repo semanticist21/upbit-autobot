@@ -131,7 +131,6 @@ class AppProvider extends ChangeNotifier {
   void _cleanCollection() {
     if (bollingerItems.length == 0) {
       for (var i = 0; i < itemsCollection.length; i++) {
-        print(itemsCollection.length);
         if (itemsCollection[i].runtimeType == StrategyBollingerItemInfo) {
           itemsCollection.removeAt(i);
           i--;
@@ -184,6 +183,11 @@ class AppProvider extends ChangeNotifier {
 
   void removeItemFromItems(int index) {
     bollingerItems.removeAt(index);
+    notifyListeners();
+  }
+
+  void removeIchimokuItemFromItems(int index) {
+    ichimokuItems.removeAt(index);
     notifyListeners();
   }
 
