@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:ffi';
+import 'dart:js_interop';
 import 'dart:ui';
 
 import 'package:flutter/gestures.dart';
@@ -10,6 +12,7 @@ import 'package:upbit_autobot/client/client.dart';
 import 'package:upbit_autobot/components/converter.dart';
 import 'package:upbit_autobot/components/draggable_card.dart';
 import 'package:upbit_autobot/model/strategy_item_info.dart';
+import 'package:upbit_autobot/model/template.dart';
 import 'package:upbit_autobot/provider.dart';
 
 import 'alert.dart';
@@ -23,16 +26,13 @@ class AddDialogNew extends StatefulWidget {
 
 class _AddDialogNewState extends State<AddDialogNew>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
-
   final _coinMarketName = TextEditingController();
   final _bollingerLength = TextEditingController(text: '20');
   final _bollingerMultiplier = TextEditingController(text: '2');
   final _purchaseCount = TextEditingController(text: '3');
   final _profitLine = TextEditingController(text: '5');
   final _lossLine = TextEditingController(text: '5');
-  final _desiredBuyAmount = TextEditingController(text: '1');
+  final _desiredBuyAmount = TextEditingController(text: '50000');
   final _minuteCandle = TextEditingController(text: '15');
 
   final _optionFormKey = GlobalKey<FormState>();
@@ -41,17 +41,16 @@ class _AddDialogNewState extends State<AddDialogNew>
   late AppProvider _provider;
   final List<String> candles = ['1', '3', '5', '15', '30', '60', '240'];
 
-  var _coinBuyEstimated = '';
+  var _coinAmountEstimated = '';
 
   var _isCtrlKeyPressed = false;
   var _focusNode = FocusNode();
   var _zoomController = TransformationController();
+  var _isTemplateSucessMarketVisible = false;
 
   @override
   void initState() {
     super.initState();
-    _controller =
-        AnimationController(duration: Duration(milliseconds: 300), vsync: this);
   }
 
   @override
@@ -64,6 +63,8 @@ class _AddDialogNewState extends State<AddDialogNew>
     _lossLine.dispose();
     _desiredBuyAmount.dispose();
     _minuteCandle.dispose();
+    _zoomController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -253,7 +254,7 @@ class _AddDialogNewState extends State<AddDialogNew>
                                     child: Row(children: [
                                   SizedBox(width: 20),
                                   ElevatedButton(
-                                    onPressed: () {},
+                                    onPressed: () => _estimateCoinAmount(),
                                     child: Row(children: [
                                       Icon(FontAwesomeIcons.coins, size: 13),
                                       SizedBox(width: 10),
@@ -263,17 +264,23 @@ class _AddDialogNewState extends State<AddDialogNew>
                                   // Text(_coinBuyEstimated),
                                   SizedBox(width: 10),
                                   SizedBox(
-                                      width: 70,
+                                      width: 90,
                                       height: 30,
                                       child: FittedBox(
-                                          child: _coinBuyEstimated == ''
+                                          child: _coinAmountEstimated == ''
                                               ? Text('')
-                                              : Text('$_coinBuyEstimated 개',
+                                              : Text('$_coinAmountEstimated 개',
                                                   style: _labelTextStyle()))),
                                   Spacer(),
+                                  Visibility(
+                                      visible: _isTemplateSucessMarketVisible,
+                                      child: Icon(
+                                        Icons.check,
+                                        color: Colors.green,
+                                      )),
+                                  SizedBox(width: 2),
                                   ElevatedButton(
-                                      onPressed: () =>
-                                          Navigator.of(context).pop(),
+                                      onPressed: () => SaveTemplate(),
                                       child: Text('템플릿 저장')),
                                   SizedBox(width: 10),
                                   ElevatedButton(
@@ -492,45 +499,10 @@ class _AddDialogNewState extends State<AddDialogNew>
   }
 
   void _doSaveAction(BuildContext context) {
-    var isPass = true;
-
-    if (_optionFormKey.currentState != null &&
-        !_optionFormKey.currentState!.validate()) {
-      isPass = false;
-    }
-
-    if (_withSuffixFormKey.currentState != null &&
-        !_withSuffixFormKey.currentState!.validate()) {
-      isPass = false;
-    }
-
-    if (!isPass) {
+    var newModel = _verifyText();
+    if (newModel == null) {
       return;
     }
-
-    var count = int.tryParse(_purchaseCount.text);
-    var length = int.tryParse(_bollingerLength.text);
-    var multiplier = int.tryParse(_bollingerMultiplier.text);
-
-    if (count != null && count > 99) {
-      count = 99;
-    }
-    if (length != null && length > 100) {
-      length = 100;
-    }
-    if (multiplier != null && multiplier > 100) {
-      multiplier = 100;
-    }
-
-    var newModel = StrategyItemInfo(
-        _coinMarketName.text.toUpperCase(),
-        length!,
-        multiplier!,
-        count!,
-        double.parse(_profitLine.text),
-        double.parse(_lossLine.text),
-        double.parse(_desiredBuyAmount.text),
-        int.parse(_minuteCandle.text));
 
     Navigator.pop(context, newModel);
   }
@@ -552,5 +524,99 @@ class _AddDialogNewState extends State<AddDialogNew>
         fontSize: 13,
         color: const Color.fromRGBO(66, 66, 66, 1),
         fontWeight: FontWeight.w900);
+  }
+
+  Future<void> _estimateCoinAmount() async {
+    if (!_coinMarketName.text.contains('KRW-')) {
+      return;
+    }
+
+    var coinMarketName = _coinMarketName.text;
+
+    var response = await RestApiClient().requestGet('balance/$coinMarketName');
+
+    var dataMap = await RestApiClient.parseResponseData(response);
+
+    if (dataMap.containsKey('avgBuyPrice')) {
+      var price = dataMap['avgBuyPrice'];
+      var priceParsed = double.tryParse(price);
+
+      if (priceParsed != null) {
+        var desiredKrwAmountParsed = int.tryParse(_desiredBuyAmount.text);
+        if (desiredKrwAmountParsed != null) {
+          var result = desiredKrwAmountParsed / priceParsed;
+          _coinAmountEstimated = result.toStringAsFixed(8);
+          setState(() {});
+        }
+      }
+    }
+  }
+
+  Future<void> SaveTemplate() async {
+    var newModel = _verifyText();
+    if (newModel == null) {
+      showDialog(
+          context: context,
+          builder: (context) =>
+              AlertDialogCustom(text: '입력 값이 올바르지 않아 저장에 실패했습니다.'));
+
+      _isTemplateSucessMarketVisible = false;
+      setState(() {});
+      return;
+    }
+
+    var template =
+        TemplateModel(bollingerTemplate: newModel, ichimokuTemplate: null);
+
+    var map = template.toJson();
+    var data = jsonEncode(map);
+
+    var response = await RestApiClient().requestPost('template', data);
+
+    if (response != null && response.statusCode == 200) {
+      _isTemplateSucessMarketVisible = true;
+      setState(() {});
+    }
+  }
+
+  StrategyItemInfo? _verifyText() {
+    var isPass = true;
+
+    if (_optionFormKey.currentState != null &&
+        !_optionFormKey.currentState!.validate()) {
+      isPass = false;
+    }
+
+    if (_withSuffixFormKey.currentState != null &&
+        !_withSuffixFormKey.currentState!.validate()) {
+      isPass = false;
+    }
+
+    if (!isPass) {
+      return null;
+    }
+
+    var count = int.tryParse(_purchaseCount.text);
+    var length = int.tryParse(_bollingerLength.text);
+    var multiplier = int.tryParse(_bollingerMultiplier.text);
+
+    if (count != null && count > 99) {
+      count = 99;
+    }
+    if (length != null && length > 100) {
+      length = 100;
+    }
+    if (multiplier != null && multiplier > 100) {
+      multiplier = 100;
+    }
+    return StrategyItemInfo(
+        _coinMarketName.text.toUpperCase(),
+        length!,
+        multiplier!,
+        count!,
+        double.parse(_profitLine.text),
+        double.parse(_lossLine.text),
+        double.parse(_desiredBuyAmount.text),
+        int.parse(_minuteCandle.text));
   }
 }

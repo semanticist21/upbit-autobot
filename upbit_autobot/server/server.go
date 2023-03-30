@@ -446,6 +446,19 @@ func handleTemplate(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func doGetHandleTemplate(w http.ResponseWriter) {
+	bytes, err := model.GetTemplateBytes()
+	if err != nil {
+		if err != nil {
+			singleton.InstanceLogger().Errs <- err
+			incurBadRequestError(w)
+			return
+		}
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(bytes)
+}
+
 func doPostHandleTemplate(w http.ResponseWriter, r *http.Request) {
 	if r.Body == nil {
 		incurBadRequestError(w)
@@ -467,20 +480,15 @@ func doPostHandleTemplate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	model.SaveTemplate(template.BollingerTemplate, template.IchimokuTemplate)
-}
-
-func doGetHandleTemplate(w http.ResponseWriter) {
-	bytes, err := model.GetTemplateBytes()
-	if err != nil {
-		if err != nil {
-			singleton.InstanceLogger().Errs <- err
-			incurBadRequestError(w)
-			return
-		}
+	if template.BollingerTemplate == nil {
+		template.BollingerTemplate = &model.BuyStrategyItemInfo{}
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(bytes)
+
+	if template.BollingerTemplate == nil {
+		template.IchimokuTemplate = &model.BuyStrategyIchimokuItemInfo{}
+	}
+
+	model.SaveTemplate(template.BollingerTemplate, template.IchimokuTemplate)
 }
 
 func handleItems(w http.ResponseWriter, r *http.Request) {

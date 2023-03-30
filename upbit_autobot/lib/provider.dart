@@ -188,6 +188,9 @@ class AppProvider extends ChangeNotifier {
             break;
           }
         }
+
+        //TODO
+        //add logic to rearrange collection item here
       }
 
       notifyListeners();
