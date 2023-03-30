@@ -608,7 +608,7 @@ func doPostHandleItems(w http.ResponseWriter, r *http.Request) {
 
 	singleton.SetBuyTargetItemsInstance(sentItems.BollingerItems)
 	singleton.SetBuyTargetItemsIchimokuInstance(sentItems.IchimokuItems)
-	singleton.InstanceLogger().Msgs <- "전략 아이템 저장되었습니다."
+	// singleton.InstanceLogger().Msgs <- "전략 아이템 저장되었습니다."
 	w.WriteHeader(http.StatusOK)
 }
 
