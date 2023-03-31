@@ -28,34 +28,54 @@ class _SellListViewState extends State<SellListView> {
         widthFactor: 0.5,
         heightFactor: 0.65,
         child: Scaffold(
-          appBar: AppBar(
-            title: Row(children: [
-              Icon(Icons.sell_sharp, size: 18),
-              SizedBox(width: 15),
-              Text('판매 감시 중인 아이템 목록', style: TextStyle(fontSize: 15)),
-            ]),
-            leading:
-                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              SizedBox(width: 15),
-              IconButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  icon: Icon(Icons.arrow_back_ios),
-                  splashRadius: 15)
-            ]),
-          ),
-          body: Container(
-            padding: EdgeInsets.all(5),
-            color: Color.fromRGBO(250, 250, 250, 0.95),
-            child: ListView.builder(
-                physics: BouncingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics()),
-                itemCount: _sellItem.length,
-                itemBuilder: (context, index) {
-                  return getListItem(_sellItem[index]);
-                }),
-          ),
-        ),
+            appBar: AppBar(
+              title: Row(children: [
+                Icon(Icons.sell_sharp, size: 18),
+                SizedBox(width: 15),
+                Text('판매 감시 중인 아이템 목록', style: TextStyle(fontSize: 15)),
+              ]),
+              leading:
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                SizedBox(width: 15),
+                IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: Icon(Icons.arrow_back_ios),
+                    splashRadius: 15)
+              ]),
+            ),
+            body: _sellItem.length != 0
+                ? getWhenItemExists()
+                : getWhenItemEmpty()),
       ),
+    );
+  }
+
+  Widget getWhenItemEmpty() {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      color: Colors.black,
+      child: Center(
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Icon(Icons.no_sim_sharp, size: 100),
+        SizedBox(height: 10),
+        Text('감시 아이템이 없습니다.',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600))
+      ])),
+    );
+  }
+
+  Widget getWhenItemExists() {
+    return Container(
+      padding: EdgeInsets.all(5),
+      color: Color.fromRGBO(250, 250, 250, 0.95),
+      child: ListView.builder(
+          physics:
+              BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+          itemCount: _sellItem.length,
+          itemBuilder: (context, index) {
+            return getListItem(_sellItem[index]);
+          }),
     );
   }
 

@@ -76,6 +76,13 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
                     icon: Icon(Icons.list),
                     splashRadius: 15),
               ),
+              Tooltip(
+                message: '프로그램 트레이 최소화',
+                child: IconButton(
+                    onPressed: () => {},
+                    icon: Icon(Icons.theater_comedy),
+                    splashRadius: 15),
+              ),
               Spacer(),
               Visibility(
                   visible: _visible,
@@ -216,7 +223,7 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
                                           MainAxisAlignment.start,
                                       children: [
                                     SizedBox(width: 10),
-                                    Icon(Icons.cloud_circle_sharp),
+                                    Icon(Icons.cloud),
                                     SizedBox(width: 20),
                                     Text('일목 구름대 아이템 추가')
                                   ])),
