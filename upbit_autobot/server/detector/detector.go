@@ -158,7 +158,7 @@ func StartBuyWithIchimokuDetectorBot(client *upbit.Upbit) {
 
 			orderResult, err := order.BuyOrder(client, &orderInfo)
 			if err != nil {
-				singleton.InstanceLogger().Errs <- fmt.Errorf("%s #에러 발생 코인 이름: %s", err.Error(), item.CoinMarketName)
+				singleton.InstanceLogger().Errs <- fmt.Errorf("%s # 에러 발생 코인 이름: %s", err.Error(), item.CoinMarketName)
 				continue
 			}
 
@@ -485,7 +485,7 @@ func StartBuyDetectorBot(client *upbit.Upbit) {
 
 			orderResult, err := order.BuyOrder(client, &orderInfo)
 			if err != nil {
-				singleton.InstanceLogger().Errs <- fmt.Errorf("%s #에러 발생 코인 이름: %s", err.Error(), item.CoinMarketName)
+				singleton.InstanceLogger().Errs <- fmt.Errorf("%s # 에러 발생 코인 이름: %s", err.Error(), item.CoinMarketName)
 				continue
 			}
 
@@ -743,7 +743,7 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 
 						accBalance, err := converter.StringToFloatWithDigit(account.Balance, 8)
 						if err != nil {
-							singleton.InstanceLogger().Errs <- fmt.Errorf("%s, #에러 발생 코인 이름: %s", err.Error(), sellTargetItem.CoinMarketName)
+							singleton.InstanceLogger().Errs <- fmt.Errorf("%s, # 에러 발생 코인 이름: %s", err.Error(), sellTargetItem.CoinMarketName)
 						}
 
 						if accBalance < sellTargetItem.ExecutedVolume {
@@ -814,7 +814,7 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 					orderResult, err := order.SellOrder(client, &sellOrderInfo)
 
 					if err != nil {
-						singleton.InstanceLogger().Errs <- fmt.Errorf("%s #에러 발생 코인 이름: %s", err.Error(), sellTargetItem.CoinMarketName)
+						singleton.InstanceLogger().Errs <- fmt.Errorf("%s # 에러 발생 코인 이름: %s", err.Error(), sellTargetItem.CoinMarketName)
 						continue
 					}
 
@@ -891,7 +891,7 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 					orderResult, err := order.SellOrder(client, &sellOrderInfo)
 
 					if err != nil {
-						singleton.InstanceLogger().Errs <- fmt.Errorf("%s #에러 발생 코인 이름: %s, 시도 볼륨: %.8f, 시도 현재 가격: %.4f", err.Error(), sellTargetItem.CoinMarketName, sellTargetItem.ExecutedVolume, price)
+						singleton.InstanceLogger().Errs <- fmt.Errorf("%s # 에러 발생 코인 이름: %s, 시도 볼륨: %.8f, 시도 현재 가격: %.4f", err.Error(), sellTargetItem.CoinMarketName, sellTargetItem.ExecutedVolume, price)
 						continue
 					}
 
