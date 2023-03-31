@@ -83,6 +83,17 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
                     icon: Icon(Icons.theater_comedy),
                     splashRadius: 15),
               ),
+              Tooltip(
+                message: '아이템 모두 제거 (저장 후 확정)',
+                child: IconButton(
+                    onPressed: () {
+                      _provider.bollingerItems.clear();
+                      _provider.ichimokuItems.clear();
+                      setState(() {});
+                    },
+                    icon: Icon(Icons.cleaning_services_rounded),
+                    splashRadius: 15),
+              ),
               Spacer(),
               Visibility(
                   visible: _visible,
