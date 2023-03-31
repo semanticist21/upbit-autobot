@@ -653,7 +653,7 @@ func handleSocketLog(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var url string = "http://api.coingecko.com/api/v3/coins/markets?vs_currency=krw&order=volume_desc&per_page=50&page=1&sparkline=false&price_change_percentage=24h"
+var url string = "http://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=volume_desc&per_page=50&page=1&sparkline=false&price_change_percentage=24h"
 
 func handleVolume(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
@@ -698,8 +698,8 @@ func handleVolume(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(bytes, &volumes)
 
 	if err != nil {
-		singleton.InstanceLogger().Errs <- err
-		incurBadRequestError(w)
+		singleton.InstanceLogger().Errs <- fmt.Errorf("API 특성 상 잦은 랜덤 생성이 불가능합니다. 잠시 후 다시 시도해주세요")
+		w.WriteHeader(200)
 		return
 	}
 
@@ -717,7 +717,7 @@ func handleVolume(w http.ResponseWriter, r *http.Request) {
 	for i := 0; i < len(volumes); i++ {
 
 		if koreanMarketName, ok := marketDic[volumes[i].Symbol]; ok {
-			coinInfo := model.SimpleCoinName{MarketName: fmt.Sprintf("{%s}{%s}", "KRW-", strings.ToUpper(volumes[i].Symbol)), CoinKrName: koreanMarketName}
+			coinInfo := model.SimpleCoinName{MarketName: fmt.Sprintf("%s%s", "KRW-", strings.ToUpper(volumes[i].Symbol)), CoinKrName: koreanMarketName}
 			topCoinInfos = append(topCoinInfos, &coinInfo)
 		}
 

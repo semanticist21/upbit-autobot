@@ -131,7 +131,7 @@ func StartBuyWithIchimokuDetectorBot(client *upbit.Upbit) {
 			}
 
 			if len(candles) != item.ConversionLine {
-				singleton.InstanceLogger().Errs <- fmt.Errorf("%s 볼린저 밴드 분석을 위한 캔들의 개수가 부족합니다. 필요한 캔들 개수 : %d, 반환된 캔들 개수 : %d", item.CoinMarketName, item.ConversionLine, len(candles))
+				singleton.InstanceLogger().Errs <- fmt.Errorf("%s 컨버젼 라인 분석을 위한 캔들의 개수가 부족합니다. 필요한 캔들 개수 : %d, 반환된 캔들 개수 : %d", item.CoinMarketName, item.ConversionLine, len(candles))
 				continue
 			}
 

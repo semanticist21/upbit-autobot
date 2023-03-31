@@ -24,8 +24,11 @@ class AppProvider extends ChangeNotifier {
       MyCustomList(List.empty(growable: true));
   MyCustomList<StrategyIchimokuItemInfo> ichimokuItems =
       MyCustomList(List.empty(growable: true));
+
   // items for listview
   List<Object> itemsCollection = List.empty(growable: true);
+
+  var volumeTopList = List.empty(growable: true);
 
   AppProvider._init() {
     bollingerItems.addInsertListener(_insertBollingerItemsToCollection);

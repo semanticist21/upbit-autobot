@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,6 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:upbit_autobot/client/client.dart';
 import 'package:upbit_autobot/components/draggable_card.dart';
+import 'package:upbit_autobot/model/strategy_item_info.dart';
 import 'package:upbit_autobot/model/strategy_item_info_ichimoku.dart';
 import 'package:upbit_autobot/model/template.dart';
 import 'package:upbit_autobot/provider.dart';
@@ -41,6 +43,7 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
   var _focusNode = FocusNode();
   var _zoomController = TransformationController();
   var _isTemplateSucessMarketVisible = false;
+  var _isProgressVisible = false;
 
   @override
   void initState() {
@@ -114,8 +117,107 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
                                         Icon(FontAwesomeIcons.lightbulb,
                                             size: 15),
                                         SizedBox(width: 10),
-                                        Text('일목균형표의 컨버젼 기반 전략 아이템 추가'),
+                                        Text('일목균형표의 컨버젼 전략 아이템 추가'),
                                         Spacer(),
+                                        SizedBox(width: 5),
+                                        Visibility(
+                                            visible: _isProgressVisible,
+                                            child: SizedBox(
+                                                width: 10,
+                                                height: 10,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                        strokeWidth: 2))),
+                                        Tooltip(
+                                            message:
+                                                '랜덤 생성 추가(상위 볼륨 20개 중 랜덤) - Credited to CoinGecko',
+                                            child: IconButton(
+                                                onPressed: () async {
+                                                  _isProgressVisible = true;
+                                                  setState(() {});
+
+                                                  if (_provider
+                                                      .volumeTopList.isEmpty) {
+                                                    var response =
+                                                        await RestApiClient()
+                                                            .requestGet(
+                                                                'volume/20');
+
+                                                    _provider.volumeTopList =
+                                                        await RestApiClient
+                                                            .parseResponseListData(
+                                                                response);
+
+                                                    if (_provider.volumeTopList
+                                                        .isEmpty) {
+                                                      _isProgressVisible =
+                                                          false;
+                                                      setState(() {});
+                                                      return;
+                                                    }
+                                                  }
+
+                                                  var isDuplicate = true;
+                                                  var maxCnt = (_provider
+                                                          .volumeTopList
+                                                          .length *
+                                                      3);
+                                                  var idx = 0;
+
+                                                  while (isDuplicate) {
+                                                    if (idx > maxCnt) {
+                                                      break;
+                                                    }
+
+                                                    isDuplicate = false;
+
+                                                    var random = Random()
+                                                        .nextInt(_provider
+                                                                .volumeTopList
+                                                                .length -
+                                                            1);
+
+                                                    Map<String, dynamic> el =
+                                                        _provider.volumeTopList
+                                                            .elementAt(random);
+                                                    var marketName =
+                                                        el['marketName'];
+
+                                                    _provider.itemsCollection
+                                                        .forEach((element) {
+                                                      if (element
+                                                              is StrategyBollingerItemInfo &&
+                                                          element.coinMarKetName ==
+                                                              marketName) {
+                                                        isDuplicate = true;
+                                                      }
+
+                                                      if (element
+                                                              is StrategyIchimokuItemInfo &&
+                                                          element.coinMarKetName ==
+                                                              marketName) {
+                                                        isDuplicate = true;
+                                                      }
+                                                    });
+
+                                                    if (!isDuplicate) {
+                                                      _coinMarketName.text =
+                                                          marketName;
+                                                      break;
+                                                    }
+
+                                                    idx++;
+                                                  }
+
+                                                  _isProgressVisible = false;
+                                                  setState(() {});
+
+                                                  _doSaveAction(context);
+                                                },
+                                                icon: Icon(
+                                                    FontAwesomeIcons.dice,
+                                                    size: 15),
+                                                splashRadius: 15)),
                                         Tooltip(
                                             message: '줌 초기화',
                                             excludeFromSemantics: true,

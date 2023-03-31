@@ -117,7 +117,7 @@ class RestApiClient {
         return {};
       }
     } else {
-      doLoggerPostRequest('잘못된 응답입니다.');
+      // doLoggerPostRequest('잘못된 응답입니다.');
       return {};
     }
   }
@@ -137,7 +137,7 @@ class RestApiClient {
         return List.empty();
       }
     } else {
-      doLoggerPostRequest('잘못된 응답입니다.');
+      // doLoggerPostRequest('잘못된 응답입니다.');
       return List.empty();
     }
   }
@@ -156,7 +156,7 @@ class RestApiClient {
         return '';
       }
     } else {
-      doLoggerPostRequest('잘못된 응답입니다.');
+      // doLoggerPostRequest('잘못된 응답입니다.');
       return '';
     }
   }

@@ -34,7 +34,8 @@ class _SellListViewState extends State<SellListView> {
               SizedBox(width: 15),
               Text('판매 감시 중인 아이템 목록', style: TextStyle(fontSize: 15)),
             ]),
-            leading: Row(children: [
+            leading:
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               SizedBox(width: 15),
               IconButton(
                   onPressed: () => Navigator.of(context).pop(),
