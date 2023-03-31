@@ -6,9 +6,7 @@ import 'package:upbit_autobot/model/strategy_item_info_ichimoku.dart';
 import 'package:upbit_autobot/provider.dart';
 
 class StrategyIchimokuItem extends StatefulWidget {
-  const StrategyIchimokuItem(
-      {super.key, required this.itemKey, required this.item});
-  final ValueKey itemKey;
+  const StrategyIchimokuItem({super.key, required this.item});
   final StrategyIchimokuItemInfo item;
 
   @override

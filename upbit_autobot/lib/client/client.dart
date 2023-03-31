@@ -122,6 +122,26 @@ class RestApiClient {
     }
   }
 
+  static Future<List<dynamic>> parseResponseListData(
+      HttpClientResponse? response) async {
+    if (response == null) {
+      return Future.value(List.empty());
+    }
+
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      final responseBody = await response.transform(utf8.decoder).join();
+
+      if (responseBody.isNotEmpty) {
+        return jsonDecode(responseBody);
+      } else {
+        return List.empty();
+      }
+    } else {
+      doLoggerPostRequest('잘못된 응답입니다.');
+      return List.empty();
+    }
+  }
+
   static Future<String> parseWordData(HttpClientResponse? response) async {
     if (response == null) {
       return Future.value('');

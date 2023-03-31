@@ -78,7 +78,7 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
             child: AnimatedContainer(
                 curve: Curves.fastLinearToSlowEaseIn,
                 duration: Duration(milliseconds: 300),
-                color: const Color.fromRGBO(255, 255, 255, 0.95),
+                color: const Color.fromRGBO(250, 250, 250, 0.95),
                 child: KeyboardListener(
                     onKeyEvent: (e) {
                       if (e.runtimeType.toString() == 'KeyDownEvent' &&
@@ -458,7 +458,7 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
             errorStyle: _errorTextStyle(),
             labelStyle: const TextStyle(fontSize: 12),
             suffixText: '%',
-            suffixStyle: const TextStyle(fontSize: 15)),
+            suffixStyle: TextStyle(fontSize: 15, color: Colors.grey[800])),
         keyboardType:
             const TextInputType.numberWithOptions(signed: false, decimal: true),
         inputFormatters: [
@@ -496,7 +496,7 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
             errorStyle: _errorTextStyle(),
             labelStyle: const TextStyle(fontSize: 12),
             suffixText: '원',
-            suffixStyle: const TextStyle(fontSize: 15)),
+            suffixStyle: TextStyle(fontSize: 15, color: Colors.grey[800])),
         keyboardType:
             const TextInputType.numberWithOptions(signed: false, decimal: true),
         inputFormatters: [

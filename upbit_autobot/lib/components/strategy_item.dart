@@ -6,8 +6,7 @@ import 'package:upbit_autobot/model/strategy_item_info.dart';
 import 'package:upbit_autobot/provider.dart';
 
 class StrategyItem extends StatefulWidget {
-  const StrategyItem({super.key, required this.itemKey, required this.item});
-  final ValueKey itemKey;
+  const StrategyItem({super.key, required this.item});
   final StrategyBollingerItemInfo item;
 
   @override
@@ -19,6 +18,12 @@ class _StrategyItemState extends State<StrategyItem> {
   final GlobalKey cardKey = GlobalKey();
   late AppProvider _provider;
   bool _isPurchased = false;
+
+  @override
+  void initState() {
+    _isPurchased = widget.item.lastBoughtTimeStamp.isEmpty ? false : true;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

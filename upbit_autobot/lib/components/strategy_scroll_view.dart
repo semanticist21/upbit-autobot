@@ -4,12 +4,15 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:reorderable_grid/reorderable_grid.dart';
+import 'package:upbit_autobot/components/sell_list_view.dart';
 import 'package:upbit_autobot/components/strategy_item.dart';
 import 'package:upbit_autobot/components/strategy_item_ichimoku.dart';
 import 'package:upbit_autobot/model/strategy_item_info.dart';
 import 'package:upbit_autobot/model/strategy_item_info_ichimoku.dart';
 
 import '../client/client.dart';
+import '../model/sell_item.dart';
 import '../provider.dart';
 import 'add_dialog_new_bollinger.dart';
 import 'add_dialog_new_ichimoku.dart';
@@ -65,7 +68,13 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
               Tooltip(
                 message: '판매 감시 아이템 리스트 확인',
                 child: IconButton(
-                    onPressed: () {}, icon: Icon(Icons.list), splashRadius: 15),
+                    onPressed: () => showDialog(
+                        context: context,
+                        builder: (_) {
+                          return SellListView();
+                        }),
+                    icon: Icon(Icons.list),
+                    splashRadius: 15),
               ),
               Spacer(),
               Visibility(
@@ -250,28 +259,46 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
           // 아이템 있는 부분
           SliverPadding(
               padding: const EdgeInsets.all(5),
-              sliver: SliverGrid.builder(
+              sliver: SliverReorderableGrid(
+                  onReorder: (oldIndex, newIndex) {
+                    final item = _provider.itemsCollection.removeAt(oldIndex);
+                    _provider.itemsCollection.insert(newIndex, item);
+
+                    if (item is StrategyBollingerItemInfo) {
+                      item.Index = newIndex;
+                    } else if (item is StrategyIchimokuItemInfo) {
+                      item.Index = newIndex;
+                    }
+
+                    _provider.reorderItemCollection();
+                  },
                   itemCount: _provider.itemsCollection.length,
                   itemBuilder: (context, index) {
                     if (_provider.itemsCollection[index].runtimeType ==
                         StrategyBollingerItemInfo) {
-                      return StrategyItem(
-                        itemKey: ValueKey(index),
-                        item: _provider.itemsCollection[index]
-                            as StrategyBollingerItemInfo,
-                      );
+                      return ReorderableGridDragStartListener(
+                          key: ValueKey(index),
+                          child: StrategyItem(
+                            key: ValueKey(index),
+                            item: _provider.itemsCollection[index]
+                                as StrategyBollingerItemInfo,
+                          ),
+                          index: index);
                     }
 
                     if (_provider.itemsCollection[index].runtimeType ==
                         StrategyIchimokuItemInfo) {
-                      return StrategyIchimokuItem(
-                        itemKey: ValueKey(index),
-                        item: _provider.itemsCollection[index]
-                            as StrategyIchimokuItemInfo,
-                      );
+                      return ReorderableGridDragStartListener(
+                          key: ValueKey(index),
+                          child: StrategyIchimokuItem(
+                            key: ValueKey(index),
+                            item: _provider.itemsCollection[index]
+                                as StrategyIchimokuItemInfo,
+                          ),
+                          index: index);
                     }
 
-                    return null;
+                    return Container();
                   },
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,

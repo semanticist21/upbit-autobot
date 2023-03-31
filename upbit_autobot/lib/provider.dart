@@ -59,7 +59,7 @@ class AppProvider extends ChangeNotifier {
         break;
       }
     }
-    _reorderItemCollection();
+    reorderItemCollection();
     notifyListeners();
   }
 
@@ -97,7 +97,7 @@ class AppProvider extends ChangeNotifier {
         break;
       }
     }
-    _reorderItemCollection();
+    reorderItemCollection();
     notifyListeners();
   }
 
@@ -119,7 +119,7 @@ class AppProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _reorderItemCollection() {
+  void reorderItemCollection() {
     for (var i = 0; i < itemsCollection.length; i++) {
       if (itemsCollection[i].runtimeType == StrategyBollingerItemInfo) {
         (itemsCollection[i] as StrategyBollingerItemInfo).Index = i;
@@ -298,7 +298,7 @@ class AppProvider extends ChangeNotifier {
       itemsCollection.add(dicWithSort[key]!);
     }
 
-    _reorderItemCollection();
+    reorderItemCollection();
     doSaveItemRequest();
     notifyListeners();
   }
@@ -402,7 +402,7 @@ class AppProvider extends ChangeNotifier {
         }
       }
 
-      _reorderItemCollection();
+      reorderItemCollection();
       notifyListeners();
     });
   }

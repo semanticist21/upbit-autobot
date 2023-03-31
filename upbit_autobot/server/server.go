@@ -44,10 +44,15 @@ func startServer() {
 
 	router := mux.NewRouter()
 	router.HandleFunc("/login", originCheckingMiddleware(handleLogin))
+
 	router.HandleFunc("/balance/{name}", originCheckingMiddleware(handleBalance))
+
 	router.HandleFunc("/logs", originCheckingMiddleware(handleLogs))
+
 	router.HandleFunc("/items", originCheckingMiddleware(handleItems))
+	router.HandleFunc("/items/sell", originCheckingMiddleware(handleSellItems))
 	router.HandleFunc("/template", originCheckingMiddleware(handleTemplate))
+
 	router.HandleFunc("/socket/logs", handleSocketLog)
 	router.HandleFunc("/socket/items", handleSocketItems)
 	http.Handle("/", router)
@@ -612,6 +617,24 @@ func doPostHandleItems(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func handleSellItems(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		incurBadRequestError(w)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	bytes, err := json.Marshal(singleton.InstanceSellTargetItems().BoughtItems)
+
+	if err != nil {
+		incurBadRequestError(w)
+		return
+	}
+
+	w.Write(bytes)
+}
+
 func handleSocketLog(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -637,12 +660,6 @@ func handleSocketItems(w http.ResponseWriter, r *http.Request) {
 	}
 
 	defer conn.Close()
-
-	go func() {
-		for {
-			time.Sleep(time.Second * 1000)
-		}
-	}()
 
 	for v := range singleton.InstanceItemsCollectionCh() {
 		err := conn.WriteJSON(v)
