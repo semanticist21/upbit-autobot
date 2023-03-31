@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
 import 'package:system_tray/system_tray.dart';
+import 'package:upbit_autobot/app_tray_manager.dart';
 import 'package:upbit_autobot/client/client.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -40,7 +41,7 @@ void main() async {
       (FlutterErrorDetails details) => FlutterError.presentError(details);
 
   runApp(MainApp(processPid: processPid));
-  initSystemTray();
+  AppTrayManager().initSystemTray();
 }
 
 class MainApp extends StatelessWidget {
@@ -52,43 +53,4 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ExitWatcher(processPid: processPid);
   }
-}
-
-Future<void> initSystemTray() async {
-  String path =
-      Platform.isWindows ? 'lib/assets/icon.ico' : 'lib/assets/icon.png';
-
-  final AppWindow appWindow = AppWindow();
-  final SystemTray systemTray = SystemTray();
-
-  // We first init the systray menu
-  await systemTray.initSystemTray(
-    title: "autobot",
-    iconPath: path,
-  );
-
-  final Menu menu = Menu();
-  await menu.buildFrom([
-    MenuItemLabel(
-      label: '종료',
-      image: Platform.isWindows ? 'lib/assets/exit.bmp' : 'lib/assets/exit.png',
-      onClicked: (menuItem) {
-        appWindow.close();
-      },
-    ),
-  ]);
-
-  // set context menu
-  await systemTray.setContextMenu(menu);
-
-  // handle system tray event
-  systemTray.registerSystemTrayEventHandler((eventName) {
-    debugPrint("eventName: $eventName");
-    if (eventName == kSystemTrayEventRightClick) {
-      Platform.isWindows ? systemTray.popUpContextMenu() : appWindow.show();
-    }
-    if (eventName == kSystemTrayEventClick) {
-      Platform.isWindows ? appWindow.show() : systemTray.popUpContextMenu();
-    }
-  });
 }

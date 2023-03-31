@@ -121,6 +121,15 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
                                         SizedBox(width: 10),
                                         Text('볼린저 밴드 기반 전략 아이템 추가'),
                                         Spacer(),
+                                        SizedBox(width: 5),
+                                        Visibility(
+                                            visible: _isProgressVisible,
+                                            child: SizedBox(
+                                                width: 10,
+                                                height: 10,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                        strokeWidth: 2))),
                                         Tooltip(
                                             message:
                                                 '랜덤 생성 추가(상위 볼륨 20개 중 랜덤) - Credited to CoinGecko',

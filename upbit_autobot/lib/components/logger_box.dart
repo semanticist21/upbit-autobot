@@ -50,18 +50,20 @@ class _LoggerBoxState extends State<LoggerBox> {
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 const Spacer(),
                 const SizedBox(width: 50),
-                const Icon(FontAwesomeIcons.clockRotateLeft, size: 15),
+                const Icon(FontAwesomeIcons.clock, size: 14),
                 const SizedBox(width: 10),
                 const Text("로그",
                     style:
                         TextStyle(fontSize: 15, fontWeight: FontWeight.normal)),
                 const Spacer(),
-                IconButton(
-                    onPressed: () {
-                      _provider.loggerText = '';
-                      setState(() {});
-                    },
-                    icon: const Icon(FontAwesomeIcons.trash, size: 13)),
+                Tooltip(
+                    message: '로그 메시지함 비우기',
+                    child: IconButton(
+                        onPressed: () {
+                          _provider.loggerText = '';
+                          setState(() {});
+                        },
+                        icon: const Icon(FontAwesomeIcons.trash, size: 13))),
                 const SizedBox(width: 5)
               ])),
           Expanded(

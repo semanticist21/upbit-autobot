@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:reorderable_grid/reorderable_grid.dart';
+import 'package:upbit_autobot/app_tray_manager.dart';
 import 'package:upbit_autobot/components/sell_list_view.dart';
 import 'package:upbit_autobot/components/strategy_item.dart';
 import 'package:upbit_autobot/components/strategy_item_ichimoku.dart';
@@ -77,13 +78,6 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
                     splashRadius: 15),
               ),
               Tooltip(
-                message: '프로그램 트레이 최소화',
-                child: IconButton(
-                    onPressed: () => {},
-                    icon: Icon(Icons.theater_comedy),
-                    splashRadius: 15),
-              ),
-              Tooltip(
                 message: '아이템 모두 제거 (추가로 저장해야 확정)',
                 child: IconButton(
                     onPressed: () {
@@ -92,6 +86,13 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
                       setState(() {});
                     },
                     icon: Icon(Icons.cleaning_services_rounded),
+                    splashRadius: 15),
+              ),
+              Tooltip(
+                message: '프로그램 트레이 최소화',
+                child: IconButton(
+                    onPressed: () => AppTrayManager().appWindow.hide(),
+                    icon: Icon(Icons.theater_comedy),
                     splashRadius: 15),
               ),
               Spacer(),
