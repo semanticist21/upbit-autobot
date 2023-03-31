@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -52,6 +53,8 @@ func startServer() {
 	router.HandleFunc("/items", originCheckingMiddleware(handleItems))
 	router.HandleFunc("/items/sell", originCheckingMiddleware(handleSellItems))
 	router.HandleFunc("/template", originCheckingMiddleware(handleTemplate))
+
+	router.HandleFunc("/volume/{num}", originCheckingMiddleware(handleVolume))
 
 	router.HandleFunc("/socket/logs", handleSocketLog)
 	router.HandleFunc("/socket/items", handleSocketItems)
@@ -440,83 +443,6 @@ func handleLogs(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
-
-func handleTemplate(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		// items update
-		doGetHandleTemplate(w)
-	case http.MethodPost:
-		doPostHandleTemplate(w, r)
-	}
-}
-
-func doGetHandleTemplate(w http.ResponseWriter) {
-	bytes, err := model.GetTemplateBytes()
-	if err != nil {
-		singleton.InstanceLogger().Errs <- err
-		incurBadRequestError(w)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(bytes)
-}
-
-func doPostHandleTemplate(w http.ResponseWriter, r *http.Request) {
-	if r.Body == nil {
-		incurBadRequestError(w)
-		return
-	}
-
-	data, err := io.ReadAll(r.Body)
-
-	if err != nil {
-		singleton.InstanceLogger().Errs <- err
-		incurBadRequestError(w)
-		return
-	}
-
-	template, err := model.GetTemplate()
-	newTemplate := model.Template{}
-
-	if err != nil {
-		singleton.InstanceLogger().Errs <- err
-		incurBadRequestError(w)
-		return
-	}
-
-	marshalErr := json.Unmarshal(data, &newTemplate)
-
-	if marshalErr != nil {
-		singleton.InstanceLogger().Errs <- marshalErr
-		incurBadRequestError(w)
-		return
-	}
-
-	if newTemplate.BollingerTemplate != nil && newTemplate.BollingerTemplate.CoinMarketName == "save" {
-		template.BollingerTemplate = newTemplate.BollingerTemplate
-	}
-
-	if newTemplate.IchimokuTemplate != nil && newTemplate.IchimokuTemplate.CoinMarketName == "save" {
-		template.IchimokuTemplate = newTemplate.IchimokuTemplate
-	}
-
-	if template.BollingerTemplate == nil {
-		template.BollingerTemplate = &model.BuyStrategyItemInfo{}
-		template.BollingerTemplate.CoinMarketName = ""
-		template.BollingerTemplate.LastBoughtTimestamp = ""
-	}
-
-	if template.IchimokuTemplate == nil {
-		template.IchimokuTemplate = &model.BuyStrategyIchimokuItemInfo{}
-		template.IchimokuTemplate.CoinMarketName = ""
-		template.IchimokuTemplate.LastBoughtTimestamp = ""
-	}
-
-	model.SaveTemplate(template.BollingerTemplate, template.IchimokuTemplate)
-	singleton.InstanceLogger().Msgs <- "템플릿 저장되었습니다."
-}
-
 func handleItems(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -617,6 +543,82 @@ func doPostHandleItems(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+func handleTemplate(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		// items update
+		doGetHandleTemplate(w)
+	case http.MethodPost:
+		doPostHandleTemplate(w, r)
+	}
+}
+
+func doGetHandleTemplate(w http.ResponseWriter) {
+	bytes, err := model.GetTemplateBytes()
+	if err != nil {
+		singleton.InstanceLogger().Errs <- err
+		incurBadRequestError(w)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(bytes)
+}
+
+func doPostHandleTemplate(w http.ResponseWriter, r *http.Request) {
+	if r.Body == nil {
+		incurBadRequestError(w)
+		return
+	}
+
+	data, err := io.ReadAll(r.Body)
+
+	if err != nil {
+		singleton.InstanceLogger().Errs <- err
+		incurBadRequestError(w)
+		return
+	}
+
+	template, err := model.GetTemplate()
+	newTemplate := model.Template{}
+
+	if err != nil {
+		singleton.InstanceLogger().Errs <- err
+		incurBadRequestError(w)
+		return
+	}
+
+	marshalErr := json.Unmarshal(data, &newTemplate)
+
+	if marshalErr != nil {
+		singleton.InstanceLogger().Errs <- marshalErr
+		incurBadRequestError(w)
+		return
+	}
+
+	if newTemplate.BollingerTemplate != nil && newTemplate.BollingerTemplate.CoinMarketName == "save" {
+		template.BollingerTemplate = newTemplate.BollingerTemplate
+	}
+
+	if newTemplate.IchimokuTemplate != nil && newTemplate.IchimokuTemplate.CoinMarketName == "save" {
+		template.IchimokuTemplate = newTemplate.IchimokuTemplate
+	}
+
+	if template.BollingerTemplate == nil {
+		template.BollingerTemplate = &model.BuyStrategyItemInfo{}
+		template.BollingerTemplate.CoinMarketName = ""
+		template.BollingerTemplate.LastBoughtTimestamp = ""
+	}
+
+	if template.IchimokuTemplate == nil {
+		template.IchimokuTemplate = &model.BuyStrategyIchimokuItemInfo{}
+		template.IchimokuTemplate.CoinMarketName = ""
+		template.IchimokuTemplate.LastBoughtTimestamp = ""
+	}
+
+	model.SaveTemplate(template.BollingerTemplate, template.IchimokuTemplate)
+	singleton.InstanceLogger().Msgs <- "템플릿 저장되었습니다."
+}
+
 func handleSellItems(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		incurBadRequestError(w)
@@ -649,6 +651,91 @@ func handleSocketLog(w http.ResponseWriter, r *http.Request) {
 		time.Sleep(time.Millisecond * 200)
 		singleton.InstanceLogger().WriteLogReponse(conn)
 	}
+}
+
+var url string = "http://api.coingecko.com/api/v3/coins/markets?vs_currency=krw&order=volume_desc&per_page=50&page=1&sparkline=false&price_change_percentage=24h"
+
+func handleVolume(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		incurBadRequestError(w)
+		return
+	}
+
+	wantedCoinNumsStr := mux.Vars(r)["num"]
+	wantedCoinNums, err := strconv.Atoi(wantedCoinNumsStr)
+
+	if err != nil {
+		singleton.InstanceLogger().Errs <- err
+		incurBadRequestError(w)
+		return
+	}
+
+	resp, err := http.Get(url)
+
+	if err != nil {
+		singleton.InstanceLogger().Errs <- err
+		incurBadRequestError(w)
+		return
+	}
+
+	bytes, err := io.ReadAll(resp.Body)
+
+	if err != nil {
+		singleton.InstanceLogger().Errs <- err
+		incurBadRequestError(w)
+		return
+	}
+
+	market, _, err := singleton.InstanceClient().GetMarkets()
+
+	if err != nil {
+		singleton.InstanceLogger().Errs <- err
+		incurBadRequestError(w)
+		return
+	}
+
+	volumes := []*model.VolumeInfo{}
+	err = json.Unmarshal(bytes, &volumes)
+
+	if err != nil {
+		singleton.InstanceLogger().Errs <- err
+		incurBadRequestError(w)
+		return
+	}
+
+	marketDic := make(map[string]string)
+	for _, item := range market {
+		if !strings.Contains(item.Market, "KRW-") {
+			continue
+		}
+		key := strings.ToLower(strings.Replace(item.Market, "KRW-", "", 1))
+		marketDic[key] = item.KoreanName
+	}
+
+	topCoinInfos := []*model.SimpleCoinName{}
+
+	for i := 0; i < len(volumes); i++ {
+
+		if koreanMarketName, ok := marketDic[volumes[i].Symbol]; ok {
+			coinInfo := model.SimpleCoinName{MarketName: fmt.Sprintf("{%s}{%s}", "KRW-", strings.ToUpper(volumes[i].Symbol)), CoinKrName: koreanMarketName}
+			topCoinInfos = append(topCoinInfos, &coinInfo)
+		}
+
+		if len(topCoinInfos) == wantedCoinNums {
+			break
+		}
+	}
+
+	bytes, err = json.Marshal(topCoinInfos)
+
+	if err != nil {
+		singleton.InstanceLogger().Errs <- err
+		incurBadRequestError(w)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(bytes)
 }
 
 func handleSocketItems(w http.ResponseWriter, r *http.Request) {
