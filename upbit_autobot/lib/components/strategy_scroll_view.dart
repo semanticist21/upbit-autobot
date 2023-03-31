@@ -12,8 +12,6 @@ import 'package:upbit_autobot/components/strategy_item_ichimoku.dart';
 import 'package:upbit_autobot/model/strategy_item_info.dart';
 import 'package:upbit_autobot/model/strategy_item_info_ichimoku.dart';
 
-import '../client/client.dart';
-import '../model/sell_item.dart';
 import '../provider.dart';
 import 'add_dialog_new_bollinger.dart';
 import 'add_dialog_new_ichimoku.dart';

@@ -12,6 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_acrylic: ^1.1.0
+  flutter_gif: ^0.0.4
   flutter_launcher_icons: ^0.12.0
   font_awesome_flutter: ^10.4.0
   http: ^0.13.5

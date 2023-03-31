@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_acrylic/flutter_acrylic.dart';
-import 'package:system_tray/system_tray.dart';
 import 'package:upbit_autobot/app_tray_manager.dart';
 import 'package:upbit_autobot/client/client.dart';
 import 'package:window_manager/window_manager.dart';

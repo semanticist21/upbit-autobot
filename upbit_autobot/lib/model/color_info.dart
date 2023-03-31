@@ -22,6 +22,9 @@ class ColorInfo {
   static Color generateRandomColor() =>
       Color((Random().nextDouble() * 0.3 * 0xffffff).toInt()).withOpacity(0.8);
 
+  static Color generateRandomColorNoOpacity() =>
+      Color((Random().nextDouble() * 0.5 * 0xffffff).toInt()).withOpacity(0.95);
+
   static String colorToHex(Color color) =>
       '#${color.alpha.toRadixString(16).padLeft(2, '0')}${color.red.toRadixString(16).padLeft(2, '0')}${color.green.toRadixString(16).padLeft(2, '0')}${color.blue.toRadixString(16).padLeft(2, '0')}';
 }
