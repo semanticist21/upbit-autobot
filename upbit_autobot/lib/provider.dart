@@ -186,6 +186,14 @@ class AppProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> doVolumeItemRequest(List<dynamic> volumeTopList) async {
+    // key : marketName
+    // key : coinKrName
+    var response = await RestApiClient().requestGet('volume/20');
+
+    volumeTopList = await RestApiClient.parseResponseListData(response);
+  }
+
   void removeItemFromItems(int index) {
     bollingerItems.removeAt(index);
     notifyListeners();

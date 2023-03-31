@@ -138,15 +138,10 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
 
                                                   if (_provider
                                                       .volumeTopList.isEmpty) {
-                                                    var response =
-                                                        await RestApiClient()
-                                                            .requestGet(
-                                                                'volume/20');
-
-                                                    _provider.volumeTopList =
-                                                        await RestApiClient
-                                                            .parseResponseListData(
-                                                                response);
+                                                    _provider
+                                                        .doVolumeItemRequest(
+                                                            _provider
+                                                                .volumeTopList);
 
                                                     if (_provider.volumeTopList
                                                         .isEmpty) {

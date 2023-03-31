@@ -17,6 +17,7 @@ import '../model/sell_item.dart';
 import '../provider.dart';
 import 'add_dialog_new_bollinger.dart';
 import 'add_dialog_new_ichimoku.dart';
+import 'casino.dart';
 
 class StrategyScrollView extends StatefulWidget {
   const StrategyScrollView({super.key});
@@ -63,8 +64,10 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
               Tooltip(
                   message: '랜덤 돌려돌려!',
                   child: IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.casino_rounded),
+                      onPressed: () => showDialog(
+                          context: context,
+                          builder: (context) => CasinoDialog()),
+                      icon: Icon(Icons.casino),
                       splashRadius: 15)),
               Tooltip(
                 message: '판매 감시 아이템 리스트 확인',
@@ -189,7 +192,7 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
                     splashRadius: 15,
                   )),
               Tooltip(
-                  message: '서버 아이템 정보로 받아오기',
+                  message: '서버 아이템으로 초기화',
                   child: IconButton(
                     onPressed: () => _doItemRequest(_provider),
                     icon: const Icon(FontAwesomeIcons.arrowsRotate),
