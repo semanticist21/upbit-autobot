@@ -16,6 +16,7 @@ dependencies:
   font_awesome_flutter: ^10.4.0
   http: ^0.13.5
   intl: ^0.18.0
+  metaballs: ^1.5.0
   package_info_plus: ^3.0.3
   provider: ^6.0.5
   reorderable_grid: ^1.0.6

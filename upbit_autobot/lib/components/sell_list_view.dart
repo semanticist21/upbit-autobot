@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:upbit_autobot/components/converter.dart';
+import 'package:upbit_autobot/components/draggable_card.dart';
 import 'package:upbit_autobot/model/sell_item.dart';
 
 import '../client/client.dart';
@@ -24,30 +25,37 @@ class _SellListViewState extends State<SellListView> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      child: FractionallySizedBox(
-        widthFactor: 0.5,
-        heightFactor: 0.65,
-        child: Scaffold(
-            appBar: AppBar(
-              title: Row(children: [
-                Icon(Icons.sell_sharp, size: 18),
-                SizedBox(width: 15),
-                Text('판매 감시 중인 아이템 목록', style: TextStyle(fontSize: 15)),
-              ]),
-              leading:
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                SizedBox(width: 15),
-                IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: Icon(Icons.arrow_back_ios),
-                    splashRadius: 15)
-              ]),
-            ),
-            body: _sellItem.length != 0
-                ? getWhenItemExists()
-                : getWhenItemEmpty()),
-      ),
-    );
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: DraggableCard(
+          child: FractionallySizedBox(
+            widthFactor: 0.5,
+            heightFactor: 0.65,
+            child: Scaffold(
+                appBar: AppBar(
+                  title: Row(children: [
+                    Icon(
+                      Icons.sell_sharp,
+                      size: 18,
+                    ),
+                    SizedBox(width: 15),
+                    Text('판매 감시 중인 아이템 목록', style: TextStyle(fontSize: 15)),
+                  ]),
+                  leading: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(width: 15),
+                        IconButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            icon: Icon(Icons.arrow_back),
+                            splashRadius: 15)
+                      ]),
+                ),
+                body: _sellItem.length != 0
+                    ? getWhenItemExists()
+                    : getWhenItemEmpty()),
+          ),
+        ));
   }
 
   Widget getWhenItemEmpty() {
