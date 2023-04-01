@@ -359,9 +359,8 @@ class CasinoDialogState extends State<CasinoDialog> {
                                       ])))),
                           Expanded(
                               flex: 6,
-                              child: Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                              child: Align(
+                                  alignment: Alignment.center,
                                   child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.start,
@@ -390,8 +389,10 @@ class CasinoDialogState extends State<CasinoDialog> {
                                         ]),
                                         const Spacer(),
                                         Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
                                             crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                                CrossAxisAlignment.center,
                                             children: [
                                               const SizedBox(height: 3),
                                               Row(children: [
