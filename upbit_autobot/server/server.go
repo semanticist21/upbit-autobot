@@ -171,9 +171,10 @@ func doHandlePostLogin(w http.ResponseWriter, r *http.Request) {
 
 	if isSuccesful {
 		singleton.InitClient(keys.PublicKey, keys.SecretKey)
+		singleton.InstanceLogger().Msgs <- "로그인 완료 !!"
+
 		singleton.InitWithClient(singleton.InstanceClient(), &detector.CycleStarter{})
 		w.WriteHeader(http.StatusOK)
-		singleton.InstanceLogger().Msgs <- "로그인 완료 !!"
 
 		file, err := getAccountFile()
 
