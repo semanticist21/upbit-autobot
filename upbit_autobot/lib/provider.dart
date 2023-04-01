@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:isolate';
 
 import 'package:flutter/widgets.dart';
-import 'package:upbit_autobot/customType/customList.dart';
+import 'package:upbit_autobot/customType/custom_list.dart';
 import 'package:upbit_autobot/model/strategy_item_info_ichimoku.dart';
 
 import 'client/client.dart';
@@ -48,7 +48,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   void _insertBollingerItemsToCollection() {
-    bollingerItems.last.Index = itemsCollection.length + 1;
+    bollingerItems.last.index = itemsCollection.length + 1;
     itemsCollection.add(bollingerItems.last);
     notifyListeners();
   }
@@ -68,7 +68,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   void _changeBollingerItemsToCollection() {
-    var dic = Map<String, int>();
+    var dic = <String, int>{};
     for (var i = 0; i < itemsCollection.length; i++) {
       var item = itemsCollection[i];
       if (item.runtimeType == StrategyBollingerItemInfo) {
@@ -78,7 +78,7 @@ class AppProvider extends ChangeNotifier {
 
     for (var bollingerItem in bollingerItems) {
       if (dic.containsKey(bollingerItem.itemId)) {
-        bollingerItem.Index = dic[bollingerItem.itemId]!;
+        bollingerItem.index = dic[bollingerItem.itemId]!;
         itemsCollection[dic[bollingerItem.itemId]!] = bollingerItem;
       }
     }
@@ -86,7 +86,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   void _insertIchimokuItemsToCollection() {
-    ichimokuItems.last.Index = itemsCollection.length + 1;
+    ichimokuItems.last.index = itemsCollection.length + 1;
     itemsCollection.add(ichimokuItems.last);
     notifyListeners();
   }
@@ -106,7 +106,7 @@ class AppProvider extends ChangeNotifier {
   }
 
   void _changeIchimokuItemsToCollection() {
-    var dic = Map<String, int>();
+    var dic = <String, int>{};
     for (var i = 0; i < itemsCollection.length; i++) {
       var item = itemsCollection[i];
       if (item.runtimeType == StrategyIchimokuItemInfo) {
@@ -116,7 +116,7 @@ class AppProvider extends ChangeNotifier {
 
     for (var ichimokuItem in ichimokuItems) {
       if (dic.containsKey(ichimokuItem.itemId)) {
-        ichimokuItem.Index = dic[ichimokuItem.itemId]!;
+        ichimokuItem.index = dic[ichimokuItem.itemId]!;
         itemsCollection[dic[ichimokuItem.itemId]!] = ichimokuItem;
       }
     }
@@ -126,16 +126,16 @@ class AppProvider extends ChangeNotifier {
   void reorderItemCollection() {
     for (var i = 0; i < itemsCollection.length; i++) {
       if (itemsCollection[i].runtimeType == StrategyBollingerItemInfo) {
-        (itemsCollection[i] as StrategyBollingerItemInfo).Index = i;
+        (itemsCollection[i] as StrategyBollingerItemInfo).index = i;
       }
       if (itemsCollection[i].runtimeType == StrategyIchimokuItemInfo) {
-        (itemsCollection[i] as StrategyIchimokuItemInfo).Index = i;
+        (itemsCollection[i] as StrategyIchimokuItemInfo).index = i;
       }
     }
   }
 
   void _cleanCollection() {
-    if (bollingerItems.length == 0) {
+    if (bollingerItems.isEmpty) {
       for (var i = 0; i < itemsCollection.length; i++) {
         if (itemsCollection[i].runtimeType == StrategyBollingerItemInfo) {
           itemsCollection.removeAt(i);
@@ -144,7 +144,7 @@ class AppProvider extends ChangeNotifier {
       }
     }
 
-    if (ichimokuItems.length == 0) {
+    if (ichimokuItems.isEmpty) {
       for (var i = 0; i < itemsCollection.length; i++) {
         if (itemsCollection[i].runtimeType == StrategyIchimokuItemInfo) {
           itemsCollection.removeAt(i);
@@ -219,13 +219,13 @@ class AppProvider extends ChangeNotifier {
     }
 
     Map<String, dynamic> data = jsonDecode(bodyStr);
-    var dicWithSort = Map<int, Object>();
-    var MaxKeyValue = 0;
+    var dicWithSort = <int, Object>{};
+    var maxKeyValue = 0;
 
     if (data['bollingerItems'] != null &&
         data['bollingerItems']['items'] != null) {
       List<dynamic> sentItems = data['bollingerItems']['items'];
-      MaxKeyValue += sentItems.length;
+      maxKeyValue += sentItems.length;
 
       var bollingerList = List<StrategyBollingerItemInfo>.empty(growable: true);
       bollingerItems.clear();
@@ -234,23 +234,23 @@ class AppProvider extends ChangeNotifier {
         var data = StrategyBollingerItemInfo.fromJson(sentItems[i]);
         bollingerList.add(data);
 
-        if (data.Index != -1 && !dicWithSort.containsKey(data.Index)) {
-          dicWithSort[data.Index] = data;
-          if (MaxKeyValue < data.Index) {
-            MaxKeyValue = data.Index;
+        if (data.index != -1 && !dicWithSort.containsKey(data.index)) {
+          dicWithSort[data.index] = data;
+          if (maxKeyValue < data.index) {
+            maxKeyValue = data.index;
           }
         } else {
-          while (dicWithSort.containsKey(data.Index) || data.Index == -1) {
-            if (data.Index == -1) {
-              data.Index = MaxKeyValue;
+          while (dicWithSort.containsKey(data.index) || data.index == -1) {
+            if (data.index == -1) {
+              data.index = maxKeyValue;
             } else {
-              data.Index++;
+              data.index++;
             }
 
-            if (!dicWithSort.containsKey(data.Index)) {
-              dicWithSort[data.Index] = data;
-              if (MaxKeyValue < data.Index) {
-                MaxKeyValue = data.Index;
+            if (!dicWithSort.containsKey(data.index)) {
+              dicWithSort[data.index] = data;
+              if (maxKeyValue < data.index) {
+                maxKeyValue = data.index;
               }
               break;
             }
@@ -264,7 +264,7 @@ class AppProvider extends ChangeNotifier {
     if (data['ichimokuItems'] != null &&
         data['ichimokuItems']['items'] != null) {
       List<dynamic> sentItems = data['ichimokuItems']['items'];
-      MaxKeyValue += sentItems.length;
+      maxKeyValue += sentItems.length;
 
       var ichimokuList = List<StrategyIchimokuItemInfo>.empty(growable: true);
       ichimokuItems.clear();
@@ -272,23 +272,23 @@ class AppProvider extends ChangeNotifier {
       for (var i = 0; i < sentItems.length; i++) {
         var data = StrategyIchimokuItemInfo.fromJson(sentItems[i]);
         ichimokuList.add(data);
-        if (data.Index != -1 && !dicWithSort.containsKey(data.Index)) {
-          dicWithSort[data.Index] = data;
-          if (MaxKeyValue < data.Index) {
-            MaxKeyValue = data.Index;
+        if (data.index != -1 && !dicWithSort.containsKey(data.index)) {
+          dicWithSort[data.index] = data;
+          if (maxKeyValue < data.index) {
+            maxKeyValue = data.index;
           }
         } else {
-          while (dicWithSort.containsKey(data.Index) || data.Index == -1) {
-            if (data.Index == -1) {
-              data.Index = MaxKeyValue;
+          while (dicWithSort.containsKey(data.index) || data.index == -1) {
+            if (data.index == -1) {
+              data.index = maxKeyValue;
             } else {
-              data.Index++;
+              data.index++;
             }
 
-            if (!dicWithSort.containsKey(data.Index)) {
-              dicWithSort[data.Index] = data;
-              if (MaxKeyValue < data.Index) {
-                MaxKeyValue = data.Index;
+            if (!dicWithSort.containsKey(data.index)) {
+              dicWithSort[data.index] = data;
+              if (maxKeyValue < data.index) {
+                maxKeyValue = data.index;
               }
               break;
             }

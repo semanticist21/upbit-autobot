@@ -9,7 +9,8 @@ class Fire extends StatefulWidget {
 }
 
 class _FireState extends State<Fire> with TickerProviderStateMixin {
-  late FlutterGifController _controller = FlutterGifController(vsync: this);
+  late final FlutterGifController _controller =
+      FlutterGifController(vsync: this);
 
   var _value = 0.0;
 
@@ -18,6 +19,7 @@ class _FireState extends State<Fire> with TickerProviderStateMixin {
     super.initState();
     _controller.duration = const Duration(milliseconds: 7000);
     _controller.addListener(changeValue);
+    _controller.forward(from: _value);
   }
 
   @override
@@ -30,7 +32,7 @@ class _FireState extends State<Fire> with TickerProviderStateMixin {
         width: double.infinity,
         height: double.infinity,
         controller: _controller,
-        image: AssetImage("assets/fire.gif"));
+        image: const AssetImage("assets/fire.gif"));
   }
 
   @override

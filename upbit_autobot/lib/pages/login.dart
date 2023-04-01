@@ -82,9 +82,10 @@ class _LoginState extends State<Login> {
                     Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                       Text(
                         'ver $_versionInfo',
-                        style: TextStyle(fontSize: 10, color: Colors.grey),
+                        style:
+                            const TextStyle(fontSize: 10, color: Colors.grey),
                       ),
-                      SizedBox(width: 10)
+                      const SizedBox(width: 10)
                     ]),
                     Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                       const SizedBox(width: 5),

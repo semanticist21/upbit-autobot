@@ -20,6 +20,8 @@ class TrianglePainter extends CustomPainter {
 }
 
 class TriangleDiagram extends StatelessWidget {
+  const TriangleDiagram({super.key});
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(

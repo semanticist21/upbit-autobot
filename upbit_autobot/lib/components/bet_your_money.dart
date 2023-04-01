@@ -10,7 +10,8 @@ class BetYourMoney extends StatefulWidget {
 
 class _BetYourMoneyState extends State<BetYourMoney>
     with TickerProviderStateMixin {
-  late FlutterGifController _controller = FlutterGifController(vsync: this);
+  late final FlutterGifController _controller =
+      FlutterGifController(vsync: this);
 
   var _value = 0.0;
 
@@ -30,7 +31,7 @@ class _BetYourMoneyState extends State<BetYourMoney>
       width: double.infinity,
       height: double.infinity,
       controller: _controller,
-      image: AssetImage("assets/bet_your_money.gif"),
+      image: const AssetImage("assets/bet_your_money.gif"),
     );
   }
 

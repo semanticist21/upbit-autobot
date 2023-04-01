@@ -40,8 +40,8 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
   var _coinAmountEstimated = '';
 
   var _isCtrlKeyPressed = false;
-  var _focusNode = FocusNode();
-  var _zoomController = TransformationController();
+  final _focusNode = FocusNode();
+  final _zoomController = TransformationController();
   var _isTemplateSucessMarketVisible = false;
   var _isProgressVisible = false;
 
@@ -74,13 +74,13 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
         shadowColor: Colors.transparent,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
-            side: BorderSide(color: Colors.transparent)),
+            side: const BorderSide(color: Colors.transparent)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         child: DraggableCard(
             child: AnimatedContainer(
                 curve: Curves.fastLinearToSlowEaseIn,
-                duration: Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 300),
                 color: const Color.fromRGBO(250, 250, 250, 0.95),
                 child: KeyboardListener(
                     onKeyEvent: (e) {
@@ -100,289 +100,273 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
                     child: FractionallySizedBox(
                         widthFactor: 0.7,
                         heightFactor: 0.87,
-                        child: Container(
-                          child: Column(children: [
-                            Expanded(
-                                flex: 1,
-                                child: Container(
-                                    color:
-                                        const Color.fromRGBO(66, 66, 66, 0.9),
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 10),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        SizedBox(width: 15),
-                                        Icon(FontAwesomeIcons.lightbulb,
-                                            size: 15),
-                                        SizedBox(width: 10),
-                                        Text('일목균형표의 컨버젼 전략 아이템 추가'),
-                                        Spacer(),
-                                        SizedBox(width: 5),
-                                        Visibility(
-                                            visible: _isProgressVisible,
-                                            child: SizedBox(
-                                                width: 10,
-                                                height: 10,
-                                                child:
-                                                    CircularProgressIndicator(
-                                                        strokeWidth: 2))),
-                                        Tooltip(
-                                            message: '랜덤 생성 추가(상위 볼륨 20개 중 랜덤)',
-                                            child: IconButton(
-                                                onPressed: () async {
-                                                  _isProgressVisible = true;
-                                                  setState(() {});
+                        child: Column(children: [
+                          Expanded(
+                              flex: 1,
+                              child: Container(
+                                  color: const Color.fromRGBO(66, 66, 66, 0.9),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(width: 15),
+                                      const Icon(FontAwesomeIcons.lightbulb,
+                                          size: 15),
+                                      const SizedBox(width: 10),
+                                      const Text('일목균형표의 컨버젼 전략 아이템 추가'),
+                                      const Spacer(),
+                                      const SizedBox(width: 5),
+                                      Visibility(
+                                          visible: _isProgressVisible,
+                                          child: const SizedBox(
+                                              width: 10,
+                                              height: 10,
+                                              child: CircularProgressIndicator(
+                                                  strokeWidth: 2))),
+                                      Tooltip(
+                                          message: '랜덤 생성 추가(상위 볼륨 20개 중 랜덤)',
+                                          child: IconButton(
+                                              onPressed: () async {
+                                                _isProgressVisible = true;
+                                                setState(() {});
+
+                                                if (_provider
+                                                    .volumeTopList.isEmpty) {
+                                                  _provider
+                                                      .doVolumeItemRequest();
 
                                                   if (_provider
                                                       .volumeTopList.isEmpty) {
-                                                    _provider
-                                                        .doVolumeItemRequest();
+                                                    _isProgressVisible = false;
+                                                    setState(() {});
+                                                    return;
+                                                  }
+                                                }
 
-                                                    if (_provider.volumeTopList
-                                                        .isEmpty) {
-                                                      _isProgressVisible =
-                                                          false;
-                                                      setState(() {});
-                                                      return;
+                                                var isDuplicate = true;
+                                                var maxCnt = (_provider
+                                                        .volumeTopList.length *
+                                                    3);
+                                                var idx = 0;
+
+                                                while (isDuplicate) {
+                                                  if (idx > maxCnt) {
+                                                    break;
+                                                  }
+
+                                                  isDuplicate = false;
+
+                                                  var random = Random().nextInt(
+                                                      _provider.volumeTopList
+                                                              .length -
+                                                          1);
+
+                                                  Map<String, dynamic> el =
+                                                      _provider.volumeTopList
+                                                          .elementAt(random);
+                                                  var marketName =
+                                                      el['marketName'];
+
+                                                  for (var element in _provider
+                                                      .itemsCollection) {
+                                                    if (element
+                                                            is StrategyBollingerItemInfo &&
+                                                        element.coinMarKetName ==
+                                                            marketName) {
+                                                      isDuplicate = true;
+                                                    }
+
+                                                    if (element
+                                                            is StrategyIchimokuItemInfo &&
+                                                        element.coinMarKetName ==
+                                                            marketName) {
+                                                      isDuplicate = true;
                                                     }
                                                   }
 
-                                                  var isDuplicate = true;
-                                                  var maxCnt = (_provider
-                                                          .volumeTopList
-                                                          .length *
-                                                      3);
-                                                  var idx = 0;
-
-                                                  while (isDuplicate) {
-                                                    if (idx > maxCnt) {
-                                                      break;
-                                                    }
-
-                                                    isDuplicate = false;
-
-                                                    var random = Random()
-                                                        .nextInt(_provider
-                                                                .volumeTopList
-                                                                .length -
-                                                            1);
-
-                                                    Map<String, dynamic> el =
-                                                        _provider.volumeTopList
-                                                            .elementAt(random);
-                                                    var marketName =
-                                                        el['marketName'];
-
-                                                    _provider.itemsCollection
-                                                        .forEach((element) {
-                                                      if (element
-                                                              is StrategyBollingerItemInfo &&
-                                                          element.coinMarKetName ==
-                                                              marketName) {
-                                                        isDuplicate = true;
-                                                      }
-
-                                                      if (element
-                                                              is StrategyIchimokuItemInfo &&
-                                                          element.coinMarKetName ==
-                                                              marketName) {
-                                                        isDuplicate = true;
-                                                      }
-                                                    });
-
-                                                    if (!isDuplicate) {
-                                                      _coinMarketName.text =
-                                                          marketName;
-                                                      break;
-                                                    }
-
-                                                    idx++;
+                                                  if (!isDuplicate) {
+                                                    _coinMarketName.text =
+                                                        marketName;
+                                                    break;
                                                   }
 
-                                                  _isProgressVisible = false;
-                                                  setState(() {});
+                                                  idx++;
+                                                }
 
-                                                  _doSaveAction(context);
-                                                },
-                                                icon: Icon(
-                                                    FontAwesomeIcons.dice,
-                                                    size: 15),
-                                                splashRadius: 15)),
-                                        Tooltip(
-                                            message: '줌 초기화',
-                                            excludeFromSemantics: true,
-                                            child: IconButton(
-                                                onPressed: () => _zoomController
-                                                    .value = Matrix4.identity(),
-                                                icon: Icon(Icons.zoom_in_map),
-                                                splashRadius: 15)),
-                                        IconButton(
-                                            onPressed: () => showDialog(
-                                                context: context,
-                                                builder: (context) =>
-                                                    AlertDialogCustom(
-                                                        text:
-                                                            '- 컨버젼(베이스) 라인 매수 전략을 가진 일목균형표 아이템을 추가합니다.\n\n- 오더북 기준으로 가격이 라인에 걸칠 시\n\t\t\t마켓 매수가 실행됩니다.\n(마켓 매수이므로 오차가 발생할 수 있습니다.)\n\n- 볼린저 밴드와 다르게 자주 조건이 만족되는\n\t\t\t경우가 많아 직접 차트를 보고 설정하길\n\t\t\t권합니다.\n\n- 템플릿 저장버튼을 누르면 코인 마켓 이름을\n\t\t\t제외한 전략 정보가 저장됩니다.\n\n- Ctrl+마우스로 줌 확대 및 이동이 가능합니다.')),
-                                            icon: Icon(Icons.question_mark),
-                                            splashRadius: 15),
-                                        IconButton(
-                                            onPressed: () =>
-                                                Navigator.of(context).pop(),
-                                            icon: Icon(Icons.close),
-                                            splashRadius: 15)
-                                      ],
-                                    ))),
-                            Expanded(
-                                flex: 5,
-                                child: InteractiveViewer(
-                                    scaleEnabled: _isCtrlKeyPressed,
-                                    scaleFactor: 1100,
-                                    transformationController: _zoomController,
-                                    child: SingleChildScrollView(
-                                        scrollDirection: Axis.vertical,
-                                        physics: BouncingScrollPhysics(
-                                            parent:
-                                                AlwaysScrollableScrollPhysics()),
-                                        child: Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 15, horizontal: 20),
-                                            child: IntrinsicHeight(
-                                                child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                  Expanded(
-                                                      child: SizedBox(
-                                                          width:
-                                                              double.infinity,
-                                                          child: Form(
-                                                            key: _optionFormKey,
-                                                            child: Column(
-                                                                children: [
-                                                                  _getIconWithText(
-                                                                      FontAwesomeIcons
-                                                                          .tags,
-                                                                      '선택 코인 마켓 (KRW)'),
-                                                                  _getHeadForm(
-                                                                      _coinMarketName),
-                                                                  SizedBox(
-                                                                      height:
-                                                                          15),
-                                                                  _getIconWithText(
-                                                                      Icons
-                                                                          .line_axis,
-                                                                      '컨버젼(베이스) 길이 (최대 200)'),
-                                                                  _getOptionForm(
-                                                                    _conversionLineLength,
-                                                                  ),
-                                                                  SizedBox(
-                                                                      height:
-                                                                          15),
-                                                                  _getIconWithText(
-                                                                      Icons
-                                                                          .shopping_cart_checkout,
-                                                                      '구매 회수(최대 99회)'),
-                                                                  _getOptionForm(
-                                                                      _purchaseCount),
-                                                                ]),
-                                                          ))),
-                                                  SizedBox(width: 10),
-                                                  VerticalDivider(
-                                                    color: Colors.grey[600],
-                                                    thickness: 0.5,
-                                                  ),
-                                                  SizedBox(width: 10),
-                                                  Expanded(
-                                                      child: SizedBox(
-                                                          width:
-                                                              double.infinity,
-                                                          child: Form(
-                                                            key:
-                                                                _withSuffixFormKey,
-                                                            child: Column(
-                                                                children: [
-                                                                  _getIconWithText(
-                                                                      Icons
-                                                                          .watch_later,
-                                                                      '기준 분봉(최대 240분)'),
-                                                                  _getOptionFormForMinuteCandle(
-                                                                      _minuteCandle),
-                                                                  SizedBox(
-                                                                      height:
-                                                                          15),
-                                                                  _getIconWithText(
-                                                                      Icons
-                                                                          .emoji_emotions_outlined,
-                                                                      '익절 기준 (%)'),
-                                                                  _getOptionWithSuffixForm(
-                                                                      _profitLine),
-                                                                  SizedBox(
-                                                                      height:
-                                                                          15),
-                                                                  _getIconWithText(
-                                                                      Icons
-                                                                          .mood_bad,
-                                                                      '손절 기준 (%)'),
-                                                                  _getOptionWithSuffixForm(
-                                                                      _lossLine),
-                                                                  SizedBox(
-                                                                      height:
-                                                                          15),
-                                                                  _getIconWithText(
-                                                                      FontAwesomeIcons
-                                                                          .bagShopping,
-                                                                      '구매 수량 (KRW)'),
-                                                                  _getOptionWithSuffixFormWithKrw(
-                                                                      _desiredBuyAmount)
-                                                                ]),
-                                                          ))),
-                                                ])))))),
-                            Expanded(
-                                flex: 1,
-                                child: SizedBox(
-                                    child: Row(children: [
-                                  SizedBox(width: 20),
-                                  ElevatedButton(
-                                    onPressed: () => _estimateCoinAmount(),
-                                    child: Row(children: [
-                                      Icon(FontAwesomeIcons.coins, size: 13),
-                                      SizedBox(width: 10),
-                                      Text('구매 추정량 계산'),
-                                    ]),
-                                  ),
-                                  // Text(_coinBuyEstimated),
-                                  SizedBox(width: 10),
-                                  SizedBox(
-                                      width: 90,
-                                      height: 30,
-                                      child: FittedBox(
-                                          child: _coinAmountEstimated == ''
-                                              ? Text('')
-                                              : Text('$_coinAmountEstimated 개',
-                                                  style: _labelTextStyle()))),
-                                  Spacer(),
-                                  Visibility(
-                                      visible: _isTemplateSucessMarketVisible,
-                                      child: Icon(
-                                        Icons.check,
-                                        color: Colors.green,
-                                      )),
-                                  SizedBox(width: 2),
-                                  ElevatedButton(
-                                      onPressed: () => SaveTemplate(),
-                                      child: Text('템플릿 저장')),
-                                  SizedBox(width: 10),
-                                  ElevatedButton(
-                                      onPressed: () => _doSaveAction(context),
-                                      child: Text('확인')),
+                                                _isProgressVisible = false;
+                                                setState(() {});
 
-                                  SizedBox(width: 20)
-                                ]))),
-                          ]),
-                        ))))));
+                                                _doSaveAction(context);
+                                              },
+                                              icon: const Icon(
+                                                  FontAwesomeIcons.dice,
+                                                  size: 15),
+                                              splashRadius: 15)),
+                                      Tooltip(
+                                          message: '줌 초기화',
+                                          excludeFromSemantics: true,
+                                          child: IconButton(
+                                              onPressed: () => _zoomController
+                                                  .value = Matrix4.identity(),
+                                              icon:
+                                                  const Icon(Icons.zoom_in_map),
+                                              splashRadius: 15)),
+                                      IconButton(
+                                          onPressed: () => showDialog(
+                                              context: context,
+                                              builder: (context) =>
+                                                  const AlertDialogCustom(
+                                                      text:
+                                                          '- 컨버젼(베이스) 라인 매수 전략을 가진 일목균형표 아이템을 추가합니다.\n\n- 오더북 기준으로 가격이 라인에 걸칠 시\n\t\t\t마켓 매수가 실행됩니다.\n(마켓 매수이므로 오차가 발생할 수 있습니다.)\n\n- 볼린저 밴드와 다르게 자주 조건이 만족되는\n\t\t\t경우가 많아 직접 차트를 보고 설정하길\n\t\t\t권합니다.\n\n- 템플릿 저장버튼을 누르면 코인 마켓 이름을\n\t\t\t제외한 전략 정보가 저장됩니다.\n\n- Ctrl+마우스로 줌 확대 및 이동이 가능합니다.')),
+                                          icon: const Icon(Icons.question_mark),
+                                          splashRadius: 15),
+                                      IconButton(
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(),
+                                          icon: const Icon(Icons.close),
+                                          splashRadius: 15)
+                                    ],
+                                  ))),
+                          Expanded(
+                              flex: 5,
+                              child: InteractiveViewer(
+                                  scaleEnabled: _isCtrlKeyPressed,
+                                  scaleFactor: 1100,
+                                  transformationController: _zoomController,
+                                  child: SingleChildScrollView(
+                                      scrollDirection: Axis.vertical,
+                                      physics: const BouncingScrollPhysics(
+                                          parent:
+                                              AlwaysScrollableScrollPhysics()),
+                                      child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 15, horizontal: 20),
+                                          child: IntrinsicHeight(
+                                              child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                Expanded(
+                                                    child: SizedBox(
+                                                        width: double.infinity,
+                                                        child: Form(
+                                                          key: _optionFormKey,
+                                                          child:
+                                                              Column(children: [
+                                                            _getIconWithText(
+                                                                FontAwesomeIcons
+                                                                    .tags,
+                                                                '선택 코인 마켓 (KRW)'),
+                                                            _getHeadForm(
+                                                                _coinMarketName),
+                                                            const SizedBox(
+                                                                height: 15),
+                                                            _getIconWithText(
+                                                                Icons.line_axis,
+                                                                '컨버젼(베이스) 길이 (최대 200)'),
+                                                            _getOptionForm(
+                                                              _conversionLineLength,
+                                                            ),
+                                                            const SizedBox(
+                                                                height: 15),
+                                                            _getIconWithText(
+                                                                Icons
+                                                                    .shopping_cart_checkout,
+                                                                '구매 회수(최대 99회)'),
+                                                            _getOptionForm(
+                                                                _purchaseCount),
+                                                          ]),
+                                                        ))),
+                                                const SizedBox(width: 10),
+                                                VerticalDivider(
+                                                  color: Colors.grey[600],
+                                                  thickness: 0.5,
+                                                ),
+                                                const SizedBox(width: 10),
+                                                Expanded(
+                                                    child: SizedBox(
+                                                        width: double.infinity,
+                                                        child: Form(
+                                                          key:
+                                                              _withSuffixFormKey,
+                                                          child:
+                                                              Column(children: [
+                                                            _getIconWithText(
+                                                                Icons
+                                                                    .watch_later,
+                                                                '기준 분봉(최대 240분)'),
+                                                            _getOptionFormForMinuteCandle(
+                                                                _minuteCandle),
+                                                            const SizedBox(
+                                                                height: 15),
+                                                            _getIconWithText(
+                                                                Icons
+                                                                    .emoji_emotions_outlined,
+                                                                '익절 기준 (%)'),
+                                                            _getOptionWithSuffixForm(
+                                                                _profitLine),
+                                                            const SizedBox(
+                                                                height: 15),
+                                                            _getIconWithText(
+                                                                Icons.mood_bad,
+                                                                '손절 기준 (%)'),
+                                                            _getOptionWithSuffixForm(
+                                                                _lossLine),
+                                                            const SizedBox(
+                                                                height: 15),
+                                                            _getIconWithText(
+                                                                FontAwesomeIcons
+                                                                    .bagShopping,
+                                                                '구매 수량 (KRW)'),
+                                                            _getOptionWithSuffixFormWithKrw(
+                                                                _desiredBuyAmount)
+                                                          ]),
+                                                        ))),
+                                              ])))))),
+                          Expanded(
+                              flex: 1,
+                              child: SizedBox(
+                                  child: Row(children: [
+                                const SizedBox(width: 20),
+                                ElevatedButton(
+                                  onPressed: () => _estimateCoinAmount(),
+                                  child: const Row(children: [
+                                    Icon(FontAwesomeIcons.coins, size: 13),
+                                    SizedBox(width: 10),
+                                    Text('구매 추정량 계산'),
+                                  ]),
+                                ),
+                                // Text(_coinBuyEstimated),
+                                const SizedBox(width: 10),
+                                SizedBox(
+                                    width: 90,
+                                    height: 30,
+                                    child: FittedBox(
+                                        child: _coinAmountEstimated == ''
+                                            ? const Text('')
+                                            : Text('$_coinAmountEstimated 개',
+                                                style: _labelTextStyle()))),
+                                const Spacer(),
+                                Visibility(
+                                    visible: _isTemplateSucessMarketVisible,
+                                    child: const Icon(
+                                      Icons.check,
+                                      color: Colors.green,
+                                    )),
+                                const SizedBox(width: 2),
+                                ElevatedButton(
+                                    onPressed: () => saveTemplate(),
+                                    child: const Text('템플릿 저장')),
+                                const SizedBox(width: 10),
+                                ElevatedButton(
+                                    onPressed: () => _doSaveAction(context),
+                                    child: const Text('확인')),
+
+                                const SizedBox(width: 20)
+                              ]))),
+                        ]))))));
   }
 
   Row _getIconWithText(
@@ -391,7 +375,7 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
   ) {
     return Row(children: [
       Icon(icon, color: Colors.black54, size: 15),
-      SizedBox(width: 5),
+      const SizedBox(width: 5),
       Text(
         text,
         textAlign: TextAlign.right,
@@ -455,9 +439,9 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
           borderSide: BorderSide(color: Colors.grey[800]!),
         ),
         errorStyle: _errorTextStyle(),
-        hintStyle: TextStyle(
+        hintStyle: const TextStyle(
             fontSize: 13,
-            color: const Color.fromRGBO(66, 66, 66, 0.6),
+            color: Color.fromRGBO(66, 66, 66, 0.6),
             fontWeight: FontWeight.w900),
         hintText: 'KRW-BTC',
       ),
@@ -599,7 +583,7 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
   }
 
   void _doSaveAction(BuildContext context) {
-    var newModel = _GetResultWithverifiedText(false);
+    var newModel = _getResultWithverifiedText(false);
     if (newModel == null) {
       return;
     }
@@ -620,9 +604,9 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
   }
 
   TextStyle _innerFormStyle() {
-    return TextStyle(
+    return const TextStyle(
         fontSize: 13,
-        color: const Color.fromRGBO(66, 66, 66, 1),
+        color: Color.fromRGBO(66, 66, 66, 1),
         fontWeight: FontWeight.w900);
   }
 
@@ -652,13 +636,13 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
     }
   }
 
-  Future<void> SaveTemplate() async {
-    var newModel = _GetResultWithverifiedText(true);
+  Future<void> saveTemplate() async {
+    var newModel = _getResultWithverifiedText(true);
     if (newModel == null) {
       showDialog(
           context: context,
           builder: (context) =>
-              AlertDialogCustom(text: '입력 값이 올바르지 않아 저장에 실패했습니다.'));
+              const AlertDialogCustom(text: '입력 값이 올바르지 않아 저장에 실패했습니다.'));
 
       _isTemplateSucessMarketVisible = false;
       setState(() {});
@@ -680,7 +664,7 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
     }
   }
 
-  StrategyIchimokuItemInfo? _GetResultWithverifiedText(bool isTemplateSaving) {
+  StrategyIchimokuItemInfo? _getResultWithverifiedText(bool isTemplateSaving) {
     var isPass = true;
 
     if (_optionFormKey.currentState != null &&
@@ -700,7 +684,8 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
     if (!isTemplateSaving && _provider.itemsCollection.length >= 10) {
       showDialog(
           context: context,
-          builder: (context) => AlertDialogCustom(text: '최대 전략 개수는 10개 입니다.'));
+          builder: (context) =>
+              const AlertDialogCustom(text: '최대 전략 개수는 10개 입니다.'));
       return null;
     }
 

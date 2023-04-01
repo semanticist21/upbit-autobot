@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -15,16 +17,18 @@ import 'package:upbit_autobot/provider.dart';
 
 import '../client/client.dart';
 import '../model/template.dart';
-import '3d_button.dart';
+import 'three_d_button.dart';
 import 'bet_your_money.dart';
 import 'fire.dart';
 
 class CasinoDialog extends StatefulWidget {
+  const CasinoDialog({super.key});
+
   @override
-  _CasinoDialogState createState() => _CasinoDialogState();
+  CasinoDialogState createState() => CasinoDialogState();
 }
 
-class _CasinoDialogState extends State<CasinoDialog> {
+class CasinoDialogState extends State<CasinoDialog> {
   late AppProvider _provider;
 
   var _firstText = '';
@@ -46,18 +50,30 @@ class _CasinoDialogState extends State<CasinoDialog> {
 
   late SharedPreferences _pref;
   var casionoRoulette = CasionoRoulette();
-  var _prefKey = 'soundOn';
+  final _prefKey = 'soundOn';
 
-  GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
 
-  var _bgPlayer = AudioPlayer();
-  var _leverPlayer = AudioPlayer();
-  var _wheelPlayer = AudioPlayer();
+  final _bgPlayer = AudioPlayer();
+  final _leverPlayer = AudioPlayer();
+  final _wheelPlayer = AudioPlayer();
+  final _textPopPlayer = AudioPlayer();
 
-  var _bgPath = 'background.wav';
-  var _leverPath = 'lever.wav';
-  var _wheelPath = 'wheel.wav';
+  final _bg0Path = 'bg0.wav';
+  final _bg1Path = 'bg1.mp3';
+  final _bg2Path = 'bg2.mp3';
+  final _bg3Path = 'bg3.mp3';
+  final _bg4Path = 'bg4.mp3';
+  final _bg5Path = 'bg5.mp3';
+  final _bg6Path = 'bg6.mp3';
+  final _bg7Path = 'bg7.mp3';
+  final _bg8Path = 'bg8.mp3';
+  final _leverPath = 'lever.wav';
+  final _wheelPath = 'wheel.wav';
+  final _popPath = 'pop.wav';
+
+  final List<AssetSource> _bgSources = List.empty(growable: true);
 
   @override
   void initState() {
@@ -95,7 +111,7 @@ class _CasinoDialogState extends State<CasinoDialog> {
                         backgroundColor: Colors.black,
                         appBar: AppBar(
                             leading: IconButton(
-                                icon: Icon(Icons.arrow_back),
+                                icon: const Icon(Icons.arrow_back),
                                 onPressed: () {
                                   cleanText();
                                   casionoRoulette.stateWidget.controller
@@ -103,7 +119,7 @@ class _CasinoDialogState extends State<CasinoDialog> {
                                   Navigator.of(context).pop();
                                 },
                                 splashRadius: 15),
-                            title: Row(children: [
+                            title: const Row(children: [
                               Icon(
                                 FontAwesomeIcons.fire,
                                 color: Colors.red,
@@ -130,7 +146,8 @@ class _CasinoDialogState extends State<CasinoDialog> {
                                             child: Stack(children: [
                                               const Fire(),
                                               Container(
-                                                padding: EdgeInsets.all(10),
+                                                padding:
+                                                    const EdgeInsets.all(10),
                                                 child: casionoRoulette,
                                               ),
                                               Padding(
@@ -142,7 +159,8 @@ class _CasinoDialogState extends State<CasinoDialog> {
                                                       0,
                                                       0,
                                                       0),
-                                                  child: TriangleDiagram())
+                                                  child:
+                                                      const TriangleDiagram())
                                             ])),
                                         Expanded(
                                             flex: 7,
@@ -150,7 +168,7 @@ class _CasinoDialogState extends State<CasinoDialog> {
                                                 color: Colors.black,
                                                 child: Column(
                                                   children: [
-                                                    Expanded(
+                                                    const Expanded(
                                                         flex: 3,
                                                         child: BetYourMoney()),
                                                     Expanded(
@@ -169,7 +187,7 @@ class _CasinoDialogState extends State<CasinoDialog> {
                                                                             'KRW-',
                                                                             '')
                                                                         .toLowerCase())
-                                                                : SizedBox(),
+                                                                : const SizedBox(),
                                                           )),
                                                           Expanded(
                                                               child: Center(
@@ -183,7 +201,7 @@ class _CasinoDialogState extends State<CasinoDialog> {
                                                                             'KRW-',
                                                                             '')
                                                                         .toLowerCase())
-                                                                : SizedBox(),
+                                                                : const SizedBox(),
                                                           )),
                                                           Expanded(
                                                               child: Center(
@@ -197,7 +215,7 @@ class _CasinoDialogState extends State<CasinoDialog> {
                                                                             'KRW-',
                                                                             '')
                                                                         .toLowerCase())
-                                                                : SizedBox(),
+                                                                : const SizedBox(),
                                                           )),
                                                           Expanded(
                                                               child: Center(
@@ -211,7 +229,7 @@ class _CasinoDialogState extends State<CasinoDialog> {
                                                                             'KRW-',
                                                                             '')
                                                                         .toLowerCase())
-                                                                : SizedBox(),
+                                                                : const SizedBox(),
                                                           )),
                                                           Expanded(
                                                               child: Center(
@@ -225,19 +243,18 @@ class _CasinoDialogState extends State<CasinoDialog> {
                                                                             'KRW-',
                                                                             '')
                                                                         .toLowerCase())
-                                                                : SizedBox(),
+                                                                : const SizedBox(),
                                                           )),
                                                         ])),
-                                                    Divider(),
+                                                    const Divider(),
                                                     Expanded(
                                                         flex: 4,
-                                                        child: Container(
-                                                            child: Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceAround,
-                                                                children: [
-                                                              SizedBox(
+                                                        child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceAround,
+                                                            children: [
+                                                              const SizedBox(
                                                                   width: 10),
                                                               Button3D(
                                                                   style:
@@ -273,8 +290,11 @@ class _CasinoDialogState extends State<CasinoDialog> {
                                                                       return;
                                                                     }
                                                                     cleanText();
+                                                                    setState(
+                                                                        () {});
                                                                   },
-                                                                  child: Row(
+                                                                  child:
+                                                                      const Row(
                                                                     mainAxisAlignment:
                                                                         MainAxisAlignment
                                                                             .center,
@@ -330,7 +350,7 @@ class _CasinoDialogState extends State<CasinoDialog> {
                                                                         Alignment
                                                                             .center,
                                                                   ))
-                                                            ])))
+                                                            ]))
                                                   ],
                                                 )))
                                       ])))),
@@ -338,10 +358,10 @@ class _CasinoDialogState extends State<CasinoDialog> {
                               flex: 6,
                               child: Row(children: [
                                 Row(children: [
-                                  SizedBox(width: 10),
-                                  Icon(Icons.radio, size: 15),
-                                  SizedBox(width: 10),
-                                  Text('소리 끄기'),
+                                  const SizedBox(width: 10),
+                                  const Icon(Icons.radio, size: 15),
+                                  const SizedBox(width: 10),
+                                  const Text('소리 끄기'),
                                   Checkbox(
                                       value: !_isSoundOn,
                                       onChanged: (event) async {
@@ -354,20 +374,19 @@ class _CasinoDialogState extends State<CasinoDialog> {
 
                                         await _pref.setBool(
                                             _prefKey, _isSoundOn);
-                                        print(_pref.getBool(_prefKey));
                                         setState(() {});
                                       })
                                 ]),
-                                Spacer(),
+                                const Spacer(),
                                 ElevatedButton(
                                   onPressed: () => _doSaveBollinger(),
-                                  child: Text('볼린저 밴드로 추가'),
+                                  child: const Text('볼린저 밴드로 추가'),
                                 ),
-                                SizedBox(width: 10),
+                                const SizedBox(width: 10),
                                 ElevatedButton(
                                     onPressed: () => _doSaveIchimoku(),
-                                    child: Text('일목 아이템로 추가')),
-                                SizedBox(width: 10),
+                                    child: const Text('일목 아이템로 추가')),
+                                const SizedBox(width: 10),
                               ]))
                         ]),
                       )),
@@ -383,17 +402,54 @@ class _CasinoDialogState extends State<CasinoDialog> {
   }
 
   void _setPlayers() {
-    var bgSource = AssetSource(_bgPath);
+    _bgSources.clear();
+
+    var bg0Source = AssetSource(_bg0Path);
+    var bg1Source = AssetSource(_bg1Path);
+    var bg2Source = AssetSource(_bg2Path);
+    var bg3Source = AssetSource(_bg3Path);
+    var bg4Source = AssetSource(_bg4Path);
+    var bg5Source = AssetSource(_bg5Path);
+    var bg6Source = AssetSource(_bg6Path);
+    var bg7Source = AssetSource(_bg7Path);
+    var bg8Source = AssetSource(_bg8Path);
+
+    _bgSources.add(bg0Source);
+    _bgSources.add(bg1Source);
+    _bgSources.add(bg2Source);
+    _bgSources.add(bg3Source);
+    _bgSources.add(bg4Source);
+    _bgSources.add(bg5Source);
+    _bgSources.add(bg6Source);
+    _bgSources.add(bg7Source);
+    _bgSources.add(bg8Source);
+
     var leverSource = AssetSource(_leverPath);
     var wheelSoruce = AssetSource(_wheelPath);
+    var popSource = AssetSource(_popPath);
 
-    _bgPlayer.setSource(bgSource);
+    var randomNum = Random().nextInt(8);
+    _bgPlayer.setSource(_bgSources[randomNum]);
+
+    _bgPlayer.onPlayerComplete.listen((event) {
+      var randomNum = Random().nextInt(8);
+      _bgPlayer.setSource(_bgSources[randomNum]);
+      print('실행됏다');
+      if (!_isSoundOn) {
+        return;
+      }
+
+      _bgPlayer.resume();
+    });
+
     _leverPlayer.setSource(leverSource);
     _wheelPlayer.setSource(wheelSoruce);
+    _textPopPlayer.setSource(popSource);
 
-    _bgPlayer.setVolume(0.06);
+    _bgPlayer.setVolume(0.1);
     _leverPlayer.setVolume(0.2);
     _wheelPlayer.setVolume(0.2);
+    _textPopPlayer.setVolume(0.3);
   }
 
   void _playBgSong() {
@@ -420,6 +476,14 @@ class _CasinoDialogState extends State<CasinoDialog> {
     _wheelPlayer.resume();
   }
 
+  void _playPopEffect() {
+    if (!_isSoundOn) {
+      return;
+    }
+
+    _textPopPlayer.resume();
+  }
+
   Future<void> _doTapDown() async {
     if (_isRouletteOnGoing || _firstText != '') {
       return;
@@ -432,36 +496,35 @@ class _CasinoDialogState extends State<CasinoDialog> {
   }
 
   Future<void> _doTapUp() async {
-    if (_firstText != '') {
-      _scaffoldMessengerKey.currentState
-          ?.showSnackBar(SnackBar(content: Text('아이템을 초기화해야 재실행이 가능합니다.')));
+    if (_isRouletteOnGoing) {
+      return;
     }
-    if (_isRouletteOnGoing || _firstText != '') {
+
+    if (_firstText != '') {
+      _scaffoldMessengerKey.currentState?.showSnackBar(
+          const SnackBar(content: Text('아이템을 초기화해야 재실행이 가능합니다.')));
       return;
     }
 
     _isRouletteOnGoing = true;
 
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 500));
     setState(() {
       _isPressed = false;
     });
 
     await _doStartRoullet();
-
     _isRouletteOnGoing = false;
   }
 
   Future<void> _doStartRoullet() async {
     if (_provider.volumeTopList.isEmpty) {
-      await _provider.doVolumeItemRequest();
-    }
-
-    if (_provider.volumeTopList.isEmpty) {
       showDialog(
           context: context,
-          builder: (context) => AlertDialogCustom(
-              text: '볼륨 아이템을 받을 수 없어 실패했습니다. \nAPI 관련 로그를 확인해주세요.'));
+          builder: (context) {
+            return const AlertDialogCustom(
+                text: '볼륨 아이템을 받을 수 없어 실패했습니다. \nAPI 관련 로그를 확인해주세요.');
+          });
 
       _isRouletteOnGoing = false;
       return;
@@ -479,7 +542,8 @@ class _CasinoDialogState extends State<CasinoDialog> {
             _provider.volumeTopList.elementAt(index)['marketName'];
       });
     }
-    await Future.delayed(Duration(milliseconds: 600));
+    _playPopEffect();
+    await Future.delayed(const Duration(milliseconds: 600));
 
     _playWheelEffect();
     index = await casionoRoulette.stateWidget.rollRoll(usedIndexs);
@@ -492,7 +556,8 @@ class _CasinoDialogState extends State<CasinoDialog> {
             _provider.volumeTopList.elementAt(index)['marketName'];
       });
     }
-    await Future.delayed(Duration(milliseconds: 600));
+    _playPopEffect();
+    await Future.delayed(const Duration(milliseconds: 600));
 
     _playWheelEffect();
     index = await casionoRoulette.stateWidget.rollRoll(usedIndexs);
@@ -504,7 +569,8 @@ class _CasinoDialogState extends State<CasinoDialog> {
             _provider.volumeTopList.elementAt(index)['marketName'];
       });
     }
-    await Future.delayed(Duration(milliseconds: 600));
+    _playPopEffect();
+    await Future.delayed(const Duration(milliseconds: 600));
 
     _playWheelEffect();
     index = await casionoRoulette.stateWidget.rollRoll(usedIndexs);
@@ -516,7 +582,8 @@ class _CasinoDialogState extends State<CasinoDialog> {
             _provider.volumeTopList.elementAt(index)['marketName'];
       });
     }
-    await Future.delayed(Duration(milliseconds: 600));
+    _playPopEffect();
+    await Future.delayed(const Duration(milliseconds: 600));
 
     _playWheelEffect();
     index = await casionoRoulette.stateWidget.rollRoll(usedIndexs);
@@ -528,6 +595,7 @@ class _CasinoDialogState extends State<CasinoDialog> {
             _provider.volumeTopList.elementAt(index)['marketName'];
       });
     }
+    _playPopEffect();
   }
 
   Future<void> _doSaveBollinger() async {
@@ -538,7 +606,7 @@ class _CasinoDialogState extends State<CasinoDialog> {
     if (_fifthText == '') {
       showDialog(
           context: context,
-          builder: (context) => AlertDialogCustom(text: '먼저 룰렛을 돌려주세요.'));
+          builder: (context) => const AlertDialogCustom(text: '먼저 룰렛을 돌려주세요.'));
       return;
     }
     var response = await RestApiClient().requestGet('template');
@@ -548,11 +616,11 @@ class _CasinoDialogState extends State<CasinoDialog> {
       return;
     }
 
-    if (_provider.itemsCollection.length >= 6) {
+    if (_provider.itemsCollection.length >= 6 && context.mounted) {
       showDialog(
           context: context,
           builder: (context) =>
-              AlertDialogCustom(text: '이미 저장된 아이템 개수가 너무 많습니다!'));
+              const AlertDialogCustom(text: '이미 저장된 아이템 개수가 너무 많습니다!'));
       return;
     }
 
@@ -560,10 +628,13 @@ class _CasinoDialogState extends State<CasinoDialog> {
 
     if (template.bollingerTemplate == null ||
         template.bollingerTemplate!.coinMarKetName != 'save') {
-      showDialog(
-          context: context,
-          builder: (context) => AlertDialogCustom(text: '저장된 템플릿이 없습니다.'));
-      return;
+      if (context.mounted) {
+        showDialog(
+            context: context,
+            builder: (context) =>
+                const AlertDialogCustom(text: '저장된 템플릿이 없습니다.'));
+        return;
+      }
     }
 
     _provider.bollingerItems
@@ -579,7 +650,7 @@ class _CasinoDialogState extends State<CasinoDialog> {
 
     cleanText();
     _scaffoldMessengerKey.currentState
-        ?.showSnackBar(SnackBar(content: Text("저장 완료!")));
+        ?.showSnackBar(const SnackBar(content: Text("저장 완료!")));
   }
 
   StrategyBollingerItemInfo getBollinger(
@@ -609,7 +680,7 @@ class _CasinoDialogState extends State<CasinoDialog> {
     if (_fifthText == '') {
       showDialog(
           context: context,
-          builder: (context) => AlertDialogCustom(text: '먼저 룰렛을 돌려주세요.'));
+          builder: (context) => const AlertDialogCustom(text: '먼저 룰렛을 돌려주세요.'));
       return;
     }
     var response = await RestApiClient().requestGet('template');
@@ -619,11 +690,11 @@ class _CasinoDialogState extends State<CasinoDialog> {
       return;
     }
 
-    if (_provider.itemsCollection.length >= 6) {
+    if (_provider.itemsCollection.length >= 6 && context.mounted) {
       showDialog(
           context: context,
           builder: (context) =>
-              AlertDialogCustom(text: '이미 저장된 아이템 개수가 너무 많습니다!'));
+              const AlertDialogCustom(text: '이미 저장된 아이템 개수가 너무 많습니다!'));
       return;
     }
 
@@ -631,10 +702,13 @@ class _CasinoDialogState extends State<CasinoDialog> {
 
     if (template.ichimokuTemplate == null ||
         template.ichimokuTemplate!.coinMarKetName != 'save') {
-      showDialog(
-          context: context,
-          builder: (context) => AlertDialogCustom(text: '저장된 템플릿이 없습니다.'));
-      return;
+      if (context.mounted) {
+        showDialog(
+            context: context,
+            builder: (context) =>
+                const AlertDialogCustom(text: '저장된 템플릿이 없습니다.'));
+        return;
+      }
     }
 
     _provider.ichimokuItems
@@ -650,7 +724,7 @@ class _CasinoDialogState extends State<CasinoDialog> {
 
     cleanText();
     _scaffoldMessengerKey.currentState
-        ?.showSnackBar(SnackBar(content: Text("저장 완료!")));
+        ?.showSnackBar(const SnackBar(content: Text("저장 완료!")));
   }
 
   StrategyIchimokuItemInfo getIchimoku(

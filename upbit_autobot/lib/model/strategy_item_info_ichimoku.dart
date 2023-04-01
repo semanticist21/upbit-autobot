@@ -14,7 +14,7 @@ class StrategyIchimokuItemInfo {
   int candleBaseMinute;
   // ISO8601
   late String lastBoughtTimeStamp;
-  int Index = -1;
+  int index = -1;
 
   factory StrategyIchimokuItemInfo(
       String coinMarKetName,
@@ -83,7 +83,7 @@ class StrategyIchimokuItemInfo {
         : ColorInfo.fromHex(map['color']);
     model.itemId = map['itemId'];
     model.lastBoughtTimeStamp = map['lastBoughtTimeStamp'];
-    model.Index = map['index'];
+    model.index = map['index'];
 
     return model;
   }
@@ -117,7 +117,7 @@ class StrategyIchimokuItemInfo {
       'lastBoughtTimeStamp': lastBoughtTimeStamp,
       'desiredBuyAmount': desiredBuyAmount,
       'candleBaseMinute': candleBaseMinute,
-      'index': Index,
+      'index': index,
     };
   }
 }

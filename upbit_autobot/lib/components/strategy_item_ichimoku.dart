@@ -83,9 +83,9 @@ class _StrategyIchimokuItemState extends State<StrategyIchimokuItem> {
                   Column(mainAxisAlignment: MainAxisAlignment.start, children: [
                 const SizedBox(height: 5),
                 Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  Tooltip(
+                  const Tooltip(
                       message: '일목균형표 아이템', child: Icon(Icons.thunderstorm)),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   const Text('마켓 ID : '),
                   Text(widget.item.coinMarKetName),
                 ]),

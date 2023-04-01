@@ -14,6 +14,7 @@ class CasionoRoulette extends StatefulWidget {
   final stateWidget = _CasionoRouletteState();
 
   @override
+  // ignore: no_logic_in_create_state
   State<CasionoRoulette> createState() => stateWidget;
 }
 
@@ -29,16 +30,16 @@ class _CasionoRouletteState extends State<CasionoRoulette>
       group: RouletteGroup([
         RouletteUnit.text('아이템\n없음',
             color: ColorInfo.generateRandomColorNoOpacity(),
-            textStyle: TextStyle(fontSize: 20)),
+            textStyle: const TextStyle(fontSize: 20)),
         RouletteUnit.text('아이템\n없음',
             color: ColorInfo.generateRandomColorNoOpacity(),
-            textStyle: TextStyle(fontSize: 20)),
+            textStyle: const TextStyle(fontSize: 20)),
         RouletteUnit.text('아이템\n없음',
             color: ColorInfo.generateRandomColorNoOpacity(),
-            textStyle: TextStyle(fontSize: 20)),
+            textStyle: const TextStyle(fontSize: 20)),
         RouletteUnit.text('아이템\n없음',
             color: ColorInfo.generateRandomColorNoOpacity(),
-            textStyle: TextStyle(fontSize: 20)),
+            textStyle: const TextStyle(fontSize: 20)),
       ]),
       vsync: this);
 
@@ -55,7 +56,7 @@ class _CasionoRouletteState extends State<CasionoRoulette>
 
     return Roulette(
       controller: controller,
-      style: RouletteStyle(
+      style: const RouletteStyle(
           dividerColor: Colors.transparent,
           dividerThickness: 1,
           centerStickerColor: Colors.black,
@@ -85,7 +86,7 @@ class _CasionoRouletteState extends State<CasionoRoulette>
   List<RouletteUnit> _getUnitItem() {
     List<RouletteUnit> list = List.empty(growable: true);
     var index = 0;
-    _provider.volumeTopList.forEach((element) {
+    for (var element in _provider.volumeTopList) {
       List<String> chunks = [];
       var str = element['coinKrName'];
 
@@ -110,11 +111,11 @@ class _CasionoRouletteState extends State<CasionoRoulette>
           color: colorInfos[index],
           weight: 1,
           text: spacedText,
-          textStyle: TextStyle(fontSize: 10));
+          textStyle: const TextStyle(fontSize: 10));
 
       list.add(unit);
       index++;
-    });
+    }
 
     setState(() {});
 
@@ -131,14 +132,14 @@ class _CasionoRouletteState extends State<CasionoRoulette>
     }
 
     await controller.rollTo(randomValue,
-        duration: Duration(milliseconds: 2000), minRotateCircles: 2);
+        duration: const Duration(milliseconds: 2000), minRotateCircles: 2);
     return randomValue;
   }
 
   void mapReset() {
     map.clear();
-    map = Map<String, bool>();
-    _provider.itemsCollection.forEach((element) {
+    map = <String, bool>{};
+    for (var element in _provider.itemsCollection) {
       if (element is StrategyBollingerItemInfo) {
         map[element.coinMarKetName] = true;
       }
@@ -146,6 +147,6 @@ class _CasionoRouletteState extends State<CasionoRoulette>
       if (element is StrategyIchimokuItemInfo) {
         map[element.coinMarKetName] = true;
       }
-    });
+    }
   }
 }

@@ -17,9 +17,9 @@ class TemplateModel {
   }
 
   Map<String, dynamic> toJson() {
-    var dic = Map<String, dynamic>();
-    dic['bollingerTemplate'] = this.bollingerTemplate;
-    dic['ichimokuTemplate'] = this.ichimokuTemplate;
+    var dic = <String, dynamic>{};
+    dic['bollingerTemplate'] = bollingerTemplate;
+    dic['ichimokuTemplate'] = ichimokuTemplate;
     return dic;
   }
 }

@@ -10,31 +10,31 @@ class AlertDialogCustom extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-        title: Row(children: [
+        title: const Row(children: [
           Icon(Icons.bubble_chart, size: 20),
           SizedBox(width: 10),
           Text('알림')
         ]),
-        content: Container(
+        content: SizedBox(
             width: 350,
             height: 150,
             child: Column(children: [
-              Container(
+              SizedBox(
                 height: 120,
                 child: SingleChildScrollView(
-                  physics: AlwaysScrollableScrollPhysics(
+                  physics: const AlwaysScrollableScrollPhysics(
                       parent: BouncingScrollPhysics()),
                   child: Text(text),
                 ),
               ),
-              Spacer(),
+              const Spacer(),
               Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                 MaterialButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: Text('확인', style: TextStyle(fontSize: 17)),
                   splashColor: Colors.transparent,
                   highlightColor: Colors.transparent,
                   hoverColor: Colors.transparent,
+                  child: const Text('확인', style: TextStyle(fontSize: 17)),
                 )
               ])
             ])));

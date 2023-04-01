@@ -14,7 +14,7 @@ class SellListView extends StatefulWidget {
 }
 
 class _SellListViewState extends State<SellListView> {
-  late List<SellItem> _sellItem = List.empty(growable: true);
+  late final List<SellItem> _sellItem = List.empty(growable: true);
 
   @override
   void initState() {
@@ -33,7 +33,7 @@ class _SellListViewState extends State<SellListView> {
             heightFactor: 0.65,
             child: Scaffold(
                 appBar: AppBar(
-                  title: Row(children: [
+                  title: const Row(children: [
                     Icon(
                       Icons.sell_sharp,
                       size: 18,
@@ -44,14 +44,14 @@ class _SellListViewState extends State<SellListView> {
                   leading: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SizedBox(width: 15),
+                        const SizedBox(width: 15),
                         IconButton(
                             onPressed: () => Navigator.of(context).pop(),
-                            icon: Icon(Icons.arrow_back),
+                            icon: const Icon(Icons.arrow_back),
                             splashRadius: 15)
                       ]),
                 ),
-                body: _sellItem.length != 0
+                body: _sellItem.isNotEmpty
                     ? getWhenItemExists()
                     : getWhenItemEmpty()),
           ),
@@ -63,7 +63,7 @@ class _SellListViewState extends State<SellListView> {
       width: double.infinity,
       height: double.infinity,
       color: Colors.black,
-      child: Center(
+      child: const Center(
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
         Icon(Icons.no_sim_sharp, size: 100),
         SizedBox(height: 10),
@@ -75,11 +75,11 @@ class _SellListViewState extends State<SellListView> {
 
   Widget getWhenItemExists() {
     return Container(
-      padding: EdgeInsets.all(5),
-      color: Color.fromRGBO(250, 250, 250, 0.95),
+      padding: const EdgeInsets.all(5),
+      color: const Color.fromRGBO(250, 250, 250, 0.95),
       child: ListView.builder(
-          physics:
-              BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+          physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics()),
           itemCount: _sellItem.length,
           itemBuilder: (context, index) {
             return getListItem(_sellItem[index]);
@@ -97,22 +97,22 @@ class _SellListViewState extends State<SellListView> {
         color: const Color.fromRGBO(75, 75, 75, 1),
         child: Container(
           height: 150,
-          padding: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(10),
           child: Column(
             children: [
               Row(
                 children: [
                   Row(children: [
-                    Icon(FontAwesomeIcons.tag, size: 15),
-                    SizedBox(width: 10),
-                    Text('마켓 ID : '),
+                    const Icon(FontAwesomeIcons.tag, size: 15),
+                    const SizedBox(width: 10),
+                    const Text('마켓 ID : '),
                     Text(item.coinMarketName)
                   ]),
-                  Spacer(),
+                  const Spacer(),
                   Row(children: [
-                    Icon(FontAwesomeIcons.bagShopping, size: 15),
-                    SizedBox(width: 10),
-                    Text('매수 볼륨 : '),
+                    const Icon(FontAwesomeIcons.bagShopping, size: 15),
+                    const SizedBox(width: 10),
+                    const Text('매수 볼륨 : '),
                     Container(
                         alignment: Alignment.centerLeft,
                         width: 110,
@@ -121,14 +121,14 @@ class _SellListViewState extends State<SellListView> {
                   ])
                 ],
               ),
-              Divider(),
-              SizedBox(height: 10),
+              const Divider(),
+              const SizedBox(height: 10),
               Row(
                 children: [
                   Row(children: [
-                    Icon(Icons.linear_scale_sharp, size: 15),
-                    SizedBox(width: 10),
-                    Text('평단가 : '),
+                    const Icon(Icons.linear_scale_sharp, size: 15),
+                    const SizedBox(width: 10),
+                    const Text('평단가 : '),
                     Container(
                         alignment: Alignment.centerLeft,
                         width: 220,
@@ -137,13 +137,13 @@ class _SellListViewState extends State<SellListView> {
                   ])
                 ],
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(
                 children: [
                   Row(children: [
-                    Icon(FontAwesomeIcons.plane, size: 15),
-                    SizedBox(width: 10),
-                    Text('익절 목표가 : '),
+                    const Icon(FontAwesomeIcons.plane, size: 15),
+                    const SizedBox(width: 10),
+                    const Text('익절 목표가 : '),
                     Container(
                         alignment: Alignment.centerLeft,
                         width: 220,
@@ -152,13 +152,13 @@ class _SellListViewState extends State<SellListView> {
                   ])
                 ],
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(
                 children: [
                   Row(children: [
-                    Icon(FontAwesomeIcons.bomb, size: 15),
-                    SizedBox(width: 10),
-                    Text('손절 실행가 : '),
+                    const Icon(FontAwesomeIcons.bomb, size: 15),
+                    const SizedBox(width: 10),
+                    const Text('손절 실행가 : '),
                     Container(
                         alignment: Alignment.centerLeft,
                         width: 240,
@@ -175,10 +175,10 @@ class _SellListViewState extends State<SellListView> {
   Future<void> doSellItemRequest(List<SellItem> sellItemList) async {
     var response = await RestApiClient().requestGet('items/sell');
     var data = await RestApiClient.parseResponseListData(response);
-    data.forEach((element) {
+    for (var element in data) {
       var sellItem = SellItem.fromJson(element);
       sellItemList.add(sellItem);
-    });
+    }
     setState(() {});
   }
 }

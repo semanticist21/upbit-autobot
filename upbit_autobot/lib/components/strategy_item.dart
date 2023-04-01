@@ -89,10 +89,10 @@ class _StrategyItemState extends State<StrategyItem> {
                   Column(mainAxisAlignment: MainAxisAlignment.start, children: [
                 const SizedBox(height: 5),
                 Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  Tooltip(
+                  const Tooltip(
                       message: '볼린저 밴드 아이템',
                       child: Icon(Icons.auto_graph_outlined)),
-                  SizedBox(width: 5),
+                  const SizedBox(width: 5),
                   const Text('마켓 ID : '),
                   Text(widget.item.coinMarKetName),
                 ]),

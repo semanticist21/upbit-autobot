@@ -8,10 +8,10 @@ class PopUpText extends StatefulWidget {
   const PopUpText({super.key, required this.text, required this.coinNm});
 
   @override
-  _PopUpTextState createState() => _PopUpTextState();
+  PopUpTextState createState() => PopUpTextState();
 }
 
-class _PopUpTextState extends State<PopUpText>
+class PopUpTextState extends State<PopUpText>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
@@ -33,11 +33,11 @@ class _PopUpTextState extends State<PopUpText>
   Widget build(BuildContext context) {
     return TweenAnimationBuilder(
       tween: Tween<double>(begin: 0, end: 1),
-      duration: Duration(milliseconds: 1000),
-      builder: (BuildContext context, double _val, Widget? child) {
+      duration: const Duration(milliseconds: 300),
+      builder: (BuildContext context, double val, Widget? child) {
         return Opacity(
-          opacity: _val,
-          child: Container(
+          opacity: val,
+          child: SizedBox(
             width: double.infinity,
             height: double.infinity,
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -45,12 +45,13 @@ class _PopUpTextState extends State<PopUpText>
                   width: 20,
                   height: 20,
                   child: CoinImage(coinNm: widget.coinNm)),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
               Padding(
-                  padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                   child: Text(
                     widget.text,
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
                   ))
             ]),
           ),

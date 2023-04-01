@@ -41,8 +41,8 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
   var _coinAmountEstimated = '';
 
   var _isCtrlKeyPressed = false;
-  var _focusNode = FocusNode();
-  var _zoomController = TransformationController();
+  final _focusNode = FocusNode();
+  final _zoomController = TransformationController();
   var _isTemplateSucessMarketVisible = false;
   var _isProgressVisible = false;
 
@@ -76,13 +76,13 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
         shadowColor: Colors.transparent,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
-            side: BorderSide(color: Colors.transparent)),
+            side: const BorderSide(color: Colors.transparent)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         child: DraggableCard(
             child: AnimatedContainer(
                 curve: Curves.fastLinearToSlowEaseIn,
-                duration: Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 300),
                 color: const Color.fromRGBO(250, 250, 250, 0.95),
                 child: KeyboardListener(
                     onKeyEvent: (e) {
@@ -102,29 +102,29 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
                     child: FractionallySizedBox(
                         widthFactor: 0.7,
                         heightFactor: 0.87,
-                        child: Container(
+                        child: SizedBox(
                           child: Column(children: [
                             Expanded(
                                 flex: 1,
                                 child: Container(
                                     color:
                                         const Color.fromRGBO(66, 66, 66, 0.9),
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 10),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10),
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.start,
                                       children: [
-                                        SizedBox(width: 15),
-                                        Icon(FontAwesomeIcons.lightbulb,
+                                        const SizedBox(width: 15),
+                                        const Icon(FontAwesomeIcons.lightbulb,
                                             size: 15),
-                                        SizedBox(width: 10),
-                                        Text('볼린저 밴드 기반 전략 아이템 추가'),
-                                        Spacer(),
-                                        SizedBox(width: 5),
+                                        const SizedBox(width: 10),
+                                        const Text('볼린저 밴드 기반 전략 아이템 추가'),
+                                        const Spacer(),
+                                        const SizedBox(width: 5),
                                         Visibility(
                                             visible: _isProgressVisible,
-                                            child: SizedBox(
+                                            child: const SizedBox(
                                                 width: 10,
                                                 height: 10,
                                                 child:
@@ -185,8 +185,9 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
                                                     var marketName =
                                                         el['marketName'];
 
-                                                    _provider.itemsCollection
-                                                        .forEach((element) {
+                                                    for (var element
+                                                        in _provider
+                                                            .itemsCollection) {
                                                       if (element
                                                               is StrategyBollingerItemInfo &&
                                                           element.coinMarKetName ==
@@ -200,7 +201,7 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
                                                               marketName) {
                                                         isDuplicate = true;
                                                       }
-                                                    });
+                                                    }
 
                                                     if (!isDuplicate) {
                                                       _coinMarketName.text =
@@ -214,9 +215,11 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
                                                   _isProgressVisible = false;
                                                   setState(() {});
 
-                                                  _doSaveAction(context);
+                                                  if (context.mounted) {
+                                                    _doSaveAction(context);
+                                                  }
                                                 },
-                                                icon: Icon(
+                                                icon: const Icon(
                                                     FontAwesomeIcons.dice,
                                                     size: 15),
                                                 splashRadius: 15)),
@@ -226,21 +229,23 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
                                             child: IconButton(
                                                 onPressed: () => _zoomController
                                                     .value = Matrix4.identity(),
-                                                icon: Icon(Icons.zoom_in_map),
+                                                icon: const Icon(
+                                                    Icons.zoom_in_map),
                                                 splashRadius: 15)),
                                         IconButton(
                                             onPressed: () => showDialog(
                                                 context: context,
                                                 builder: (context) =>
-                                                    AlertDialogCustom(
+                                                    const AlertDialogCustom(
                                                         text:
                                                             '- 볼린저 하단 매수 전략을 가진 볼린저 밴드 아이템을 추가합니다.\n\n- 오더북 기준으로 가격이 하단보다 내려갈 시\n\t\t\t마켓 매수가 실행됩니다.\n(마켓 매수이므로 오차가 발생할 수 있습니다.)\n\n- 템플릿 저장버튼을 누르면 코인 마켓 이름을\n\t\t\t제외한 전략 정보가 저장됩니다.\n\n- Ctrl+마우스로 줌 확대 및 이동이 가능합니다.')),
-                                            icon: Icon(Icons.question_mark),
+                                            icon:
+                                                const Icon(Icons.question_mark),
                                             splashRadius: 15),
                                         IconButton(
                                             onPressed: () =>
                                                 Navigator.of(context).pop(),
-                                            icon: Icon(Icons.close),
+                                            icon: const Icon(Icons.close),
                                             splashRadius: 15)
                                       ],
                                     ))),
@@ -252,11 +257,11 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
                                     transformationController: _zoomController,
                                     child: SingleChildScrollView(
                                         scrollDirection: Axis.vertical,
-                                        physics: BouncingScrollPhysics(
+                                        physics: const BouncingScrollPhysics(
                                             parent:
                                                 AlwaysScrollableScrollPhysics()),
                                         child: Padding(
-                                            padding: EdgeInsets.symmetric(
+                                            padding: const EdgeInsets.symmetric(
                                                 vertical: 15, horizontal: 20),
                                             child: IntrinsicHeight(
                                                 child: Row(
@@ -278,7 +283,7 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
                                                                       '선택 코인 마켓 (KRW)'),
                                                                   _getHeadForm(
                                                                       _coinMarketName),
-                                                                  SizedBox(
+                                                                  const SizedBox(
                                                                       height:
                                                                           15),
                                                                   _getIconWithText(
@@ -288,7 +293,7 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
                                                                   _getOptionForm(
                                                                     _bollingerLength,
                                                                   ),
-                                                                  SizedBox(
+                                                                  const SizedBox(
                                                                       height:
                                                                           15),
                                                                   _getIconWithText(
@@ -297,7 +302,7 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
                                                                       '볼린저 곱 (최대 100)'),
                                                                   _getOptionForm(
                                                                       _bollingerMultiplier),
-                                                                  SizedBox(
+                                                                  const SizedBox(
                                                                       height:
                                                                           15),
                                                                   _getIconWithText(
@@ -308,12 +313,12 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
                                                                       _purchaseCount),
                                                                 ]),
                                                           ))),
-                                                  SizedBox(width: 10),
+                                                  const SizedBox(width: 10),
                                                   VerticalDivider(
                                                     color: Colors.grey[600],
                                                     thickness: 0.5,
                                                   ),
-                                                  SizedBox(width: 10),
+                                                  const SizedBox(width: 10),
                                                   Expanded(
                                                       child: SizedBox(
                                                           width:
@@ -329,7 +334,7 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
                                                                       '기준 분봉(최대 240분)'),
                                                                   _getOptionFormForMinuteCandle(
                                                                       _minuteCandle),
-                                                                  SizedBox(
+                                                                  const SizedBox(
                                                                       height:
                                                                           15),
                                                                   _getIconWithText(
@@ -338,7 +343,7 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
                                                                       '익절 기준 (%)'),
                                                                   _getOptionWithSuffixForm(
                                                                       _profitLine),
-                                                                  SizedBox(
+                                                                  const SizedBox(
                                                                       height:
                                                                           15),
                                                                   _getIconWithText(
@@ -347,7 +352,7 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
                                                                       '손절 기준 (%)'),
                                                                   _getOptionWithSuffixForm(
                                                                       _lossLine),
-                                                                  SizedBox(
+                                                                  const SizedBox(
                                                                       height:
                                                                           15),
                                                                   _getIconWithText(
@@ -363,42 +368,42 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
                                 flex: 1,
                                 child: SizedBox(
                                     child: Row(children: [
-                                  SizedBox(width: 20),
+                                  const SizedBox(width: 20),
                                   ElevatedButton(
                                     onPressed: () => _estimateCoinAmount(),
-                                    child: Row(children: [
+                                    child: const Row(children: [
                                       Icon(FontAwesomeIcons.coins, size: 13),
                                       SizedBox(width: 10),
                                       Text('구매 추정량 계산'),
                                     ]),
                                   ),
                                   // Text(_coinBuyEstimated),
-                                  SizedBox(width: 10),
+                                  const SizedBox(width: 10),
                                   SizedBox(
                                       width: 90,
                                       height: 30,
                                       child: FittedBox(
                                           child: _coinAmountEstimated == ''
-                                              ? Text('')
+                                              ? const Text('')
                                               : Text('$_coinAmountEstimated 개',
                                                   style: _labelTextStyle()))),
-                                  Spacer(),
+                                  const Spacer(),
                                   Visibility(
                                       visible: _isTemplateSucessMarketVisible,
-                                      child: Icon(
+                                      child: const Icon(
                                         Icons.check,
                                         color: Colors.green,
                                       )),
-                                  SizedBox(width: 2),
+                                  const SizedBox(width: 2),
                                   ElevatedButton(
-                                      onPressed: () => SaveTemplate(),
-                                      child: Text('템플릿 저장')),
-                                  SizedBox(width: 10),
+                                      onPressed: () => saveTemplate(),
+                                      child: const Text('템플릿 저장')),
+                                  const SizedBox(width: 10),
                                   ElevatedButton(
                                       onPressed: () => _doSaveAction(context),
-                                      child: Text('확인')),
+                                      child: const Text('확인')),
 
-                                  SizedBox(width: 20)
+                                  const SizedBox(width: 20)
                                 ]))),
                           ]),
                         ))))));
@@ -410,7 +415,7 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
   ) {
     return Row(children: [
       Icon(icon, color: Colors.black54, size: 15),
-      SizedBox(width: 5),
+      const SizedBox(width: 5),
       Text(
         text,
         textAlign: TextAlign.right,
@@ -474,9 +479,9 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
           borderSide: BorderSide(color: Colors.grey[800]!),
         ),
         errorStyle: _errorTextStyle(),
-        hintStyle: TextStyle(
+        hintStyle: const TextStyle(
             fontSize: 13,
-            color: const Color.fromRGBO(66, 66, 66, 0.6),
+            color: Color.fromRGBO(66, 66, 66, 0.6),
             fontWeight: FontWeight.w900),
         hintText: 'KRW-BTC',
       ),
@@ -618,7 +623,7 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
   }
 
   void _doSaveAction(BuildContext context) {
-    var newModel = _GetResultWithverifiedText(false);
+    var newModel = _getResultWithverifiedText(false);
     if (newModel == null) {
       return;
     }
@@ -639,9 +644,9 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
   }
 
   TextStyle _innerFormStyle() {
-    return TextStyle(
+    return const TextStyle(
         fontSize: 13,
-        color: const Color.fromRGBO(66, 66, 66, 1),
+        color: Color.fromRGBO(66, 66, 66, 1),
         fontWeight: FontWeight.w900);
   }
 
@@ -671,13 +676,13 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
     }
   }
 
-  Future<void> SaveTemplate() async {
-    var newModel = _GetResultWithverifiedText(true);
+  Future<void> saveTemplate() async {
+    var newModel = _getResultWithverifiedText(true);
     if (newModel == null) {
       showDialog(
           context: context,
           builder: (context) =>
-              AlertDialogCustom(text: '입력 값이 올바르지 않아 저장에 실패했습니다.'));
+              const AlertDialogCustom(text: '입력 값이 올바르지 않아 저장에 실패했습니다.'));
 
       _isTemplateSucessMarketVisible = false;
       setState(() {});
@@ -699,7 +704,7 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
     }
   }
 
-  StrategyBollingerItemInfo? _GetResultWithverifiedText(bool isTemplateSaving) {
+  StrategyBollingerItemInfo? _getResultWithverifiedText(bool isTemplateSaving) {
     var isPass = true;
 
     if (_optionFormKey.currentState != null &&
@@ -719,7 +724,8 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
     if (!isTemplateSaving && _provider.itemsCollection.length >= 10) {
       showDialog(
           context: context,
-          builder: (context) => AlertDialogCustom(text: '최대 전략 개수는 10개 입니다.'));
+          builder: (context) =>
+              const AlertDialogCustom(text: '최대 전략 개수는 10개 입니다.'));
       return null;
     }
 

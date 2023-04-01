@@ -58,14 +58,14 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
             automaticallyImplyLeading: false,
             backgroundColor: const Color.fromRGBO(66, 66, 66, 0.9),
             actions: [
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
               Tooltip(
                   message: '랜덤 돌려돌려!',
                   child: IconButton(
                       onPressed: () => showDialog(
                           context: context,
-                          builder: (context) => CasinoDialog()),
-                      icon: Icon(Icons.casino),
+                          builder: (context) => const CasinoDialog()),
+                      icon: const Icon(Icons.casino),
                       splashRadius: 15)),
               Tooltip(
                 message: '판매 감시 아이템 리스트 확인',
@@ -73,9 +73,9 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
                     onPressed: () => showDialog(
                         context: context,
                         builder: (_) {
-                          return SellListView();
+                          return const SellListView();
                         }),
-                    icon: Icon(Icons.list),
+                    icon: const Icon(Icons.list),
                     splashRadius: 15),
               ),
               Tooltip(
@@ -86,17 +86,32 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
                       _provider.ichimokuItems.clear();
                       setState(() {});
                     },
-                    icon: Icon(Icons.cleaning_services_rounded),
+                    icon: const Icon(Icons.cleaning_services_rounded),
                     splashRadius: 15),
               ),
               Tooltip(
                 message: '프로그램 트레이 최소화',
                 child: IconButton(
                     onPressed: () => AppTrayManager().appWindow.hide(),
-                    icon: Icon(Icons.theater_comedy),
+                    icon: const Icon(Icons.theater_comedy),
                     splashRadius: 15),
               ),
-              Spacer(),
+              Tooltip(
+                message: '상위 코인 볼륨 정보 다시 얻어오기',
+                child: IconButton(
+                    onPressed: () async {
+                      setState(() {
+                        _visible = true;
+                      });
+                      await _provider.doVolumeItemRequest();
+                      setState(() {
+                        _visible = false;
+                      });
+                    },
+                    icon: const Icon(Icons.stacked_bar_chart),
+                    splashRadius: 15),
+              ),
+              const Spacer(),
               Visibility(
                   visible: _visible,
                   child: const Center(
@@ -226,16 +241,18 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
                                   ])),
                               onTap: () async {
                                 await Future.delayed(
-                                    Duration(milliseconds: 100));
-                                showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return Builder(builder: (context) {
-                                            return const AddDialogNewBollinger();
-                                          });
-                                        })
-                                    .then((value) =>
-                                        _addNewList(_provider, value));
+                                    const Duration(milliseconds: 100));
+                                if (context.mounted) {
+                                  showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return Builder(builder: (context) {
+                                              return const AddDialogNewBollinger();
+                                            });
+                                          })
+                                      .then((value) =>
+                                          _addNewList(_provider, value));
+                                }
                               },
                             ),
                             PopupMenuItem(
@@ -251,16 +268,18 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
                                   ])),
                               onTap: () async {
                                 await Future.delayed(
-                                    Duration(milliseconds: 100));
-                                showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return Builder(builder: (context) {
-                                            return const AddDialogNewIchimoku();
-                                          });
-                                        })
-                                    .then((value) =>
-                                        _addNewListIchimoku(_provider, value));
+                                    const Duration(milliseconds: 100));
+                                if (context.mounted) {
+                                  showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return Builder(builder: (context) {
+                                              return const AddDialogNewIchimoku();
+                                            });
+                                          })
+                                      .then((value) => _addNewListIchimoku(
+                                          _provider, value));
+                                }
                               },
                             )
                           ]);
@@ -296,9 +315,9 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
                     _provider.itemsCollection.insert(newIndex, item);
 
                     if (item is StrategyBollingerItemInfo) {
-                      item.Index = newIndex;
+                      item.index = newIndex;
                     } else if (item is StrategyIchimokuItemInfo) {
-                      item.Index = newIndex;
+                      item.index = newIndex;
                     }
 
                     _provider.reorderItemCollection();
@@ -309,24 +328,24 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
                         StrategyBollingerItemInfo) {
                       return ReorderableGridDragStartListener(
                           key: ValueKey(index),
+                          index: index,
                           child: StrategyItem(
                             key: ValueKey(index),
                             item: _provider.itemsCollection[index]
                                 as StrategyBollingerItemInfo,
-                          ),
-                          index: index);
+                          ));
                     }
 
                     if (_provider.itemsCollection[index].runtimeType ==
                         StrategyIchimokuItemInfo) {
                       return ReorderableGridDragStartListener(
                           key: ValueKey(index),
+                          index: index,
                           child: StrategyIchimokuItem(
                             key: ValueKey(index),
                             item: _provider.itemsCollection[index]
                                 as StrategyIchimokuItemInfo,
-                          ),
-                          index: index);
+                          ));
                     }
 
                     return Container();
