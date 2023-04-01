@@ -89,6 +89,7 @@ class CasinoDialogState extends State<CasinoDialog> {
     _bgPlayer.dispose();
     _leverPlayer.dispose();
     _wheelPlayer.dispose();
+    _textPopPlayer.dispose();
     super.dispose();
   }
 
