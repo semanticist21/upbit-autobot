@@ -128,14 +128,20 @@ class _CasinoDialogState extends State<CasinoDialog> {
                                         Expanded(
                                             flex: 10,
                                             child: Stack(children: [
-                                              Fire(),
+                                              const Fire(),
                                               Container(
                                                 padding: EdgeInsets.all(10),
                                                 child: casionoRoulette,
                                               ),
                                               Padding(
                                                   padding: EdgeInsets.fromLTRB(
-                                                      200, 0, 0, 0),
+                                                      MediaQuery.of(context)
+                                                              .size
+                                                              .width *
+                                                          0.2,
+                                                      0,
+                                                      0,
+                                                      0),
                                                   child: TriangleDiagram())
                                             ])),
                                         Expanded(
