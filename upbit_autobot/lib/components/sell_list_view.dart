@@ -109,6 +109,7 @@ class _SellListViewState extends State<SellListView> {
                     Text(item.coinMarketName)
                   ]),
                   const Spacer(),
+                  const SizedBox(width: 10),
                   Row(children: [
                     const Icon(FontAwesomeIcons.bagShopping, size: 15),
                     const SizedBox(width: 10),
