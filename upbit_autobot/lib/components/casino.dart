@@ -359,90 +359,100 @@ class CasinoDialogState extends State<CasinoDialog> {
                                       ])))),
                           Expanded(
                               flex: 6,
-                              child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Row(children: [
-                                      const SizedBox(width: 10),
-                                      const Icon(Icons.radio, size: 15),
-                                      const SizedBox(width: 10),
-                                      const Text('소리 끄기'),
-                                      Checkbox(
-                                          value: !_isSoundOn,
-                                          onChanged: (event) async {
-                                            _isSoundOn = !_isSoundOn;
-                                            if (_isSoundOn) {
-                                              _bgPlayer.resume();
-                                            } else {
-                                              _bgPlayer.stop();
-                                            }
+                              child: Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                                  child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Row(children: [
+                                          const SizedBox(width: 10),
+                                          const Icon(Icons.radio, size: 15),
+                                          const SizedBox(width: 10),
+                                          const Text('소리 끄기'),
+                                          Checkbox(
+                                              value: !_isSoundOn,
+                                              onChanged: (event) async {
+                                                _isSoundOn = !_isSoundOn;
+                                                if (_isSoundOn) {
+                                                  _bgPlayer.resume();
+                                                } else {
+                                                  _bgPlayer.stop();
+                                                }
 
-                                            await _pref.setBool(
-                                                _prefKey, _isSoundOn);
-                                            setState(() {});
-                                          })
-                                    ]),
-                                    const Spacer(),
-                                    Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          const SizedBox(height: 3),
-                                          Row(children: [
-                                            ElevatedButton(
-                                                onPressed: () => showDialog(
-                                                    context: context,
-                                                    builder: (_) =>
-                                                        const AddDialogNewIchimokuTemplate()),
-                                                child: const Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      SizedBox(width: 20),
-                                                      Icon(Icons.edit_document,
-                                                          size: 15),
-                                                      SizedBox(width: 5),
-                                                      Text('일목 템플릿'),
-                                                      SizedBox(width: 19),
-                                                    ])),
-                                            const SizedBox(width: 5),
-                                            ElevatedButton(
-                                              onPressed: () => showDialog(
-                                                  context: context,
-                                                  builder: (_) =>
-                                                      const AddDialogNewBollingerTemplate()),
-                                              child: const Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    SizedBox(width: 7),
-                                                    Icon(Icons.edit_document,
-                                                        size: 15),
-                                                    SizedBox(width: 5),
-                                                    Text('볼린저 템플릿'),
-                                                    SizedBox(width: 6),
-                                                  ]),
-                                            ),
-                                          ]),
-                                          const SizedBox(height: 5),
-                                          Row(children: [
-                                            ElevatedButton(
-                                                onPressed: () =>
-                                                    _doSaveIchimoku(),
-                                                child:
-                                                    const Text('일목 아이템으로 추가')),
-                                            const SizedBox(width: 5),
-                                            ElevatedButton(
-                                              onPressed: () =>
-                                                  _doSaveBollinger(),
-                                              child: const Text('볼린저 밴드로 추가'),
-                                            ),
-                                          ])
+                                                await _pref.setBool(
+                                                    _prefKey, _isSoundOn);
+                                                setState(() {});
+                                              })
                                         ]),
-                                    const SizedBox(width: 10),
-                                  ]))
+                                        const Spacer(),
+                                        Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              const SizedBox(height: 3),
+                                              Row(children: [
+                                                ElevatedButton(
+                                                    onPressed: () => showDialog(
+                                                        context: context,
+                                                        builder: (_) =>
+                                                            const AddDialogNewIchimokuTemplate()),
+                                                    child: const Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          SizedBox(width: 20),
+                                                          Icon(
+                                                              Icons
+                                                                  .edit_document,
+                                                              size: 15),
+                                                          SizedBox(width: 5),
+                                                          Text('일목 템플릿'),
+                                                          SizedBox(width: 19),
+                                                        ])),
+                                                const SizedBox(width: 5),
+                                                ElevatedButton(
+                                                  onPressed: () => showDialog(
+                                                      context: context,
+                                                      builder: (_) =>
+                                                          const AddDialogNewBollingerTemplate()),
+                                                  child: const Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        SizedBox(width: 7),
+                                                        Icon(
+                                                            Icons.edit_document,
+                                                            size: 15),
+                                                        SizedBox(width: 5),
+                                                        Text('볼린저 템플릿'),
+                                                        SizedBox(width: 6),
+                                                      ]),
+                                                ),
+                                              ]),
+                                              const SizedBox(height: 5),
+                                              Row(children: [
+                                                ElevatedButton(
+                                                    onPressed: () =>
+                                                        _doSaveIchimoku(),
+                                                    child: const Text(
+                                                        '일목 아이템으로 추가')),
+                                                const SizedBox(width: 5),
+                                                ElevatedButton(
+                                                  onPressed: () =>
+                                                      _doSaveBollinger(),
+                                                  child:
+                                                      const Text('볼린저 밴드로 추가'),
+                                                ),
+                                              ])
+                                            ]),
+                                        const SizedBox(width: 10),
+                                      ])))
                         ]),
                       )),
                 ))));
