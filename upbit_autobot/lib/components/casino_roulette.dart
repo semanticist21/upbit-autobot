@@ -26,6 +26,8 @@ class _CasionoRouletteState extends State<CasionoRoulette>
   List<Color> colorInfos =
       List.generate(20, (_) => ColorInfo.generateRandomColorNoOpacity());
 
+  final alreadyGenerateDic = <String, bool>{};
+
   late RouletteController controller = RouletteController(
       group: RouletteGroup([
         RouletteUnit.text('아이템\n없음',
@@ -44,6 +46,12 @@ class _CasionoRouletteState extends State<CasionoRoulette>
       vsync: this);
 
   Map<String, bool> map = {};
+
+  @override
+  void initState() {
+    super.initState();
+    alreadyGenerateDic.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,14 +133,17 @@ class _CasionoRouletteState extends State<CasionoRoulette>
   Future<int> rollRoll(List<int> usedIndexs) async {
     var randomValue = Random().nextInt(_provider.volumeTopList.length - 1);
 
-    while (
-        map.containsKey(_provider.volumeTopList[randomValue]['marketName']) ||
-            usedIndexs.contains(randomValue)) {
+    while (map
+            .containsKey(_provider.volumeTopList[randomValue]['marketName']) ||
+        usedIndexs.contains(randomValue) ||
+        alreadyGenerateDic
+            .containsKey(_provider.volumeTopList[randomValue]['marketName'])) {
       randomValue = Random().nextInt(_provider.volumeTopList.length - 1);
     }
 
     await controller.rollTo(randomValue,
         duration: const Duration(milliseconds: 2000), minRotateCircles: 2);
+
     return randomValue;
   }
 

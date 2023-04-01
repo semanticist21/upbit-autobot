@@ -96,21 +96,7 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
                     icon: const Icon(Icons.theater_comedy),
                     splashRadius: 15),
               ),
-              Tooltip(
-                message: '상위 코인 볼륨 정보 다시 얻어오기',
-                child: IconButton(
-                    onPressed: () async {
-                      setState(() {
-                        _visible = true;
-                      });
-                      await _provider.doVolumeItemRequest();
-                      setState(() {
-                        _visible = false;
-                      });
-                    },
-                    icon: const Icon(Icons.stacked_bar_chart),
-                    splashRadius: 15),
-              ),
+
               const Spacer(),
               Visibility(
                   visible: _visible,
@@ -204,6 +190,21 @@ class _StrategyScrollViewState extends State<StrategyScrollView> {
                     icon: const Icon(Icons.question_mark_outlined, size: 23),
                     splashRadius: 15,
                   )),
+              Tooltip(
+                message: '상위 코인 볼륨 정보 다시 얻어오기',
+                child: IconButton(
+                    onPressed: () async {
+                      setState(() {
+                        _visible = true;
+                      });
+                      await _provider.doVolumeItemRequest();
+                      setState(() {
+                        _visible = false;
+                      });
+                    },
+                    icon: const Icon(Icons.stacked_bar_chart),
+                    splashRadius: 15),
+              ),
               Tooltip(
                   message: '서버 아이템으로 초기화',
                   child: IconButton(

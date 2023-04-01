@@ -434,7 +434,6 @@ class CasinoDialogState extends State<CasinoDialog> {
     _bgPlayer.onPlayerComplete.listen((event) {
       var randomNum = Random().nextInt(8);
       _bgPlayer.setSource(_bgSources[randomNum]);
-      print('실행됏다');
       if (!_isSoundOn) {
         return;
       }
@@ -648,6 +647,12 @@ class CasinoDialogState extends State<CasinoDialog> {
     _provider.bollingerItems
         .add(getBollinger(template.bollingerTemplate!, _fifthMarketCoinNm));
 
+    casionoRoulette.stateWidget.alreadyGenerateDic[_firstMarketCoinNm] = true;
+    casionoRoulette.stateWidget.alreadyGenerateDic[_secondMarketCoinNm] = true;
+    casionoRoulette.stateWidget.alreadyGenerateDic[_thirdMarketCoinNm] = true;
+    casionoRoulette.stateWidget.alreadyGenerateDic[_fourthMarketCoinNm] = true;
+    casionoRoulette.stateWidget.alreadyGenerateDic[_fifthMarketCoinNm] = true;
+
     cleanText();
     _scaffoldMessengerKey.currentState
         ?.showSnackBar(const SnackBar(content: Text("저장 완료!")));
@@ -721,6 +726,12 @@ class CasinoDialogState extends State<CasinoDialog> {
         .add(getIchimoku(template.ichimokuTemplate!, _fourthMarketCoinNm));
     _provider.ichimokuItems
         .add(getIchimoku(template.ichimokuTemplate!, _fifthMarketCoinNm));
+
+    casionoRoulette.stateWidget.alreadyGenerateDic[_firstMarketCoinNm] = true;
+    casionoRoulette.stateWidget.alreadyGenerateDic[_secondMarketCoinNm] = true;
+    casionoRoulette.stateWidget.alreadyGenerateDic[_thirdMarketCoinNm] = true;
+    casionoRoulette.stateWidget.alreadyGenerateDic[_fourthMarketCoinNm] = true;
+    casionoRoulette.stateWidget.alreadyGenerateDic[_fifthMarketCoinNm] = true;
 
     cleanText();
     _scaffoldMessengerKey.currentState
