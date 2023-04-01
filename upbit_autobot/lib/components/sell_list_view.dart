@@ -30,7 +30,7 @@ class _SellListViewState extends State<SellListView> {
         elevation: 0,
         child: DraggableCard(
           child: FractionallySizedBox(
-            widthFactor: 0.5,
+            widthFactor: 0.55,
             heightFactor: 0.65,
             child: Scaffold(
                 appBar: AppBar(
