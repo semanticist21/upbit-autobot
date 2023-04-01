@@ -450,7 +450,7 @@ class _AddDialogNewIchimokuTemplateState
       setState(() {});
     }
 
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 200));
 
     if (context.mounted) {
       Navigator.of(context).pop();
