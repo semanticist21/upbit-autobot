@@ -19,11 +19,12 @@ class _SellListViewState extends State<SellListView> {
   @override
   void initState() {
     super.initState();
-    doSellItemRequest(_sellItem);
   }
 
   @override
   Widget build(BuildContext context) {
+    doSellItemRequest(_sellItem);
+
     return Dialog(
         backgroundColor: Colors.transparent,
         elevation: 0,
