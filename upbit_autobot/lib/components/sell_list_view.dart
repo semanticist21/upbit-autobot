@@ -115,7 +115,7 @@ class _SellListViewState extends State<SellListView> {
                     const Text('매수 볼륨 : '),
                     Container(
                         alignment: Alignment.centerLeft,
-                        width: 110,
+                        width: 90,
                         child: FittedBox(
                             fit: BoxFit.scaleDown, child: Text('$volume 개')))
                   ])
