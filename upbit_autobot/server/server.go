@@ -7,6 +7,7 @@ import (
 	"math"
 	"net/http"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -653,7 +654,7 @@ func handleSocketLog(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-var url string = "http://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=volume_desc&per_page=50&page=1&sparkline=false&price_change_percentage=24h"
+var url string = "https://api.binance.com/api/v3/ticker/24hr"
 
 func handleVolume(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
@@ -686,15 +687,7 @@ func handleVolume(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	market, _, err := singleton.InstanceClient().GetMarkets()
-
-	if err != nil {
-		singleton.InstanceLogger().Errs <- err
-		incurBadRequestError(w)
-		return
-	}
-
-	volumes := []*model.VolumeInfo{}
+	volumes := model.VolumeInfos{}
 	err = json.Unmarshal(bytes, &volumes)
 
 	if err != nil {
@@ -703,21 +696,68 @@ func handleVolume(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	market, _, err := singleton.InstanceClient().GetMarkets()
+
+	if err != nil {
+		singleton.InstanceLogger().Errs <- err
+		incurBadRequestError(w)
+		return
+	}
+
 	marketDic := make(map[string]string)
 	for _, item := range market {
 		if !strings.Contains(item.Market, "KRW-") {
 			continue
 		}
-		key := strings.ToLower(strings.Replace(item.Market, "KRW-", "", 1))
+		key := strings.ToUpper(strings.Replace(item.Market, "KRW-", "", 1))
 		marketDic[key] = item.KoreanName
+	}
+
+	for i := 0; i < len(volumes); i++ {
+		if volumes[i] == nil {
+			break
+		}
+
+		chars := []rune(volumes[i].Symbol)
+		charLength := len(chars)
+		if charLength <= 4 {
+			volumes = append(volumes[:i], volumes[i+1:]...)
+			i -= 1
+			continue
+		}
+
+		newStr := fmt.Sprintf("%c%c%c%c", chars[charLength-4], chars[charLength-3], chars[charLength-2], chars[charLength-1])
+
+		if newStr != "USDT" {
+			volumes = append(volumes[:i], volumes[i+1:]...)
+			i -= 1
+			continue
+		}
+	}
+
+	for _, item := range volumes {
+		item.Symbol = strings.Replace(item.Symbol, "USDT", "", 1)
+	}
+
+	sort.Sort(volumes)
+
+	top50Volumes := model.VolumeInfos{}
+	if len(volumes) > 50 {
+		for _, item := range volumes {
+			if len(top50Volumes) == 50 {
+				break
+			}
+
+			top50Volumes = append(top50Volumes, item)
+		}
 	}
 
 	topCoinInfos := []*model.SimpleCoinName{}
 
-	for i := 0; i < len(volumes); i++ {
+	for i := 0; i < len(top50Volumes); i++ {
 
-		if koreanMarketName, ok := marketDic[volumes[i].Symbol]; ok {
-			coinInfo := model.SimpleCoinName{MarketName: fmt.Sprintf("%s%s", "KRW-", strings.ToUpper(volumes[i].Symbol)), CoinKrName: koreanMarketName}
+		if koreanMarketName, ok := marketDic[top50Volumes[i].Symbol]; ok {
+			coinInfo := model.SimpleCoinName{MarketName: fmt.Sprintf("%s%s", "KRW-", strings.ToUpper(top50Volumes[i].Symbol)), CoinKrName: koreanMarketName}
 			topCoinInfos = append(topCoinInfos, &coinInfo)
 		}
 
