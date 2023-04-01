@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:upbit_autobot/components/coin_image.dart';
-import 'package:upbit_autobot/components/converter.dart';
+import 'package:upbit_autobot/components/helper/custom_converter.dart';
 import 'package:upbit_autobot/model/balance.dart';
 
 class BuyItem extends StatefulWidget {
@@ -76,7 +76,7 @@ class _BuyItemState extends State<BuyItem> {
                                   style: TextStyle(fontSize: 12),
                                 ),
                                 Text(
-                                    '${Converter.currencyFormatDouble(double.parse(widget.coinBalance.avgBuyPrice))} 원'),
+                                    '${CustomConverter.currencyFormatDouble(double.parse(widget.coinBalance.avgBuyPrice))} 원'),
                                 const Divider(),
                                 const Text('수량',
                                     style: TextStyle(fontSize: 12)),

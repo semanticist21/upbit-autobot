@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:upbit_autobot/components/converter.dart';
+import 'package:upbit_autobot/components/helper/custom_converter.dart';
 import 'package:upbit_autobot/components/draggable_card.dart';
 import 'package:upbit_autobot/model/sell_item.dart';
 
@@ -89,9 +89,9 @@ class _SellListViewState extends State<SellListView> {
 
   Widget getListItem(SellItem item) {
     var volume = item.executedVolume;
-    var avgBuy = Converter.currencyFormatDouble(item.avgBuyPrice);
-    var profit = Converter.currencyFormatDouble(item.profitTargetPrice);
-    var loss = Converter.currencyFormatDouble(item.lossTargetPrice);
+    var avgBuy = CustomConverter.currencyFormatDouble(item.avgBuyPrice);
+    var profit = CustomConverter.currencyFormatDouble(item.profitTargetPrice);
+    var loss = CustomConverter.currencyFormatDouble(item.lossTargetPrice);
 
     return Card(
         color: const Color.fromRGBO(75, 75, 75, 1),

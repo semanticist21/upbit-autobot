@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:upbit_autobot/client/client.dart';
-import 'package:upbit_autobot/components/converter.dart';
+import 'package:upbit_autobot/components/helper/custom_converter.dart';
 import 'package:upbit_autobot/model/strategy_item_info.dart';
 import 'package:upbit_autobot/provider.dart';
 
@@ -262,7 +262,7 @@ class _AddDialogState extends State<AddDialog> {
                                                                                 desiredBuyAmountParsed;
 
                                                                         _coinPriceCalcuationResult =
-                                                                            Converter.currencyFormat(result.toInt());
+                                                                            CustomConverter.currencyFormat(result.toInt());
                                                                         setState(
                                                                             () {});
                                                                       }

@@ -1,6 +1,5 @@
-import 'dart:math';
+import 'package:upbit_autobot/components/helper/custom_converter.dart';
 import 'package:upbit_autobot/model/color_info.dart';
-import 'package:crypto/crypto.dart';
 
 class StrategyIchimokuItemInfo {
   late ColorInfo color;
@@ -34,7 +33,7 @@ class StrategyIchimokuItemInfo {
         candleBaseMinute: minuteCandle);
 
     model.color = ColorInfo(color: ColorInfo.generateRandomColor());
-    model.itemId = _generateRandomString();
+    model.itemId = CustomConverter.generateRandomString();
     model.lastBoughtTimeStamp = '';
 
     return model;
@@ -96,14 +95,6 @@ class StrategyIchimokuItemInfo {
       required this.lossLinePercent,
       required this.desiredBuyAmount,
       required this.candleBaseMinute});
-
-  static String _generateRandomString() {
-    var random = Random();
-    var randomBytes = List.generate(32, (index) => random.nextInt(256));
-    var digest = sha256.convert(randomBytes);
-
-    return digest.toString();
-  }
 
   Map<String, dynamic> toJson() {
     return {

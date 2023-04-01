@@ -15,7 +15,7 @@ class SellItem {
   factory SellItem.fromJson(Map<String, dynamic> map) {
     return SellItem(
         coinMarketName: map['coinMarketName'],
-        avgBuyPrice: map['avgBuyPrice'],
+        avgBuyPrice: (map['avgBuyPrice'] as int).toDouble(),
         executedVolume: map['executedVolume'],
         profitTargetPrice: map['profitTargetPrice'],
         lossTargetPrice: map['lossTargetPrice']);

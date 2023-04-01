@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:upbit_autobot/components/alert.dart';
 import 'package:upbit_autobot/components/casino_roulette.dart';
 import 'package:upbit_autobot/components/draggable_card.dart';
+import 'package:upbit_autobot/components/helper/custom_converter.dart';
 import 'package:upbit_autobot/components/pop_text.dart';
 import 'package:upbit_autobot/components/triangle.dart';
 import 'package:upbit_autobot/model/color_info.dart';
@@ -677,6 +678,8 @@ class CasinoDialogState extends State<CasinoDialog> {
         info.candleBaseMinute);
 
     newItem.coinMarKetName = marketName;
+    newItem.itemId = CustomConverter.generateRandomString();
+
     return newItem;
   }
 
@@ -760,6 +763,7 @@ class CasinoDialogState extends State<CasinoDialog> {
         info.candleBaseMinute);
 
     newItem.coinMarKetName = marketName;
+    newItem.itemId = CustomConverter.generateRandomString();
     return newItem;
   }
 

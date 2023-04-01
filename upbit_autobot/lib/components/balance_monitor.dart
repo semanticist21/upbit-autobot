@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:upbit_autobot/components/converter.dart';
+import 'package:upbit_autobot/components/helper/custom_converter.dart';
 import 'package:upbit_autobot/components/refresh_button.dart';
 import 'package:upbit_autobot/provider.dart';
 
@@ -67,7 +67,7 @@ class _BalanceMonitorState extends State<BalanceMonitor> {
                         children: [
                           const SizedBox(width: 10),
                           Text(
-                            Converter.currencyFormat(
+                            CustomConverter.currencyFormat(
                                 double.parse(_provider.krwBalance).toInt()),
                             style: const TextStyle(fontSize: 25),
                           ),
