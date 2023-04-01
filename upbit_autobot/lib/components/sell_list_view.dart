@@ -184,7 +184,7 @@ class _SellListViewState extends State<SellListView> {
     }
 
     setState(() {
-      _isItemFinished = true;
+      if (_sellItem.isNotEmpty) _isItemFinished = true;
     });
   }
 }
