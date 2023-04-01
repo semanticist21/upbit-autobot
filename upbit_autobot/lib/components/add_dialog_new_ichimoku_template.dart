@@ -433,12 +433,6 @@ class _AddDialogNewIchimokuTemplateState
       _isTemplateSucessMarketVisible = false;
       setState(() {});
 
-      await Future.delayed(const Duration(milliseconds: 500));
-
-      if (context.mounted) {
-        Navigator.of(context).pop();
-      }
-
       return;
     }
 
@@ -454,6 +448,12 @@ class _AddDialogNewIchimokuTemplateState
     if (response != null && response.statusCode == 200) {
       _isTemplateSucessMarketVisible = true;
       setState(() {});
+    }
+
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    if (context.mounted) {
+      Navigator.of(context).pop();
     }
   }
 

@@ -458,11 +458,6 @@ class _AddDialogNewBollingerTemplateState
       _isTemplateSucessMarketVisible = false;
       setState(() {});
 
-      await Future.delayed(const Duration(milliseconds: 500));
-
-      if (context.mounted) {
-        Navigator.of(context).pop();
-      }
       return;
     }
 
@@ -478,6 +473,12 @@ class _AddDialogNewBollingerTemplateState
     if (response != null && response.statusCode == 200) {
       _isTemplateSucessMarketVisible = true;
       setState(() {});
+    }
+
+    await Future.delayed(const Duration(milliseconds: 200));
+
+    if (context.mounted) {
+      Navigator.of(context).pop();
     }
   }
 
