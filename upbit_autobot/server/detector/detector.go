@@ -766,6 +766,7 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 				singleton.InstanceSellTargetItems().BoughtItems = append(singleton.InstanceSellTargetItems().BoughtItems[:i], singleton.InstanceSellTargetItems().BoughtItems[i+1:]...)
 
 				index := -1
+				IchimokuIndex := -1
 				for i := 0; i < len(singleton.InstanceBuyTargetItems().Items); i++ {
 					if sellTargetItem.ItemId == singleton.InstanceBuyTargetItems().Items[i].ItemId && singleton.InstanceBuyTargetItems().Items[i].PurchaseCount == 0 {
 						index = i
@@ -774,7 +775,7 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 				}
 				for i := 0; i < len(singleton.InstanceBuyTargetIchimokuItems().Items); i++ {
 					if sellTargetItem.ItemId == singleton.InstanceBuyTargetIchimokuItems().Items[i].ItemId && singleton.InstanceBuyTargetIchimokuItems().Items[i].PurchaseCount == 0 {
-						index = i
+						IchimokuIndex = i
 						break
 					}
 				}
@@ -782,6 +783,11 @@ func StartSellDetectorBot(client *upbit.Upbit) {
 				if index != -1 {
 					singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 구매 회수가 0이라 해당 구매 코인 리스트에서도 삭제됐습니다.", sellTargetItem.CoinMarketName)
 					singleton.InstanceBuyTargetItems().Items = append(singleton.InstanceBuyTargetItems().Items[:index], singleton.InstanceBuyTargetItems().Items[index+1:]...)
+				}
+
+				if IchimokuIndex != -1 {
+					singleton.InstanceLogger().Msgs <- fmt.Sprintf("%s 구매 회수가 0이라 해당 구매 코인 리스트에서도 삭제됐습니다.", sellTargetItem.CoinMarketName)
+					singleton.InstanceBuyTargetIchimokuItems().Items = append(singleton.InstanceBuyTargetIchimokuItems().Items[:IchimokuIndex], singleton.InstanceBuyTargetIchimokuItems().Items[IchimokuIndex+1:]...)
 				}
 
 				singleton.SaveSellTargetStrategyItems()
