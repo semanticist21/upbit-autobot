@@ -50,6 +50,7 @@ class MyCustomList<T> with ListMixin<T> {
       changeListeners.add(function);
   void addCleanListener(void Function() function) =>
       cleanListeners.add(function);
+
   void notifyListeners(List<void Function()> listeners) =>
       listeners.forEach((element) => element());
   void notifyRemoveListeners(int val) =>

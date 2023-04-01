@@ -16,15 +16,14 @@ class _FireState extends State<Fire> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    _controller.duration = const Duration(milliseconds: 7000);
     _controller.addListener(changeValue);
   }
 
   @override
   Widget build(BuildContext context) {
-    _controller.value = _value;
-    _controller.forward();
-    _controller.repeat(
-        min: 0, max: 140, period: const Duration(milliseconds: 5000));
+    _controller.forward(from: _value);
+    _controller.repeat(min: 0, max: 140);
 
     return GifImage(
         fit: BoxFit.fill,

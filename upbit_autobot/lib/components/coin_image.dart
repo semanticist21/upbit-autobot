@@ -6,7 +6,7 @@ class CoinImage extends StatelessWidget {
 
   final String coinNm;
   final String iconUrl = 'https://cryptoicons.org/api/icon/';
-  final String suffix = '/600';
+  final String suffix = '/400';
 
   @override
   Widget build(BuildContext context) {

@@ -35,6 +35,7 @@ class AppProvider extends ChangeNotifier {
     bollingerItems.addRemoveListener(_removeBollingerItemsToCollection);
     bollingerItems.addChangeListener(_changeBollingerItemsToCollection);
     bollingerItems.addCleanListener(_cleanCollection);
+
     ichimokuItems.addInsertListener(_insertIchimokuItemsToCollection);
     ichimokuItems.addRemoveListener(_removeIchimokuItemsToCollection);
     ichimokuItems.addChangeListener(_changeIchimokuItemsToCollection);

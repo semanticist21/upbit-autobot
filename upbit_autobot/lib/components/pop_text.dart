@@ -33,7 +33,7 @@ class _PopUpTextState extends State<PopUpText>
   Widget build(BuildContext context) {
     return TweenAnimationBuilder(
       tween: Tween<double>(begin: 0, end: 1),
-      duration: Duration(milliseconds: 500),
+      duration: Duration(milliseconds: 1000),
       builder: (BuildContext context, double _val, Widget? child) {
         return Opacity(
           opacity: _val,
@@ -42,8 +42,8 @@ class _PopUpTextState extends State<PopUpText>
             height: double.infinity,
             child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               SizedBox(
-                  width: 25,
-                  height: 25,
+                  width: 20,
+                  height: 20,
                   child: CoinImage(coinNm: widget.coinNm)),
               SizedBox(width: 10),
               Padding(

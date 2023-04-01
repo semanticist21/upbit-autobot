@@ -47,8 +47,8 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
 
   @override
   void initState() {
-    super.initState();
     _initTextItems();
+    super.initState();
   }
 
   @override
@@ -129,8 +129,7 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
                                                     CircularProgressIndicator(
                                                         strokeWidth: 2))),
                                         Tooltip(
-                                            message:
-                                                '랜덤 생성 추가(상위 볼륨 20개 중 랜덤) - Credited to CoinGecko',
+                                            message: '랜덤 생성 추가(상위 볼륨 20개 중 랜덤)',
                                             child: IconButton(
                                                 onPressed: () async {
                                                   _isProgressVisible = true;
@@ -602,7 +601,7 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
   }
 
   void _doSaveAction(BuildContext context) {
-    var newModel = _verifyText(false);
+    var newModel = _GetResultWithverifiedText(false);
     if (newModel == null) {
       return;
     }
@@ -656,7 +655,7 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
   }
 
   Future<void> SaveTemplate() async {
-    var newModel = _verifyText(true);
+    var newModel = _GetResultWithverifiedText(true);
     if (newModel == null) {
       showDialog(
           context: context,
@@ -683,7 +682,7 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
     }
   }
 
-  StrategyIchimokuItemInfo? _verifyText(bool isTemplateSaving) {
+  StrategyIchimokuItemInfo? _GetResultWithverifiedText(bool isTemplateSaving) {
     var isPass = true;
 
     if (_optionFormKey.currentState != null &&

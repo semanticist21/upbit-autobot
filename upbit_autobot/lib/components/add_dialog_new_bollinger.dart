@@ -48,8 +48,8 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
 
   @override
   void initState() {
-    super.initState();
     _initTextItems();
+    super.initState();
   }
 
   @override
@@ -618,7 +618,7 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
   }
 
   void _doSaveAction(BuildContext context) {
-    var newModel = _verifyText(false);
+    var newModel = _GetResultWithverifiedText(false);
     if (newModel == null) {
       return;
     }
@@ -672,7 +672,7 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
   }
 
   Future<void> SaveTemplate() async {
-    var newModel = _verifyText(true);
+    var newModel = _GetResultWithverifiedText(true);
     if (newModel == null) {
       showDialog(
           context: context,
@@ -699,7 +699,7 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
     }
   }
 
-  StrategyBollingerItemInfo? _verifyText(bool isTemplateSaving) {
+  StrategyBollingerItemInfo? _GetResultWithverifiedText(bool isTemplateSaving) {
     var isPass = true;
 
     if (_optionFormKey.currentState != null &&
@@ -749,7 +749,6 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
 
   Future<void> _initTextItems() async {
     var response = await RestApiClient().requestGet('template');
-
     var data = await RestApiClient.parseResponseData(response);
 
     if (data.isEmpty) {

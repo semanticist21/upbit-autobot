@@ -1,10 +1,12 @@
+import 'dart:isolate';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:roulette/roulette.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:upbit_autobot/components/alert.dart';
+import 'package:upbit_autobot/components/casino_roulette.dart';
 import 'package:upbit_autobot/components/draggable_card.dart';
 import 'package:upbit_autobot/components/pop_text.dart';
 import 'package:upbit_autobot/model/color_info.dart';
@@ -12,6 +14,8 @@ import 'package:upbit_autobot/model/strategy_item_info.dart';
 import 'package:upbit_autobot/model/strategy_item_info_ichimoku.dart';
 import 'package:upbit_autobot/provider.dart';
 
+import '../client/client.dart';
+import '../model/template.dart';
 import 'bet_your_money.dart';
 import 'fire.dart';
 
@@ -20,24 +24,7 @@ class CasinoDialog extends StatefulWidget {
   _CasinoDialogState createState() => _CasinoDialogState();
 }
 
-class _CasinoDialogState extends State<CasinoDialog>
-    with TickerProviderStateMixin {
-  late RouletteController _controller = RouletteController(
-      group: RouletteGroup([
-        RouletteUnit.text('아이템\n없음',
-            color: ColorInfo.generateRandomColorNoOpacity(),
-            textStyle: TextStyle(fontSize: 20)),
-        RouletteUnit.text('아이템\n없음',
-            color: ColorInfo.generateRandomColorNoOpacity(),
-            textStyle: TextStyle(fontSize: 20)),
-        RouletteUnit.text('아이템\n없음',
-            color: ColorInfo.generateRandomColorNoOpacity(),
-            textStyle: TextStyle(fontSize: 20)),
-        RouletteUnit.text('아이템\n없음',
-            color: ColorInfo.generateRandomColorNoOpacity(),
-            textStyle: TextStyle(fontSize: 20)),
-      ]),
-      vsync: this);
+class _CasinoDialogState extends State<CasinoDialog> {
   late AppProvider _provider;
 
   var _firstText = '';
@@ -55,232 +42,305 @@ class _CasinoDialogState extends State<CasinoDialog>
   var _isPressed = false;
   var _isRouletteOnGoing = false;
 
-  bool _hasTried = false;
+  var _hasTried = false;
+  var _isSoundOn = true;
+
+  late SharedPreferences _pref;
+  var casionoRoulette = CasionoRoulette();
+  var _prefKey = 'soundOn';
+
+  GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
 
   @override
   void initState() {
+    _initPref();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     _provider = Provider.of(context);
-    if (!_hasTried) {
-      _initRouletteGroup();
-    }
 
     return Dialog(
         backgroundColor: Colors.transparent,
         elevation: 0,
         child: DraggableCard(
             child: FractionallySizedBox(
-          widthFactor: 0.8,
-          heightFactor: 0.9,
-          child: Container(
-              clipBehavior: Clip.antiAliasWithSaveLayer,
-              decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(15)),
-              child: Scaffold(
-                backgroundColor: Colors.black,
-                appBar: AppBar(
-                    leading: IconButton(
-                        icon: Icon(Icons.arrow_back),
-                        onPressed: () => Navigator.of(context).pop(),
-                        splashRadius: 15),
-                    title: Row(children: [
-                      Icon(
-                        FontAwesomeIcons.fire,
-                        color: Colors.red,
-                        size: 15,
-                      ),
-                      SizedBox(width: 10),
-                      Text('랜덤 룰렛, 당신의 포지션 행운에 맡기세요 ! (5개 생성)',
-                          style: TextStyle(fontSize: 15))
-                    ])),
-                body: Column(children: [
-                  Expanded(
-                      flex: 30,
-                      child: Container(
-                          alignment: Alignment.centerLeft,
-                          width: double.infinity,
-                          height: double.infinity,
-                          color: Colors.transparent,
-                          child: FractionallySizedBox(
-                              child: Row(children: [
-                            Expanded(
-                                flex: 10,
-                                child: Stack(children: [
-                                  Fire(),
-                                  Container(
-                                      padding: EdgeInsets.all(10),
-                                      child: Roulette(
-                                        controller: _controller,
-                                        style: RouletteStyle(
-                                            dividerColor: Colors.transparent,
-                                            dividerThickness: 1,
-                                            centerStickerColor: Colors.grey,
-                                            centerStickSizePercent: 0.08),
-                                      ))
-                                ])),
-                            Expanded(
-                                flex: 7,
-                                child: Container(
-                                    color: Colors.black,
-                                    child: Column(
-                                      children: [
-                                        Expanded(
-                                            flex: 3, child: BetYourMoney()),
-                                        Divider(),
-                                        Expanded(
-                                            flex: 12,
-                                            child: Column(children: [
-                                              Expanded(
-                                                  child: Center(
-                                                child: _firstText != ''
-                                                    ? PopUpText(
-                                                        text: _firstText,
-                                                        coinNm:
-                                                            _firstMarketCoinNm)
-                                                    : SizedBox(),
-                                              )),
-                                              Expanded(
-                                                  child: Center(
-                                                child: _firstText != ''
-                                                    ? PopUpText(
-                                                        text: _firstText,
-                                                        coinNm:
-                                                            _firstMarketCoinNm)
-                                                    : SizedBox(),
-                                              )),
-                                              Expanded(
-                                                  child: Center(
-                                                child: _secondText != ''
-                                                    ? PopUpText(
-                                                        text: _secondText,
-                                                        coinNm:
-                                                            _secondMarketCoinNm)
-                                                    : SizedBox(),
-                                              )),
-                                              Expanded(
-                                                  child: Center(
-                                                child: _thirdText != ''
-                                                    ? PopUpText(
-                                                        text: _thirdText,
-                                                        coinNm:
-                                                            _thirdMarketCoinNm)
-                                                    : SizedBox(),
-                                              )),
-                                              Expanded(
-                                                  child: Center(
-                                                child: _firstText != ''
-                                                    ? PopUpText(
-                                                        text: _firstText,
-                                                        coinNm:
-                                                            _firstMarketCoinNm)
-                                                    : SizedBox(),
-                                              )),
-                                            ])),
-                                        Divider(),
-                                        Expanded(
-                                            flex: 4,
-                                            child: Container(
-                                                child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceAround,
-                                                    children: [
-                                                  SizedBox(width: 10),
-                                                  ElevatedButton(
-                                                      onPressed: () =>
-                                                          setState(() {
-                                                            if (_isRouletteOnGoing) {
-                                                              return;
-                                                            }
-                                                            _isPressed = false;
-                                                          }),
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          Icon(
-                                                              FontAwesomeIcons
-                                                                  .gun,
-                                                              size: 20),
-                                                          SizedBox(
-                                                              width: 10,
-                                                              height: double
-                                                                  .infinity),
-                                                          Text('리셋',
-                                                              style: TextStyle(
-                                                                  fontSize: 20))
-                                                        ],
+                widthFactor: 0.8,
+                heightFactor: 0.9,
+                child: Container(
+                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                  decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(15)),
+                  child: ScaffoldMessenger(
+                      key: _scaffoldMessengerKey,
+                      child: Scaffold(
+                        backgroundColor: Colors.black,
+                        appBar: AppBar(
+                            leading: IconButton(
+                                icon: Icon(Icons.arrow_back),
+                                onPressed: () {
+                                  cleanText();
+                                  casionoRoulette.stateWidget.controller
+                                      .resetAnimation();
+                                  Navigator.of(context).pop();
+                                },
+                                splashRadius: 15),
+                            title: Row(children: [
+                              Icon(
+                                FontAwesomeIcons.fire,
+                                color: Colors.red,
+                                size: 15,
+                              ),
+                              SizedBox(width: 10),
+                              Text('랜덤 룰렛, 당신의 포지션 행운에 맡기세요 ! (5개 생성)',
+                                  style: TextStyle(fontSize: 15))
+                            ])),
+                        body: Column(children: [
+                          Expanded(
+                              flex: 30,
+                              child: Container(
+                                  alignment: Alignment.centerLeft,
+                                  width: double.infinity,
+                                  height: double.infinity,
+                                  color: Colors.transparent,
+                                  child: FractionallySizedBox(
+                                      child: Row(children: [
+                                    Expanded(
+                                        flex: 10,
+                                        child: Stack(children: [
+                                          Fire(),
+                                          Container(
+                                            padding: EdgeInsets.all(10),
+                                            child: casionoRoulette,
+                                          )
+                                        ])),
+                                    Expanded(
+                                        flex: 7,
+                                        child: Container(
+                                            color: Colors.black,
+                                            child: Column(
+                                              children: [
+                                                Expanded(
+                                                    flex: 3,
+                                                    child: BetYourMoney()),
+                                                Expanded(
+                                                    flex: 12,
+                                                    child: Column(children: [
+                                                      Expanded(
+                                                          child: Center(
+                                                        child: _firstText != ''
+                                                            ? PopUpText(
+                                                                text:
+                                                                    _firstText,
+                                                                coinNm: _firstMarketCoinNm
+                                                                    .replaceAll(
+                                                                        'KRW-',
+                                                                        '')
+                                                                    .toLowerCase())
+                                                            : SizedBox(),
                                                       )),
-                                                  GestureDetector(
-                                                      onTapDown: (details) {
-                                                        setState(() {
-                                                          if (_isRouletteOnGoing) {
-                                                            return;
-                                                          }
-                                                          _isRouletteOnGoing =
-                                                              true;
-                                                          _isPressed = true;
-
-                                                          _doStartRoullet();
-                                                        });
-                                                      },
-                                                      child: Container(
-                                                        width: 110,
-                                                        height: double.infinity,
-                                                        clipBehavior:
-                                                            Clip.hardEdge,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                                image:
-                                                                    DecorationImage(
-                                                                  image: AssetImage(
-                                                                      _isPressed
-                                                                          ? 'lib/assets/down.png'
-                                                                          : 'lib/assets/up.png'),
-                                                                  fit: BoxFit
-                                                                      .fill,
-                                                                ),
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
+                                                      Expanded(
+                                                          child: Center(
+                                                        child: _secondText != ''
+                                                            ? PopUpText(
+                                                                text:
+                                                                    _secondText,
+                                                                coinNm: _secondMarketCoinNm
+                                                                    .replaceAll(
+                                                                        'KRW-',
+                                                                        '')
+                                                                    .toLowerCase())
+                                                            : SizedBox(),
+                                                      )),
+                                                      Expanded(
+                                                          child: Center(
+                                                        child: _thirdText != ''
+                                                            ? PopUpText(
+                                                                text:
+                                                                    _thirdText,
+                                                                coinNm: _thirdMarketCoinNm
+                                                                    .replaceAll(
+                                                                        'KRW-',
+                                                                        '')
+                                                                    .toLowerCase())
+                                                            : SizedBox(),
+                                                      )),
+                                                      Expanded(
+                                                          child: Center(
+                                                        child: _fourthText != ''
+                                                            ? PopUpText(
+                                                                text:
+                                                                    _fourthText,
+                                                                coinNm: _fourthMarketCoinNm
+                                                                    .replaceAll(
+                                                                        'KRW-',
+                                                                        '')
+                                                                    .toLowerCase())
+                                                            : SizedBox(),
+                                                      )),
+                                                      Expanded(
+                                                          child: Center(
+                                                        child: _fifthText != ''
+                                                            ? PopUpText(
+                                                                text:
+                                                                    _fifthText,
+                                                                coinNm: _fifthMarketCoinNm
+                                                                    .replaceAll(
+                                                                        'KRW-',
+                                                                        '')
+                                                                    .toLowerCase())
+                                                            : SizedBox(),
+                                                      )),
+                                                    ])),
+                                                Divider(),
+                                                Expanded(
+                                                    flex: 4,
+                                                    child: Container(
+                                                        child: Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceAround,
+                                                            children: [
+                                                          SizedBox(width: 10),
+                                                          ElevatedButton(
+                                                              onPressed: () {
+                                                                if (_isRouletteOnGoing) {
+                                                                  return;
+                                                                }
+                                                                casionoRoulette
+                                                                    .stateWidget
+                                                                    .controller
+                                                                    .resetAnimation();
+                                                                cleanText();
+                                                              },
+                                                              child: Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .center,
+                                                                children: [
+                                                                  Icon(
+                                                                      FontAwesomeIcons
+                                                                          .gun,
+                                                                      size: 20),
+                                                                  SizedBox(
+                                                                      width: 10,
+                                                                      height: double
+                                                                          .infinity),
+                                                                  Text('리셋',
+                                                                      style: TextStyle(
+                                                                          fontSize:
+                                                                              20))
+                                                                ],
+                                                              )),
+                                                          GestureDetector(
+                                                              onTapDown:
+                                                                  (details) {
+                                                                _doTapDown();
+                                                              },
+                                                              onTapUp:
+                                                                  (details) async {
+                                                                await _doTapUp();
+                                                              },
+                                                              child: Container(
+                                                                width: 110,
+                                                                height: double
+                                                                    .infinity,
+                                                                clipBehavior:
+                                                                    Clip.hardEdge,
+                                                                decoration: BoxDecoration(
+                                                                    image: DecorationImage(
+                                                                        image: AssetImage(_isPressed
+                                                                            ? 'lib/assets/down.png'
+                                                                            : 'lib/assets/up.png'),
+                                                                        fit: BoxFit
+                                                                            .fill,
+                                                                        filterQuality:
+                                                                            FilterQuality
+                                                                                .high,
+                                                                        isAntiAlias:
+                                                                            true),
+                                                                    borderRadius:
+                                                                        BorderRadius.circular(
                                                                             20)),
-                                                        alignment:
-                                                            Alignment.center,
-                                                      ))
-                                                ])))
-                                      ],
-                                    )))
-                          ])))),
-                  Expanded(
-                      flex: 6,
-                      child: Row(children: [
-                        Row(children: [
-                          Text('소리 끄기'),
-                          SizedBox(width: 10),
-                          Checkbox(value: true, onChanged: (event) {})
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                              ))
+                                                        ])))
+                                              ],
+                                            )))
+                                  ])))),
+                          Expanded(
+                              flex: 6,
+                              child: Row(children: [
+                                Row(children: [
+                                  SizedBox(width: 10),
+                                  Icon(Icons.radio, size: 15),
+                                  SizedBox(width: 10),
+                                  Text('소리 끄기'),
+                                  Checkbox(
+                                      value: !_isSoundOn,
+                                      onChanged: (event) async {
+                                        _isSoundOn = !_isSoundOn;
+                                        await _pref.setBool(
+                                            _prefKey, _isSoundOn);
+                                        setState(() {});
+                                      })
+                                ]),
+                                Spacer(),
+                                ElevatedButton(
+                                  onPressed: () => _doSaveBollinger(),
+                                  child: Text('볼린저 밴드로 추가'),
+                                ),
+                                SizedBox(width: 10),
+                                ElevatedButton(
+                                    onPressed: () => _doSaveIchimoku(),
+                                    child: Text('일목 아이템로 추가')),
+                                SizedBox(width: 10),
+                              ]))
                         ]),
-                        Spacer(),
-                        ElevatedButton(
-                            onPressed: () {}, child: Text('볼린저 밴드로 추가')),
-                        ElevatedButton(
-                            onPressed: () {}, child: Text('일목 아이템로 추가')),
-                      ]))
-                ]),
-              )),
-        )));
+                      )),
+                ))));
   }
 
-  Future<void> _initRouletteGroup() async {
-    if (_provider.volumeTopList.isEmpty && !_hasTried) {
-      await _provider.doVolumeItemRequest(_provider.volumeTopList);
-      _hasTried = true;
+  Future<void> _initPref() async {
+    _pref = await SharedPreferences.getInstance();
+    _isSoundOn = _pref.getBool(_prefKey) ?? true;
+    setState(() {});
+  }
+
+  Future<void> _doTapDown() async {
+    if (_isRouletteOnGoing || _firstText != '') {
+      return;
     }
+
+    setState(() {
+      _isPressed = true;
+    });
+  }
+
+  Future<void> _doTapUp() async {
+    if (_firstText != '') {
+      _scaffoldMessengerKey.currentState
+          ?.showSnackBar(SnackBar(content: Text('아이템을 초기화해야 재실행이 가능합니다.')));
+    }
+    if (_isRouletteOnGoing || _firstText != '') {
+      return;
+    }
+
+    _isRouletteOnGoing = true;
+
+    await Future.delayed(Duration(milliseconds: 500));
+    setState(() {
+      _isPressed = false;
+    });
+
+    await _doStartRoullet();
+
+    _isRouletteOnGoing = false;
   }
 
   Future<void> _doStartRoullet() async {
@@ -291,85 +351,223 @@ class _CasinoDialogState extends State<CasinoDialog>
               text: '볼륨 아이템을 받을 수 없어 실패했습니다. \nAPI 관련 로그를 확인해주세요.'));
 
       _isRouletteOnGoing = false;
-      _isPressed = false;
-      setState(() {});
-
       return;
     }
 
-    _controller.group = RouletteGroup(_getUnitItem());
+    var usedIndexs = List<int>.empty(growable: true);
 
-    var map = Map<String, bool>();
-    _provider.itemsCollection.forEach((element) {
-      if (element is StrategyBollingerItemInfo) {
-        map[element.coinMarKetName] = true;
-      }
+    var index = await casionoRoulette.stateWidget.rollRoll(usedIndexs);
+    usedIndexs.add(index);
+    if (index < _provider.volumeTopList.length) {
+      setState(() {
+        _firstText = _provider.volumeTopList.elementAt(index)['coinKrName'];
+        _firstMarketCoinNm =
+            _provider.volumeTopList.elementAt(index)['marketName'];
+      });
+    }
+    await Future.delayed(Duration(milliseconds: 600));
 
-      if (element is StrategyIchimokuItemInfo) {
-        map[element.coinMarKetName] = true;
-      }
-    });
+    index = await casionoRoulette.stateWidget.rollRoll(usedIndexs);
+    usedIndexs.add(index);
 
-    await _rollRoll(map, _firstText, _firstMarketCoinNm);
-    await Future.delayed(Duration(seconds: 1));
-    await _rollRoll(map, _secondText, _secondMarketCoinNm);
-    await Future.delayed(Duration(seconds: 1));
-    await _rollRoll(map, _thirdText, _thirdMarketCoinNm);
-    await Future.delayed(Duration(seconds: 1));
-    await _rollRoll(map, _fourthText, _fourthMarketCoinNm);
-    await Future.delayed(Duration(seconds: 1));
-    await _rollRoll(map, _fifthText, _fifthMarketCoinNm);
+    if (index < _provider.volumeTopList.length) {
+      setState(() {
+        _secondText = _provider.volumeTopList.elementAt(index)['coinKrName'];
+        _secondMarketCoinNm =
+            _provider.volumeTopList.elementAt(index)['marketName'];
+      });
+    }
+    await Future.delayed(Duration(milliseconds: 600));
 
-    _isRouletteOnGoing = false;
-    setState(() {});
+    index = await casionoRoulette.stateWidget.rollRoll(usedIndexs);
+    usedIndexs.add(index);
+    if (index < _provider.volumeTopList.length) {
+      setState(() {
+        _thirdText = _provider.volumeTopList.elementAt(index)['coinKrName'];
+        _thirdMarketCoinNm =
+            _provider.volumeTopList.elementAt(index)['marketName'];
+      });
+    }
+    await Future.delayed(Duration(milliseconds: 600));
+
+    index = await casionoRoulette.stateWidget.rollRoll(usedIndexs);
+    usedIndexs.add(index);
+    if (index < _provider.volumeTopList.length) {
+      setState(() {
+        _fourthText = _provider.volumeTopList.elementAt(index)['coinKrName'];
+        _fourthMarketCoinNm =
+            _provider.volumeTopList.elementAt(index)['marketName'];
+      });
+    }
+    await Future.delayed(Duration(milliseconds: 600));
+
+    index = await casionoRoulette.stateWidget.rollRoll(usedIndexs);
+    usedIndexs.add(index);
+    if (index < _provider.volumeTopList.length) {
+      setState(() {
+        _fifthText = _provider.volumeTopList.elementAt(index)['coinKrName'];
+        _fifthMarketCoinNm =
+            _provider.volumeTopList.elementAt(index)['marketName'];
+      });
+    }
   }
 
-  Future<void> _rollRoll(
-    Map<String, bool> map,
-    String text,
-    String marketText,
-  ) async {
-    var randomValue = Random().nextInt(_provider.volumeTopList.length - 1);
-    while (
-        map.containsKey(_provider.volumeTopList[randomValue]['marketName'])) {
-      randomValue = Random().nextInt(_provider.volumeTopList.length - 1);
+  Future<void> _doSaveBollinger() async {
+    if (_isRouletteOnGoing) {
+      return;
     }
 
-    await _controller.rollTo(randomValue);
-    text = _provider.volumeTopList[randomValue]['coinKrName'];
-    marketText = _provider.volumeTopList[randomValue]['marketName'];
-    setState(() {});
+    if (_fifthText == '') {
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialogCustom(text: '먼저 룰렛을 돌려주세요.'));
+      return;
+    }
+    var response = await RestApiClient().requestGet('template');
+    var data = await RestApiClient.parseResponseData(response);
+
+    if (data.isEmpty) {
+      return;
+    }
+
+    if (_provider.itemsCollection.length >= 6) {
+      showDialog(
+          context: context,
+          builder: (context) =>
+              AlertDialogCustom(text: '이미 저장된 아이템 개수가 너무 많습니다!'));
+      return;
+    }
+
+    var template = TemplateModel.fromJson(data);
+
+    if (template.bollingerTemplate == null ||
+        template.bollingerTemplate!.coinMarKetName != 'save') {
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialogCustom(text: '저장된 템플릿이 없습니다.'));
+      return;
+    }
+
+    _provider.bollingerItems
+        .add(getBollinger(template.bollingerTemplate!, _firstMarketCoinNm));
+    _provider.bollingerItems
+        .add(getBollinger(template.bollingerTemplate!, _secondMarketCoinNm));
+    _provider.bollingerItems
+        .add(getBollinger(template.bollingerTemplate!, _thirdMarketCoinNm));
+    _provider.bollingerItems
+        .add(getBollinger(template.bollingerTemplate!, _fourthMarketCoinNm));
+    _provider.bollingerItems
+        .add(getBollinger(template.bollingerTemplate!, _fifthMarketCoinNm));
+
+    cleanText();
+    _scaffoldMessengerKey.currentState
+        ?.showSnackBar(SnackBar(content: Text("저장 완료!")));
   }
 
-  List<RouletteUnit> _getUnitItem() {
-    List<RouletteUnit> list = List.empty(growable: true);
+  StrategyBollingerItemInfo getBollinger(
+      StrategyBollingerItemInfo info, String marketName) {
+    var newItem = StrategyBollingerItemInfo.from(
+        ColorInfo(color: ColorInfo.generateRandomColor()),
+        info.itemId,
+        info.coinMarKetName,
+        info.bollingerLength,
+        info.bollingerMultiplier,
+        info.purchaseCount,
+        info.profitLinePercent,
+        info.lossLinePercent,
+        info.lastBoughtTimeStamp,
+        info.desiredBuyAmount,
+        info.candleBaseMinute);
 
-    _provider.volumeTopList.forEach((element) {
-      List<String> chunks = [];
-      var str = element['coinKrName'];
+    newItem.coinMarKetName = marketName;
+    return newItem;
+  }
 
-      for (int i = 0; i < str.length; i += 2) {
-        if (i + 2 >= str.length) {
-          String chunk = str.substring(i, str.length);
-          chunks.add(chunk);
-          break;
-        }
+  Future<void> _doSaveIchimoku() async {
+    if (_isRouletteOnGoing) {
+      return;
+    }
 
-        String chunk = str.substring(i, i + 2);
-        chunks.add(chunk);
-      }
+    if (_fifthText == '') {
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialogCustom(text: '먼저 룰렛을 돌려주세요.'));
+      return;
+    }
+    var response = await RestApiClient().requestGet('template');
+    var data = await RestApiClient.parseResponseData(response);
 
-      String spacedText = chunks.join("\n");
+    if (data.isEmpty) {
+      return;
+    }
 
-      var unit = RouletteUnit(
-          color: ColorInfo.generateRandomColorNoOpacity(),
-          weight: 1.0,
-          text: spacedText,
-          textStyle: TextStyle(fontSize: 10));
+    if (_provider.itemsCollection.length >= 6) {
+      showDialog(
+          context: context,
+          builder: (context) =>
+              AlertDialogCustom(text: '이미 저장된 아이템 개수가 너무 많습니다!'));
+      return;
+    }
 
-      list.add(unit);
-    });
+    var template = TemplateModel.fromJson(data);
 
-    return list;
+    if (template.ichimokuTemplate == null ||
+        template.ichimokuTemplate!.coinMarKetName != 'save') {
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialogCustom(text: '저장된 템플릿이 없습니다.'));
+      return;
+    }
+
+    _provider.ichimokuItems
+        .add(getIchimoku(template.ichimokuTemplate!, _firstMarketCoinNm));
+    _provider.ichimokuItems
+        .add(getIchimoku(template.ichimokuTemplate!, _secondMarketCoinNm));
+    _provider.ichimokuItems
+        .add(getIchimoku(template.ichimokuTemplate!, _thirdMarketCoinNm));
+    _provider.ichimokuItems
+        .add(getIchimoku(template.ichimokuTemplate!, _fourthMarketCoinNm));
+    _provider.ichimokuItems
+        .add(getIchimoku(template.ichimokuTemplate!, _fifthMarketCoinNm));
+
+    cleanText();
+    _scaffoldMessengerKey.currentState
+        ?.showSnackBar(SnackBar(content: Text("저장 완료!")));
+  }
+
+  StrategyIchimokuItemInfo getIchimoku(
+      StrategyIchimokuItemInfo info, String marketName) {
+    var newItem = StrategyIchimokuItemInfo.from(
+        ColorInfo(color: ColorInfo.generateRandomColor()),
+        info.itemId,
+        info.coinMarKetName,
+        info.conversionLine,
+        info.purchaseCount,
+        info.profitLinePercent,
+        info.lossLinePercent,
+        info.lastBoughtTimeStamp,
+        info.desiredBuyAmount,
+        info.candleBaseMinute);
+
+    newItem.coinMarKetName = marketName;
+    return newItem;
+  }
+
+  void cleanText() {
+    _firstText = '';
+    _firstMarketCoinNm = '';
+
+    _secondText = '';
+    _secondMarketCoinNm = '';
+
+    _thirdText = '';
+    _thirdMarketCoinNm = '';
+
+    _fourthText = '';
+    _fourthMarketCoinNm = '';
+
+    _fifthText = '';
+    _fifthMarketCoinNm = '';
+    setState(() {});
   }
 }

@@ -17,15 +17,14 @@ class _BetYourMoneyState extends State<BetYourMoney>
   @override
   void initState() {
     super.initState();
+    _controller.duration = const Duration(milliseconds: 300);
     _controller.addListener(changeValue);
   }
 
   @override
   Widget build(BuildContext context) {
-    _controller.value = _value;
-    _controller.forward();
-    _controller.repeat(
-        min: 0, max: 4, period: const Duration(milliseconds: 300));
+    _controller.forward(from: _value);
+    _controller.repeat(min: 0, max: 4);
 
     return GifImage(
       width: double.infinity,
