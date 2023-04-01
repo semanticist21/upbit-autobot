@@ -187,12 +187,13 @@ class AppProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> doVolumeItemRequest(List<dynamic> volumeTopList) async {
+  Future<void> doVolumeItemRequest() async {
     // key : marketName
     // key : coinKrName
+    volumeTopList.clear();
     var response = await RestApiClient().requestGet('volume/20');
-
     volumeTopList = await RestApiClient.parseResponseListData(response);
+    notifyListeners();
   }
 
   void removeItemFromItems(int index) {

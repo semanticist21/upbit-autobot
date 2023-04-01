@@ -30,7 +30,7 @@ class _BetYourMoneyState extends State<BetYourMoney>
       width: double.infinity,
       height: double.infinity,
       controller: _controller,
-      image: AssetImage("lib/assets/bet_your_money.gif"),
+      image: AssetImage("assets/bet_your_money.gif"),
     );
   }
 

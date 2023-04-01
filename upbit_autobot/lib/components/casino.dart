@@ -1,6 +1,4 @@
-import 'dart:isolate';
-import 'dart:math';
-
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +7,7 @@ import 'package:upbit_autobot/components/alert.dart';
 import 'package:upbit_autobot/components/casino_roulette.dart';
 import 'package:upbit_autobot/components/draggable_card.dart';
 import 'package:upbit_autobot/components/pop_text.dart';
+import 'package:upbit_autobot/components/triangle.dart';
 import 'package:upbit_autobot/model/color_info.dart';
 import 'package:upbit_autobot/model/strategy_item_info.dart';
 import 'package:upbit_autobot/model/strategy_item_info_ichimoku.dart';
@@ -16,6 +15,7 @@ import 'package:upbit_autobot/provider.dart';
 
 import '../client/client.dart';
 import '../model/template.dart';
+import '3d_button.dart';
 import 'bet_your_money.dart';
 import 'fire.dart';
 
@@ -42,7 +42,6 @@ class _CasinoDialogState extends State<CasinoDialog> {
   var _isPressed = false;
   var _isRouletteOnGoing = false;
 
-  var _hasTried = false;
   var _isSoundOn = true;
 
   late SharedPreferences _pref;
@@ -52,6 +51,14 @@ class _CasinoDialogState extends State<CasinoDialog> {
   GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
 
+  var _bgPlayer = AudioPlayer();
+  var _leverPlayer = AudioPlayer();
+  var _wheelPlayer = AudioPlayer();
+
+  var _bgPath = 'background.wav';
+  var _leverPath = 'lever.wav';
+  var _wheelPath = 'wheel.wav';
+
   @override
   void initState() {
     _initPref();
@@ -59,8 +66,16 @@ class _CasinoDialogState extends State<CasinoDialog> {
   }
 
   @override
+  void dispose() {
+    _bgPlayer.dispose();
+    _leverPlayer.dispose();
+    _wheelPlayer.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    _provider = Provider.of(context);
+    _provider = Provider.of(context, listen: true);
 
     return Dialog(
         backgroundColor: Colors.transparent,
@@ -107,172 +122,212 @@ class _CasinoDialogState extends State<CasinoDialog> {
                                   height: double.infinity,
                                   color: Colors.transparent,
                                   child: FractionallySizedBox(
+                                      widthFactor: 1.0,
+                                      heightFactor: 1.0,
                                       child: Row(children: [
-                                    Expanded(
-                                        flex: 10,
-                                        child: Stack(children: [
-                                          Fire(),
-                                          Container(
-                                            padding: EdgeInsets.all(10),
-                                            child: casionoRoulette,
-                                          )
-                                        ])),
-                                    Expanded(
-                                        flex: 7,
-                                        child: Container(
-                                            color: Colors.black,
-                                            child: Column(
-                                              children: [
-                                                Expanded(
-                                                    flex: 3,
-                                                    child: BetYourMoney()),
-                                                Expanded(
-                                                    flex: 12,
-                                                    child: Column(children: [
-                                                      Expanded(
-                                                          child: Center(
-                                                        child: _firstText != ''
-                                                            ? PopUpText(
-                                                                text:
-                                                                    _firstText,
-                                                                coinNm: _firstMarketCoinNm
-                                                                    .replaceAll(
-                                                                        'KRW-',
-                                                                        '')
-                                                                    .toLowerCase())
-                                                            : SizedBox(),
-                                                      )),
-                                                      Expanded(
-                                                          child: Center(
-                                                        child: _secondText != ''
-                                                            ? PopUpText(
-                                                                text:
-                                                                    _secondText,
-                                                                coinNm: _secondMarketCoinNm
-                                                                    .replaceAll(
-                                                                        'KRW-',
-                                                                        '')
-                                                                    .toLowerCase())
-                                                            : SizedBox(),
-                                                      )),
-                                                      Expanded(
-                                                          child: Center(
-                                                        child: _thirdText != ''
-                                                            ? PopUpText(
-                                                                text:
-                                                                    _thirdText,
-                                                                coinNm: _thirdMarketCoinNm
-                                                                    .replaceAll(
-                                                                        'KRW-',
-                                                                        '')
-                                                                    .toLowerCase())
-                                                            : SizedBox(),
-                                                      )),
-                                                      Expanded(
-                                                          child: Center(
-                                                        child: _fourthText != ''
-                                                            ? PopUpText(
-                                                                text:
-                                                                    _fourthText,
-                                                                coinNm: _fourthMarketCoinNm
-                                                                    .replaceAll(
-                                                                        'KRW-',
-                                                                        '')
-                                                                    .toLowerCase())
-                                                            : SizedBox(),
-                                                      )),
-                                                      Expanded(
-                                                          child: Center(
-                                                        child: _fifthText != ''
-                                                            ? PopUpText(
-                                                                text:
-                                                                    _fifthText,
-                                                                coinNm: _fifthMarketCoinNm
-                                                                    .replaceAll(
-                                                                        'KRW-',
-                                                                        '')
-                                                                    .toLowerCase())
-                                                            : SizedBox(),
-                                                      )),
-                                                    ])),
-                                                Divider(),
-                                                Expanded(
-                                                    flex: 4,
-                                                    child: Container(
-                                                        child: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceAround,
-                                                            children: [
-                                                          SizedBox(width: 10),
-                                                          ElevatedButton(
-                                                              onPressed: () {
-                                                                if (_isRouletteOnGoing) {
-                                                                  return;
-                                                                }
-                                                                casionoRoulette
-                                                                    .stateWidget
-                                                                    .controller
-                                                                    .resetAnimation();
-                                                                cleanText();
-                                                              },
-                                                              child: Row(
+                                        Expanded(
+                                            flex: 10,
+                                            child: Stack(children: [
+                                              Fire(),
+                                              Container(
+                                                padding: EdgeInsets.all(10),
+                                                child: casionoRoulette,
+                                              ),
+                                              Padding(
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      200, 0, 0, 0),
+                                                  child: TriangleDiagram())
+                                            ])),
+                                        Expanded(
+                                            flex: 7,
+                                            child: Container(
+                                                color: Colors.black,
+                                                child: Column(
+                                                  children: [
+                                                    Expanded(
+                                                        flex: 3,
+                                                        child: BetYourMoney()),
+                                                    Expanded(
+                                                        flex: 12,
+                                                        child:
+                                                            Column(children: [
+                                                          Expanded(
+                                                              child: Center(
+                                                            child: _firstText !=
+                                                                    ''
+                                                                ? PopUpText(
+                                                                    text:
+                                                                        _firstText,
+                                                                    coinNm: _firstMarketCoinNm
+                                                                        .replaceAll(
+                                                                            'KRW-',
+                                                                            '')
+                                                                        .toLowerCase())
+                                                                : SizedBox(),
+                                                          )),
+                                                          Expanded(
+                                                              child: Center(
+                                                            child: _secondText !=
+                                                                    ''
+                                                                ? PopUpText(
+                                                                    text:
+                                                                        _secondText,
+                                                                    coinNm: _secondMarketCoinNm
+                                                                        .replaceAll(
+                                                                            'KRW-',
+                                                                            '')
+                                                                        .toLowerCase())
+                                                                : SizedBox(),
+                                                          )),
+                                                          Expanded(
+                                                              child: Center(
+                                                            child: _thirdText !=
+                                                                    ''
+                                                                ? PopUpText(
+                                                                    text:
+                                                                        _thirdText,
+                                                                    coinNm: _thirdMarketCoinNm
+                                                                        .replaceAll(
+                                                                            'KRW-',
+                                                                            '')
+                                                                        .toLowerCase())
+                                                                : SizedBox(),
+                                                          )),
+                                                          Expanded(
+                                                              child: Center(
+                                                            child: _fourthText !=
+                                                                    ''
+                                                                ? PopUpText(
+                                                                    text:
+                                                                        _fourthText,
+                                                                    coinNm: _fourthMarketCoinNm
+                                                                        .replaceAll(
+                                                                            'KRW-',
+                                                                            '')
+                                                                        .toLowerCase())
+                                                                : SizedBox(),
+                                                          )),
+                                                          Expanded(
+                                                              child: Center(
+                                                            child: _fifthText !=
+                                                                    ''
+                                                                ? PopUpText(
+                                                                    text:
+                                                                        _fifthText,
+                                                                    coinNm: _fifthMarketCoinNm
+                                                                        .replaceAll(
+                                                                            'KRW-',
+                                                                            '')
+                                                                        .toLowerCase())
+                                                                : SizedBox(),
+                                                          )),
+                                                        ])),
+                                                    Divider(),
+                                                    Expanded(
+                                                        flex: 4,
+                                                        child: Container(
+                                                            child: Row(
                                                                 mainAxisAlignment:
                                                                     MainAxisAlignment
-                                                                        .center,
+                                                                        .spaceAround,
                                                                 children: [
-                                                                  Icon(
-                                                                      FontAwesomeIcons
-                                                                          .gun,
-                                                                      size: 20),
-                                                                  SizedBox(
-                                                                      width: 10,
-                                                                      height: double
-                                                                          .infinity),
-                                                                  Text('리셋',
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              20))
-                                                                ],
-                                                              )),
-                                                          GestureDetector(
-                                                              onTapDown:
-                                                                  (details) {
-                                                                _doTapDown();
-                                                              },
-                                                              onTapUp:
-                                                                  (details) async {
-                                                                await _doTapUp();
-                                                              },
-                                                              child: Container(
-                                                                width: 110,
-                                                                height: double
-                                                                    .infinity,
-                                                                clipBehavior:
-                                                                    Clip.hardEdge,
-                                                                decoration: BoxDecoration(
-                                                                    image: DecorationImage(
-                                                                        image: AssetImage(_isPressed
-                                                                            ? 'lib/assets/down.png'
-                                                                            : 'lib/assets/up.png'),
-                                                                        fit: BoxFit
-                                                                            .fill,
-                                                                        filterQuality:
-                                                                            FilterQuality
-                                                                                .high,
-                                                                        isAntiAlias:
-                                                                            true),
+                                                              SizedBox(
+                                                                  width: 10),
+                                                              Button3D(
+                                                                  style:
+                                                                      StyleOf3dButton(
+                                                                    width: MediaQuery.of(context)
+                                                                            .size
+                                                                            .width *
+                                                                        0.1,
+                                                                    height: 90,
+                                                                    backColor:
+                                                                        Colors.red[
+                                                                            900]!,
+                                                                    topColor:
+                                                                        Colors.red[
+                                                                            400]!,
                                                                     borderRadius:
                                                                         BorderRadius.circular(
-                                                                            20)),
-                                                                alignment:
-                                                                    Alignment
-                                                                        .center,
-                                                              ))
-                                                        ])))
-                                              ],
-                                            )))
-                                  ])))),
+                                                                            30),
+                                                                  ),
+                                                                  width: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width *
+                                                                      0.15,
+                                                                  height: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width *
+                                                                      0.08,
+                                                                  onPressed:
+                                                                      () {
+                                                                    if (_isRouletteOnGoing) {
+                                                                      return;
+                                                                    }
+                                                                    cleanText();
+                                                                  },
+                                                                  child: Row(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .center,
+                                                                    children: [
+                                                                      Icon(
+                                                                          FontAwesomeIcons
+                                                                              .gun,
+                                                                          size:
+                                                                              20),
+                                                                      SizedBox(
+                                                                          width:
+                                                                              10,
+                                                                          height:
+                                                                              double.infinity),
+                                                                      Text('리셋',
+                                                                          style:
+                                                                              TextStyle(fontSize: 20))
+                                                                    ],
+                                                                  )),
+                                                              GestureDetector(
+                                                                  onTapDown:
+                                                                      (details) {
+                                                                    _doTapDown();
+                                                                  },
+                                                                  onTapUp:
+                                                                      (details) async {
+                                                                    await _doTapUp();
+                                                                  },
+                                                                  child:
+                                                                      Container(
+                                                                    width: MediaQuery.of(context)
+                                                                            .size
+                                                                            .width *
+                                                                        0.13,
+                                                                    height: double
+                                                                        .infinity,
+                                                                    clipBehavior:
+                                                                        Clip.hardEdge,
+                                                                    decoration: BoxDecoration(
+                                                                        image: DecorationImage(
+                                                                            image: AssetImage(_isPressed
+                                                                                ? 'assets/down.png'
+                                                                                : 'assets/up.png'),
+                                                                            fit: BoxFit
+                                                                                .fill,
+                                                                            filterQuality: FilterQuality
+                                                                                .high,
+                                                                            isAntiAlias:
+                                                                                true),
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(20)),
+                                                                    alignment:
+                                                                        Alignment
+                                                                            .center,
+                                                                  ))
+                                                            ])))
+                                                  ],
+                                                )))
+                                      ])))),
                           Expanded(
                               flex: 6,
                               child: Row(children: [
@@ -285,8 +340,15 @@ class _CasinoDialogState extends State<CasinoDialog> {
                                       value: !_isSoundOn,
                                       onChanged: (event) async {
                                         _isSoundOn = !_isSoundOn;
+                                        if (_isSoundOn) {
+                                          _bgPlayer.resume();
+                                        } else {
+                                          _bgPlayer.stop();
+                                        }
+
                                         await _pref.setBool(
                                             _prefKey, _isSoundOn);
+                                        print(_pref.getBool(_prefKey));
                                         setState(() {});
                                       })
                                 ]),
@@ -310,6 +372,46 @@ class _CasinoDialogState extends State<CasinoDialog> {
     _pref = await SharedPreferences.getInstance();
     _isSoundOn = _pref.getBool(_prefKey) ?? true;
     setState(() {});
+    _setPlayers();
+    _playBgSong();
+  }
+
+  void _setPlayers() {
+    var bgSource = AssetSource(_bgPath);
+    var leverSource = AssetSource(_leverPath);
+    var wheelSoruce = AssetSource(_wheelPath);
+
+    _bgPlayer.setSource(bgSource);
+    _leverPlayer.setSource(leverSource);
+    _wheelPlayer.setSource(wheelSoruce);
+
+    _bgPlayer.setVolume(0.06);
+    _leverPlayer.setVolume(0.2);
+    _wheelPlayer.setVolume(0.2);
+  }
+
+  void _playBgSong() {
+    if (!_isSoundOn) {
+      return;
+    }
+
+    _bgPlayer.resume();
+  }
+
+  void _playLeverEffect() {
+    if (!_isSoundOn) {
+      return;
+    }
+
+    _leverPlayer.resume();
+  }
+
+  void _playWheelEffect() {
+    if (!_isSoundOn) {
+      return;
+    }
+
+    _wheelPlayer.resume();
   }
 
   Future<void> _doTapDown() async {
@@ -320,6 +422,7 @@ class _CasinoDialogState extends State<CasinoDialog> {
     setState(() {
       _isPressed = true;
     });
+    _playLeverEffect();
   }
 
   Future<void> _doTapUp() async {
@@ -345,6 +448,10 @@ class _CasinoDialogState extends State<CasinoDialog> {
 
   Future<void> _doStartRoullet() async {
     if (_provider.volumeTopList.isEmpty) {
+      await _provider.doVolumeItemRequest();
+    }
+
+    if (_provider.volumeTopList.isEmpty) {
       showDialog(
           context: context,
           builder: (context) => AlertDialogCustom(
@@ -356,6 +463,7 @@ class _CasinoDialogState extends State<CasinoDialog> {
 
     var usedIndexs = List<int>.empty(growable: true);
 
+    _playWheelEffect();
     var index = await casionoRoulette.stateWidget.rollRoll(usedIndexs);
     usedIndexs.add(index);
     if (index < _provider.volumeTopList.length) {
@@ -367,6 +475,7 @@ class _CasinoDialogState extends State<CasinoDialog> {
     }
     await Future.delayed(Duration(milliseconds: 600));
 
+    _playWheelEffect();
     index = await casionoRoulette.stateWidget.rollRoll(usedIndexs);
     usedIndexs.add(index);
 
@@ -379,6 +488,7 @@ class _CasinoDialogState extends State<CasinoDialog> {
     }
     await Future.delayed(Duration(milliseconds: 600));
 
+    _playWheelEffect();
     index = await casionoRoulette.stateWidget.rollRoll(usedIndexs);
     usedIndexs.add(index);
     if (index < _provider.volumeTopList.length) {
@@ -390,6 +500,7 @@ class _CasinoDialogState extends State<CasinoDialog> {
     }
     await Future.delayed(Duration(milliseconds: 600));
 
+    _playWheelEffect();
     index = await casionoRoulette.stateWidget.rollRoll(usedIndexs);
     usedIndexs.add(index);
     if (index < _provider.volumeTopList.length) {
@@ -401,6 +512,7 @@ class _CasinoDialogState extends State<CasinoDialog> {
     }
     await Future.delayed(Duration(milliseconds: 600));
 
+    _playWheelEffect();
     index = await casionoRoulette.stateWidget.rollRoll(usedIndexs);
     usedIndexs.add(index);
     if (index < _provider.volumeTopList.length) {

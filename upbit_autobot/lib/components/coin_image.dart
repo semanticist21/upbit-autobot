@@ -14,10 +14,8 @@ class CoinImage extends StatelessWidget {
       filterQuality: FilterQuality.high,
       imageUrl: '$iconUrl$coinNm$suffix',
       placeholder: (context, url) => new CircularProgressIndicator(),
-      errorWidget: (context, url, error) => new Image.asset(
-          'lib/assets/coin.png',
-          filterQuality: FilterQuality.high,
-          isAntiAlias: true),
+      errorWidget: (context, url, error) => new Image.asset('assets/coin.png',
+          filterQuality: FilterQuality.high, isAntiAlias: true),
     );
   }
 }

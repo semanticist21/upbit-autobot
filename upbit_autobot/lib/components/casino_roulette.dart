@@ -71,13 +71,14 @@ class _CasionoRouletteState extends State<CasionoRoulette>
 
   Future<void> _initRouletteGroup() async {
     if (_provider.volumeTopList.isEmpty) {
-      await _provider.doVolumeItemRequest(_provider.volumeTopList);
+      await _provider.doVolumeItemRequest();
       _hasTried = true;
     }
 
     var item = _getUnitItem();
     if (item.isNotEmpty) {
       controller.group = RouletteGroup(_getUnitItem());
+      setState(() {});
     }
   }
 

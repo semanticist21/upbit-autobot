@@ -15,8 +15,7 @@ class AppTrayManager {
   }
 
   Future<void> initSystemTray() async {
-    String path =
-        Platform.isWindows ? 'lib/assets/icon.ico' : 'lib/assets/icon.png';
+    String path = Platform.isWindows ? 'assets/icon.ico' : 'assets/icon.png';
 
     appWindow = AppWindow();
     systemTray = SystemTray();
@@ -31,8 +30,7 @@ class AppTrayManager {
     await menu.buildFrom([
       MenuItemLabel(
         label: '종료',
-        image:
-            Platform.isWindows ? 'lib/assets/exit.bmp' : 'lib/assets/exit.png',
+        image: Platform.isWindows ? 'assets/exit.bmp' : 'assets/exit.png',
         onClicked: (menuItem) {
           appWindow.close();
         },

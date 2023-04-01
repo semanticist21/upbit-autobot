@@ -30,7 +30,7 @@ class _FireState extends State<Fire> with TickerProviderStateMixin {
         width: double.infinity,
         height: double.infinity,
         controller: _controller,
-        image: AssetImage("lib/assets/fire.gif"));
+        image: AssetImage("assets/fire.gif"));
   }
 
   @override

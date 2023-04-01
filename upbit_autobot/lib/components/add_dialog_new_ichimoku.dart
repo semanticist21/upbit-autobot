@@ -138,9 +138,7 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
                                                   if (_provider
                                                       .volumeTopList.isEmpty) {
                                                     _provider
-                                                        .doVolumeItemRequest(
-                                                            _provider
-                                                                .volumeTopList);
+                                                        .doVolumeItemRequest();
 
                                                     if (_provider.volumeTopList
                                                         .isEmpty) {
