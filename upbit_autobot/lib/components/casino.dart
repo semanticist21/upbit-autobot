@@ -610,7 +610,11 @@ class CasinoDialogState extends State<CasinoDialog> {
     var response = await RestApiClient().requestGet('template');
     var data = await RestApiClient.parseResponseData(response);
 
-    if (data.isEmpty) {
+    if (data.isEmpty && context.mounted) {
+      showDialog(
+          context: context,
+          builder: (context) =>
+              const AlertDialogCustom(text: '저장된 템플릿이 없습니다.'));
       return;
     }
 
@@ -690,7 +694,11 @@ class CasinoDialogState extends State<CasinoDialog> {
     var response = await RestApiClient().requestGet('template');
     var data = await RestApiClient.parseResponseData(response);
 
-    if (data.isEmpty) {
+    if (data.isEmpty && context.mounted) {
+      showDialog(
+          context: context,
+          builder: (context) =>
+              const AlertDialogCustom(text: '저장된 템플릿이 없습니다.'));
       return;
     }
 
