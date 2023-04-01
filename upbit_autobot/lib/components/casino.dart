@@ -433,12 +433,11 @@ class CasinoDialogState extends State<CasinoDialog> {
 
     _bgPlayer.onPlayerComplete.listen((event) {
       var randomNum = Random().nextInt(8);
-      _bgPlayer.setSource(_bgSources[randomNum]);
       if (!_isSoundOn) {
         return;
       }
 
-      _bgPlayer.resume();
+      _bgPlayer.play(_bgSources[randomNum]);
     });
 
     _leverPlayer.setSource(leverSource);
