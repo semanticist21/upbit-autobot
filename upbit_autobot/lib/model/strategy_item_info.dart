@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:upbit_autobot/model/color_info.dart';
 
 import '../components/helper/custom_converter.dart';

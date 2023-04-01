@@ -15,16 +15,16 @@ class SellListView extends StatefulWidget {
 
 class _SellListViewState extends State<SellListView> {
   late final List<SellItem> _sellItem = List.empty(growable: true);
+  var _isItemFinished = false;
 
   @override
   void initState() {
     super.initState();
+    doSellItemRequest();
   }
 
   @override
   Widget build(BuildContext context) {
-    doSellItemRequest(_sellItem);
-
     return Dialog(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -52,9 +52,8 @@ class _SellListViewState extends State<SellListView> {
                             splashRadius: 15)
                       ]),
                 ),
-                body: _sellItem.isNotEmpty
-                    ? getWhenItemExists()
-                    : getWhenItemEmpty()),
+                body:
+                    _isItemFinished ? getWhenItemExists() : getWhenItemEmpty()),
           ),
         ));
   }
@@ -173,13 +172,19 @@ class _SellListViewState extends State<SellListView> {
         ));
   }
 
-  Future<void> doSellItemRequest(List<SellItem> sellItemList) async {
+  Future<void> doSellItemRequest() async {
+    _sellItem.clear();
+
     var response = await RestApiClient().requestGet('items/sell');
     var data = await RestApiClient.parseResponseListData(response);
+
     for (var element in data) {
       var sellItem = SellItem.fromJson(element);
-      sellItemList.add(sellItem);
+      _sellItem.add(sellItem);
     }
-    setState(() {});
+
+    setState(() {
+      _isItemFinished = true;
+    });
   }
 }
