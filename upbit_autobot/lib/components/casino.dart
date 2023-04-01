@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:upbit_autobot/components/add_dialog_new_bollinger_template.dart';
+import 'package:upbit_autobot/components/add_dialog_new_ichimoku_template.dart';
 import 'package:upbit_autobot/components/alert.dart';
 import 'package:upbit_autobot/components/casino_roulette.dart';
 import 'package:upbit_autobot/components/draggable_card.dart';
@@ -379,14 +381,59 @@ class CasinoDialogState extends State<CasinoDialog> {
                                       })
                                 ]),
                                 const Spacer(),
-                                ElevatedButton(
-                                  onPressed: () => _doSaveBollinger(),
-                                  child: const Text('볼린저 밴드로 추가'),
-                                ),
-                                const SizedBox(width: 10),
-                                ElevatedButton(
-                                    onPressed: () => _doSaveIchimoku(),
-                                    child: const Text('일목 아이템로 추가')),
+                                Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(height: 3),
+                                      Row(children: [
+                                        ElevatedButton(
+                                            onPressed: () => showDialog(
+                                                context: context,
+                                                builder: (_) =>
+                                                    const AddDialogNewIchimokuTemplate()),
+                                            child: const Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  SizedBox(width: 20),
+                                                  Icon(Icons.edit_document,
+                                                      size: 15),
+                                                  SizedBox(width: 5),
+                                                  Text('일목 템플릿'),
+                                                  SizedBox(width: 19),
+                                                ])),
+                                        const SizedBox(width: 5),
+                                        ElevatedButton(
+                                          onPressed: () => showDialog(
+                                              context: context,
+                                              builder: (_) =>
+                                                  const AddDialogNewBollingerTemplate()),
+                                          child: const Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                SizedBox(width: 7),
+                                                Icon(Icons.edit_document,
+                                                    size: 15),
+                                                SizedBox(width: 5),
+                                                Text('볼린저 템플릿'),
+                                                SizedBox(width: 6),
+                                              ]),
+                                        ),
+                                      ]),
+                                      const SizedBox(height: 5),
+                                      Row(children: [
+                                        ElevatedButton(
+                                            onPressed: () => _doSaveIchimoku(),
+                                            child: const Text('일목 아이템으로 추가')),
+                                        const SizedBox(width: 5),
+                                        ElevatedButton(
+                                          onPressed: () => _doSaveBollinger(),
+                                          child: const Text('볼린저 밴드로 추가'),
+                                        ),
+                                      ])
+                                    ]),
                                 const SizedBox(width: 10),
                               ]))
                         ]),
