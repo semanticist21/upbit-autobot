@@ -204,6 +204,23 @@ class _AddDialogNewIchimokuState extends State<AddDialogNewIchimoku>
                                                   size: 15),
                                               splashRadius: 15)),
                                       Tooltip(
+                                        message: '상위 코인 볼륨 정보 다시 얻어오기',
+                                        child: IconButton(
+                                            onPressed: () async {
+                                              setState(() {
+                                                _isProgressVisible = true;
+                                              });
+                                              await _provider
+                                                  .doVolumeItemRequest();
+                                              setState(() {
+                                                _isProgressVisible = false;
+                                              });
+                                            },
+                                            icon: const Icon(
+                                                Icons.stacked_bar_chart),
+                                            splashRadius: 15),
+                                      ),
+                                      Tooltip(
                                           message: '줌 초기화',
                                           excludeFromSemantics: true,
                                           child: IconButton(
