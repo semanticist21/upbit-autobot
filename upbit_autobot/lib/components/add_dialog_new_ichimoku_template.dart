@@ -110,7 +110,7 @@ class _AddDialogNewIchimokuTemplateState
                                       const Icon(FontAwesomeIcons.lightbulb,
                                           size: 15),
                                       const SizedBox(width: 10),
-                                      const Text('일목균형표의 컨버젼 전략 아이템 추가'),
+                                      const Text('컨버젼 템플릿 추가'),
                                       const Spacer(),
                                       const SizedBox(width: 5),
                                       Visibility(

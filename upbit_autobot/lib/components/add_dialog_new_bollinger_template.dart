@@ -115,7 +115,7 @@ class _AddDialogNewBollingerTemplateState
                                         const Icon(FontAwesomeIcons.lightbulb,
                                             size: 15),
                                         const SizedBox(width: 10),
-                                        const Text('볼린저 밴드 기반 전략 아이템 추가'),
+                                        const Text('볼린저 밴드 템플릿 추가'),
                                         const Spacer(),
                                         const SizedBox(width: 5),
                                         Visibility(
