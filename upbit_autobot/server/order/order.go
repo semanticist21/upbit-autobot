@@ -18,6 +18,7 @@ const (
 	One      Minutes = 1
 	Three    Minutes = 3
 	Five     Minutes = 5
+	Ten      Minutes = 10
 	Fiften   Minutes = 15
 	Thirty   Minutes = 30
 	Sixty    Minutes = 60
@@ -26,10 +27,10 @@ const (
 
 func IntToMinutesType(val int) (Minutes, error) {
 	switch val {
-	case 1, 3, 5, 15, 30, 60, 240:
+	case 1, 3, 5, 10, 15, 30, 60, 240:
 		return Minutes(val), nil
 	default:
-		return 0, fmt.Errorf("%d분 :: 적합한 분봉이 아닙니다. 1, 3, 5, 15, 30, 60, 240분 중 하나여야 합니다", val)
+		return 0, fmt.Errorf("%d분 :: 적합한 분봉이 아닙니다. 1, 3, 5, 10, 15, 30, 60, 240분 중 하나여야 합니다", val)
 	}
 }
 

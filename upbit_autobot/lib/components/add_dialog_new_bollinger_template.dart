@@ -35,7 +35,7 @@ class _AddDialogNewBollingerTemplateState
   final _withSuffixFormKey = GlobalKey<FormState>();
 
   late AppProvider _provider;
-  final List<String> candles = ['1', '3', '5', '15', '30', '60', '240'];
+  final List<String> candles = ['1', '3', '5', '10', '15', '30', '60', '240'];
 
   var _isCtrlKeyPressed = false;
   final _focusNode = FocusNode();
