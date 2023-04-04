@@ -132,7 +132,7 @@ class _AddDialogNewBollingerState extends State<AddDialogNewBollinger>
                                                         strokeWidth: 2))),
                                         Tooltip(
                                             message:
-                                                '랜덤 생성 추가(상위 볼륨 20개 중 랜덤) - Credited to CoinGecko',
+                                                '랜덤 생성 추가(상위 볼륨 20개 중 랜덤)',
                                             child: IconButton(
                                                 onPressed: () async {
                                                   _isProgressVisible = true;

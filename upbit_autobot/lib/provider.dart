@@ -414,7 +414,6 @@ class AppProvider extends ChangeNotifier {
           }
         }
       }
-
       reorderItemCollection();
       notifyListeners();
     });
