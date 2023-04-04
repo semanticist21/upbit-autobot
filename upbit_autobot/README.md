@@ -1,4 +1,4 @@
-# upbit_autobot v 1.14
+# upbit_autobot v 1.16
 
 ## 설명
 
@@ -13,6 +13,7 @@
 플러터 실행 폴더에 넣어주세요.
 
 아이콘 및 배경은 비상업적 하에 사용이 허가된 애셋입니다.
+최대 권장 실행 해상도 : 2560 * 1440
 
 실행파일 : upbit_autobot.exe
 설명 보기 : ? 클릭하여 설명서 참고
@@ -21,4 +22,6 @@
 
 ![화면 캡처 2023-03-25 143325](https://user-images.githubusercontent.com/92710478/227698444-c3ded7c2-beab-49ef-9edc-f4a407f6d08b.png)
 ![화면 캡처 2023-03-25 143347](https://user-images.githubusercontent.com/92710478/227698464-adf67d81-49ae-4b10-a42e-42e9f1af2cd6.png)
-![화면 캡처 2023-03-25 143357](https://user-images.githubusercontent.com/92710478/227698465-b453f817-4c18-4072-a316-46c537f83be7.png)
+![1](https://user-images.githubusercontent.com/92710478/229475451-91efd3e4-62ec-4cb6-b0ce-be74462cd667.png)
+![2](https://user-images.githubusercontent.com/92710478/229475511-2f4e1920-cf32-43ae-a34e-1774c5ac21c4.png)
+![3](https://user-images.githubusercontent.com/92710478/229475518-fc8edbf6-ec50-4be5-be65-d996bc211a73.png)
